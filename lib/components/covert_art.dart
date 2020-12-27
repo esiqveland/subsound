@@ -28,6 +28,7 @@ class CoverArtImage extends StatelessWidget {
       height: height,
       width: width,
       cacheManager: ArtworkCacheManager(),
+      //fit: BoxFit.cover,
       // if (this.id != null ) cacheKey: this.id,
       cacheKey: this.id,
       progressIndicatorBuilder: (context, url, downloadProgress) =>
