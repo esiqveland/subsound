@@ -11,6 +11,7 @@ class CoverArtImage extends StatelessWidget {
   final String url;
   final double height;
   final double width;
+  final BoxFit fit;
 
   const CoverArtImage(
     this.url, {
@@ -18,6 +19,7 @@ class CoverArtImage extends StatelessWidget {
     String id,
     this.height = 48.0,
     this.width = 48.0,
+    this.fit,
   })  : this.id = id ?? url,
         super(key: key);
 
@@ -29,7 +31,7 @@ class CoverArtImage extends StatelessWidget {
       width: width,
       //placeholderFadeInDuration: ,
       cacheManager: ArtworkCacheManager(),
-      fit: BoxFit.cover,
+      fit: fit,
       // if (this.id != null ) cacheKey: this.id,
       cacheKey: this.id,
       progressIndicatorBuilder: (context, url, downloadProgress) =>

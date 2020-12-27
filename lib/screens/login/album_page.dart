@@ -148,7 +148,7 @@ class AlbumView extends StatelessWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              titlePadding: EdgeInsets.only(left: 5.0, bottom: 10.0),
+              //titlePadding: EdgeInsets.only(left: 5.0, bottom: 10.0),
               title: Text(
                 album.name,
                 //textAlign: TextAlign.start,
@@ -169,6 +169,7 @@ class AlbumView extends StatelessWidget {
                   id: album.coverArtId,
                   height: expandedHeight * 1.6,
                   width: expandedHeight * 1.6,
+                  fit: BoxFit.cover,
                 ),
               ),
               stretchModes: [
