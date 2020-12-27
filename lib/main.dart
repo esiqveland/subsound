@@ -71,7 +71,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      //theme: ThemeData(primarySwatch: Colors.orange),
       theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: darkBlue),
       routes: appRoutes,
       initialRoute: Navigator.defaultRouteName,
@@ -83,7 +82,12 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CircularProgressIndicator(),
+      child: Column(
+        children: [
+          Icon(Icons.play_arrow_outlined),
+          CircularProgressIndicator(),
+        ],
+      ),
     );
   }
 }
