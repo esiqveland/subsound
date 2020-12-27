@@ -97,6 +97,7 @@ class _PlayerControllerState extends State<PlayerController> {
 }
 
 class PlayerScreen extends StatelessWidget {
+  static final String routeName = "/player";
   final PlayerState playerState;
 
   const PlayerScreen({Key key, this.playerState}) : super(key: key);
@@ -128,10 +129,10 @@ class PlayerScreen extends StatelessWidget {
 class MiniPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50.0,
-      child: Container(
-        color: Colors.black54,
+    return Container(
+      color: Colors.black54,
+      child: SizedBox(
+        height: 50.0,
         child: ListTile(
           leading: Icon(
             Icons.album,
