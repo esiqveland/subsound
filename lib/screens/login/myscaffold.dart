@@ -107,18 +107,6 @@ class MyScaffold extends StatelessWidget {
               AppBar(
                 title: title,
               ),
-      // body: Container(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //     children: [
-      //       Expanded(child: body),
-      //       Container(
-      //         color: Colors.transparent.withOpacity(0.5),
-      //         height: PlayerBottomBarSize,
-      //       ),
-      //     ],
-      //   ),
-      // ),
       body: Container(
         padding: EdgeInsets.only(bottom: PlayerBottomBarSize),
         child: body,
