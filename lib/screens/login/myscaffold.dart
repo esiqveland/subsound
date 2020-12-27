@@ -76,14 +76,21 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
 }
 
 class MyScaffold extends StatelessWidget {
+  final Widget appBar;
   final Widget body;
+  bool disableAppBar;
 
-  const MyScaffold({Key key, this.body}) : super(key: key);
+  MyScaffold({
+    Key key,
+    this.body,
+    this.appBar,
+    this.disableAppBar = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: disableAppBar ? null : appBar ?? AppBar(),
       body: body,
       drawer: Navigator.of(context).canPop()
           ? null
