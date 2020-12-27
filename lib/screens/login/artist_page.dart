@@ -153,29 +153,50 @@ class ArtistView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: <Widget>[
-          Container(
-            child: CoverArtImage(
-              artist.coverArtLink,
-              height: 250.0,
-              width: 250.0,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomCenter,
+          stops: [0.0, 0.8],
+          colors: [
+            Colors.blueGrey.withOpacity(0.7),
+            Colors.black.withOpacity(0.7),
+          ],
+        ),
+      ),
+      child: CustomScrollView(
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: Container(
+              margin: EdgeInsets.only(bottom: 10.0),
+              child: CoverArtImage(
+                artist.coverArtLink,
+                height: 250.0,
+                width: 250.0,
+              ),
             ),
-            margin: EdgeInsets.only(bottom: 10.0),
           ),
-          Container(
-            child: Text(
-              artist.name,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
-            ),
-            margin: EdgeInsets.only(
-              bottom: 10.0,
+          SliverToBoxAdapter(
+            child: Container(
+              margin: EdgeInsets.only(
+                bottom: 10.0,
+                left: 10.0,
+              ),
+              child: Text(
+                artist.name,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
+              ),
             ),
           ),
-          AlbumList(
-            artist: artist,
-            albums: artist.albums,
-            onSelectedAlbum: onSelectedAlbum,
+          SliverList(
+            delegate: SliverChildListDelegate(
+              this
+                  .artist
+                  .albums
+                  .map((album) =>
+                      AlbumRow(album: album, onSelectedAlbum: onSelectedAlbum))
+                  .toList(),
+            ),
           ),
         ],
       ),
