@@ -127,12 +127,16 @@ class PlayerScreen extends StatelessWidget {
 }
 
 class MiniPlayer extends StatelessWidget {
+  final double size;
+
+  const MiniPlayer({Key key, this.size}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black54,
+      // color: Colors.black54.withOpacity(0.3),
       child: SizedBox(
-        height: 50.0,
+        height: size ?? 50.0,
         child: ListTile(
           leading: Icon(
             Icons.album,
@@ -165,8 +169,12 @@ class MiniPlayer extends StatelessWidget {
 // DraggableScrollableSheet
 // or BottomSheet ?
 class PlayerBottomBar extends StatelessWidget {
+  final double size;
+
+  PlayerBottomBar({Key key, this.size}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MiniPlayer();
+    return MiniPlayer(size: size);
   }
 }

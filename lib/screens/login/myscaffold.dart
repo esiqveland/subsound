@@ -75,6 +75,8 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   }
 }
 
+const PlayerBottomBarSize = 50.0;
+
 class MyScaffold extends StatelessWidget {
   final Widget appBar;
   final Widget body;
@@ -91,7 +93,22 @@ class MyScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: disableAppBar ? null : appBar ?? AppBar(),
-      body: body,
+      // body: Container(
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //     children: [
+      //       Expanded(child: body),
+      //       Container(
+      //         color: Colors.transparent.withOpacity(0.5),
+      //         height: PlayerBottomBarSize,
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      body: Container(
+        padding: EdgeInsets.only(bottom: PlayerBottomBarSize),
+        child: body,
+      ),
       drawer: Navigator.of(context).canPop()
           ? null
           : Drawer(
@@ -133,7 +150,7 @@ class MyScaffold extends StatelessWidget {
                 ],
               ),
             ),
-      bottomSheet: PlayerBottomBar(),
+      bottomSheet: PlayerBottomBar(size: PlayerBottomBarSize),
       bottomNavigationBar: BottomNavigationBarWidget(navItems: navBarItems),
     );
   }
