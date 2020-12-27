@@ -146,6 +146,7 @@ class AlbumView extends StatelessWidget {
             snap: false,
             floating: true,
             pinned: true,
+            primary: true,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
               //titlePadding: EdgeInsets.only(left: 5.0, bottom: 10.0),
@@ -161,16 +162,30 @@ class AlbumView extends StatelessWidget {
                 //maxLines: 1,
               ),
               collapseMode: CollapseMode.parallax,
-              background: Container(
-                //margin: EdgeInsets.only(bottom: 50.0),
-                color: Colors.black54,
-                child: CoverArtImage(
-                  album.coverArtLink,
-                  id: album.coverArtId,
-                  height: expandedHeight * 1.6,
-                  width: expandedHeight * 1.6,
-                  fit: BoxFit.cover,
-                ),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CoverArtImage(
+                    album.coverArtLink,
+                    id: album.coverArtId,
+                    height: expandedHeight * 1.6,
+                    width: expandedHeight * 1.6,
+                    fit: BoxFit.cover,
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        // end: Alignment(0.0, 0.0),
+                        begin: Alignment.bottomCenter,
+                        end: Alignment(0.0, 0.0),
+                        colors: <Color>[
+                          Color(0x60000000),
+                          Color(0x00000000),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
               stretchModes: [
                 StretchMode.fadeTitle,
