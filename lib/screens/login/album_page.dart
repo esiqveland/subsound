@@ -132,8 +132,20 @@ class AlbumView extends StatelessWidget {
     // var expandedHeight = MediaQuery.of(context).size.height / 3;
     var expandedHeight = 350.0;
     return Container(
-      color: Colors.black54,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomCenter,
+          stops: [0.0, 0.8],
+          colors: [
+            Colors.blueGrey.withOpacity(0.7),
+            Colors.black.withOpacity(0.7),
+          ],
+        ),
+      ),
+      //color: Colors.black54,
       child: CustomScrollView(
+        primary: true,
         physics: const BouncingScrollPhysics(),
         slivers: <Widget>[
           SliverAppBar(
@@ -194,13 +206,15 @@ class AlbumView extends StatelessWidget {
               ],
             ),
           ),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              return SongRow(song: album.songs[index]);
-            },
-            childCount: album.songs.length,
-          )),
+          Container(
+            child: SliverList(
+                delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return SongRow(song: album.songs[index]);
+              },
+              childCount: album.songs.length,
+            )),
+          ),
           // Expanded(
           //   child: AlbumList(
           //     album: album,
