@@ -69,9 +69,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var theme = ThemeData.dark();
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: darkBlue),
+      title: 'Sub:Sound',
+      theme: theme.copyWith(
+        bottomSheetTheme: theme.bottomSheetTheme.copyWith(
+          backgroundColor: Colors.black.withOpacity(0.6),
+        ),
+      ),
       routes: appRoutes,
       initialRoute: Navigator.defaultRouteName,
     );
