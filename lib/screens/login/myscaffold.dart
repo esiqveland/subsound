@@ -31,6 +31,13 @@ final navBarItems = [
     Navigator.of(context).pushReplacementNamed(PlayerScreen.routeName);
   }),
   NavItems(
+      BottomNavigationBarItem(
+        label: 'Search',
+        icon: Icon(Icons.search_sharp),
+      ), (context) {
+    Navigator.of(context).pushReplacementNamed(PlayerScreen.routeName);
+  }),
+  NavItems(
     BottomNavigationBarItem(
       label: 'Settings',
       icon: Icon(Icons.settings),
