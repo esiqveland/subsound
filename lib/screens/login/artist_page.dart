@@ -103,6 +103,7 @@ class AlbumRow extends StatelessWidget {
         onSelectedAlbum(album);
       },
       child: Container(
+        margin: EdgeInsets.all(10.0),
         child: Row(
           children: [
             CoverArtImage(
@@ -137,7 +138,6 @@ class AlbumRow extends StatelessWidget {
             ),
           ],
         ),
-        margin: EdgeInsets.all(10.0),
       ),
     );
   }
@@ -197,14 +197,16 @@ class AlbumList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: this
-          .albums
-          .map((a) => AlbumRow(
-                album: a,
-                onSelectedAlbum: onSelectedAlbum,
-              ))
-          .toList(),
+    return Expanded(
+      child: ListView(
+        children: this
+            .albums
+            .map((a) => AlbumRow(
+                  album: a,
+                  onSelectedAlbum: onSelectedAlbum,
+                ))
+            .toList(),
+      ),
     );
   }
 }
