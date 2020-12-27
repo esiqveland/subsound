@@ -87,19 +87,26 @@ const PlayerBottomBarSize = 50.0;
 class MyScaffold extends StatelessWidget {
   final Widget appBar;
   final Widget body;
+  final Widget title;
   bool disableAppBar;
 
   MyScaffold({
     Key key,
     this.body,
     this.appBar,
+    this.title,
     this.disableAppBar = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: disableAppBar ? null : appBar ?? AppBar(),
+      appBar: disableAppBar
+          ? null
+          : appBar ??
+              AppBar(
+                title: title,
+              ),
       // body: Container(
       //   child: Column(
       //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
