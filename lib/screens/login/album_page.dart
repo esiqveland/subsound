@@ -95,6 +95,7 @@ class SongRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.black54,
       child: Row(
         children: [
           Text("${song.trackNumber}"),
@@ -130,50 +131,66 @@ class AlbumView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var expandedHeight = MediaQuery.of(context).size.height / 3;
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
-      slivers: [
-        SliverAppBar(
-          expandedHeight: expandedHeight,
-          stretch: true,
-          stretchTriggerOffset: 150,
-          centerTitle: false,
-          flexibleSpace: FlexibleSpaceBar(
-            titlePadding: EdgeInsets.only(top: 30.0, left: 5.0, bottom: 10.0),
+    return Container(
+      color: Colors.black54,
+      child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Colors.black54,
+            // foregroundColor: Colors.black54,
+            // shadowColor: Colors.black54,
+            expandedHeight: expandedHeight,
+            stretch: true,
+            stretchTriggerOffset: 150,
             centerTitle: false,
-            title: Text(
-              album.name,
-              style: TextStyle(
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0,
+            snap: false,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              titlePadding: EdgeInsets.only(top: 30.0, left: 5.0, bottom: 10.0),
+              title: Text(
+                album.name,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+              collapseMode: CollapseMode.parallax,
+              background: Container(
+                margin: EdgeInsets.only(bottom: 50.0),
+                child: CoverArtImage(
+                  album.coverArtLink,
+                  id: album.coverArtId,
+                  height: expandedHeight * 1.6,
+                  width: expandedHeight * 1.6,
+                ),
+              ),
+              stretchModes: [
+                StretchMode.fadeTitle,
+                StretchMode.zoomBackground,
+                //StretchMode.blurBackground,
+              ],
             ),
-            background: CoverArtImage(
-              album.coverArtLink,
-              id: album.coverArtId,
-              height: expandedHeight,
-              width: null,
-            ),
-            stretchModes: [
-              StretchMode.fadeTitle,
-              StretchMode.zoomBackground,
-            ],
           ),
-        ),
-        SliverList(
-          delegate: SliverChildListDelegate(
-              album.songs.map((s) => SongRow(song: s)).toList()),
-        ),
-        // Expanded(
-        //   child: AlbumList(
-        //     album: album,
-        //     songs: album.songs,
-        //   ),
-        // ),
-      ],
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+              return SongRow(song: album.songs[index]);
+            },
+            childCount: album.songs.length,
+          )),
+          // Expanded(
+          //   child: AlbumList(
+          //     album: album,
+          //     songs: album.songs,
+          //   ),
+          // ),
+        ],
+      ),
     );
   }
 }
@@ -205,19 +222,22 @@ class AlbumPageState extends State<AlbumPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<AlbumResult>(
-        future: load(this.albumId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return Center(child: Text("${snapshot.error}"));
+    return Container(
+      color: Colors.black54,
+      child: FutureBuilder<AlbumResult>(
+          future: load(this.albumId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return Center(child: Text("${snapshot.error}"));
+              } else {
+                return AlbumView(album: snapshot.data);
+              }
             } else {
-              return AlbumView(album: snapshot.data);
+              return Center(child: CircularProgressIndicator());
             }
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        });
+          }),
+    );
   }
 
   Future<AlbumResult> load(String albumId) {
