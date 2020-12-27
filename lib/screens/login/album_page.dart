@@ -95,7 +95,6 @@ class SongRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black54,
       child: Row(
         children: [
           Text("${song.trackNumber}"),
@@ -130,38 +129,41 @@ class AlbumView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var expandedHeight = MediaQuery.of(context).size.height / 3;
+    // var expandedHeight = MediaQuery.of(context).size.height / 3;
+    var expandedHeight = 350.0;
     return Container(
       color: Colors.black54,
       child: CustomScrollView(
         physics: const BouncingScrollPhysics(),
-        slivers: [
+        slivers: <Widget>[
           SliverAppBar(
             backgroundColor: Colors.black54,
             // foregroundColor: Colors.black54,
             // shadowColor: Colors.black54,
             expandedHeight: expandedHeight,
             stretch: true,
-            stretchTriggerOffset: 150,
             centerTitle: false,
             snap: false,
+            floating: true,
+            pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              titlePadding: EdgeInsets.only(top: 30.0, left: 5.0, bottom: 10.0),
+              titlePadding: EdgeInsets.only(left: 5.0, bottom: 10.0),
               title: Text(
                 album.name,
-                textAlign: TextAlign.left,
+                //textAlign: TextAlign.start,
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,
                 ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+                //overflow: TextOverflow.ellipsis,
+                //maxLines: 1,
               ),
               collapseMode: CollapseMode.parallax,
               background: Container(
-                margin: EdgeInsets.only(bottom: 50.0),
+                //margin: EdgeInsets.only(bottom: 50.0),
+                color: Colors.black54,
                 child: CoverArtImage(
                   album.coverArtLink,
                   id: album.coverArtId,
@@ -172,7 +174,7 @@ class AlbumView extends StatelessWidget {
               stretchModes: [
                 StretchMode.fadeTitle,
                 StretchMode.zoomBackground,
-                //StretchMode.blurBackground,
+                StretchMode.blurBackground,
               ],
             ),
           ),
