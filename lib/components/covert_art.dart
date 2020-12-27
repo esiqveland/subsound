@@ -34,8 +34,8 @@ class CoverArtImage extends StatelessWidget {
       fit: fit,
       // if (this.id != null ) cacheKey: this.id,
       cacheKey: this.id,
-      progressIndicatorBuilder: (context, url, downloadProgress) =>
-          CircularProgressIndicator(value: downloadProgress.progress),
+      // progressIndicatorBuilder: (context, url, downloadProgress) =>
+      //     CircularProgressIndicator(value: downloadProgress.progress),
       errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
