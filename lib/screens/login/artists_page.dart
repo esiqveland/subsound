@@ -8,7 +8,10 @@ import 'package:subsound/subsonic/requests/get_artists.dart';
 class ArtistsPage extends StatefulWidget {
   final SubsonicContext ctx;
 
-  const ArtistsPage({Key key, this.ctx}) : super(key: key);
+  const ArtistsPage({
+    Key key,
+    this.ctx,
+  }) : super(key: key);
 
   @override
   State<ArtistsPage> createState() {

@@ -1,9 +1,10 @@
 import 'dart:developer';
 
+import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
-import 'package:subsound/screens/login/loginscreen.dart';
+import 'package:subsound/state/appstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/requests.dart';
 
@@ -13,26 +14,17 @@ const WilderunID = '5833625b38e3620bc71b46dd2eef49eb';
 
 class WilderunScreen extends StatelessWidget {
   static final routeName = "/artist/wilderun";
-  final ServerData serverData;
-  final SubsonicContext client;
-
-  WilderunScreen({
-    @required this.serverData,
-  }) : client = SubsonicContext(
-          serverId: serverData.uri,
-          name: "",
-          endpoint: Uri.tryParse(serverData.uri),
-          user: serverData.username,
-          pass: serverData.password,
-        );
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
-      body: Center(
-        child: ArtistPage(
-          ctx: client,
-          artistId: WilderunID,
+    return StoreConnector<AppState, ServerData>(
+      converter: (st) => st.state.loginState,
+      builder: (context, state) => MyScaffold(
+        body: (context) => Center(
+          child: ArtistPage(
+            ctx: state.toClient(),
+            artistId: WilderunID,
+          ),
         ),
       ),
     );
@@ -47,13 +39,7 @@ class ArtistScreen extends StatelessWidget {
   ArtistScreen({
     @required this.artistId,
     @required this.serverData,
-  }) : client = SubsonicContext(
-          serverId: serverData.uri,
-          name: "",
-          endpoint: Uri.tryParse(serverData.uri),
-          user: serverData.username,
-          pass: serverData.password,
-        );
+  }) : client = serverData.toClient();
 
   ArtistScreen.of(
     this.artistId, {
@@ -64,7 +50,7 @@ class ArtistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
-      body: Center(
+      body: (context) => Center(
         child: ArtistPage(
           ctx: client,
           artistId: this.artistId,

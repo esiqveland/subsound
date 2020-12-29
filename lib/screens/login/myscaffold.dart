@@ -1,8 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
+
+import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/artist_page.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
+import 'package:subsound/state/appstate.dart';
 
 import 'homescreen.dart';
 
@@ -86,11 +89,41 @@ const PlayerBottomBarSize = 50.0;
 
 class MyScaffold extends StatelessWidget {
   final Widget appBar;
-  final Widget body;
+  final WidgetBuilder body;
   final Widget title;
-  bool disableAppBar;
+  final bool disableAppBar;
 
   MyScaffold({
+    Key key,
+    this.body,
+    this.appBar,
+    this.title,
+    this.disableAppBar = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, StartUpState>(
+      converter: (state) => state.state.startUpState,
+      builder: (context, state) => state == StartUpState.loading
+          ? _SplashScreen()
+          : _AppScaffold(
+              title: title,
+              body: body,
+              appBar: appBar,
+              disableAppBar: disableAppBar,
+            ),
+    );
+  }
+}
+
+class _AppScaffold extends StatelessWidget {
+  final Widget appBar;
+  final WidgetBuilder body;
+  final Widget title;
+  final bool disableAppBar;
+
+  _AppScaffold({
     Key key,
     this.body,
     this.appBar,
@@ -109,7 +142,9 @@ class MyScaffold extends StatelessWidget {
               ),
       body: Container(
         padding: EdgeInsets.only(bottom: PlayerBottomBarSize),
-        child: body,
+        child: Builder(
+          builder: body,
+        ),
       ),
       drawer: Navigator.of(context).canPop()
           ? null
@@ -154,6 +189,52 @@ class MyScaffold extends StatelessWidget {
             ),
       bottomSheet: PlayerBottomBar(size: PlayerBottomBarSize),
       bottomNavigationBar: BottomNavigationBarWidget(navItems: navBarItems),
+    );
+  }
+}
+
+class RootScreen extends StatelessWidget {
+  static final routeName = "/root";
+
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, ServerData>(
+      converter: (store) => store.state.loginState,
+      builder: (context, data) {
+        if (data.uri.isEmpty || Uri.tryParse(data.uri) == null) {
+          log("root:init:nostate data.uri=${data.uri}");
+          //Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+          return LoginScreen();
+        } else {
+          log("root:init:state data.uri=${data.uri}");
+          //Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+          return HomeScreen();
+        }
+      },
+    );
+  }
+}
+
+class _SplashScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        //color: Colors.white,
+        child: Column(
+          children: [
+            Icon(
+              Icons.play_arrow_outlined,
+              size: 36.0,
+            ),
+            Text(
+              "Sub:Sound",
+              style: TextStyle(fontSize: 40.0),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

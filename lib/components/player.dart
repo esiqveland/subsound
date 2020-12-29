@@ -16,9 +16,15 @@ class PlayerSong {
 enum PlayerStates { stopped, playing, paused, buffering }
 
 class PlayerState {
-  PlayerStates current;
-  PlayerSong currentSong;
-  List<PlayerSong> queue;
+  final PlayerStates current;
+  final PlayerSong currentSong;
+  final List<PlayerSong> queue;
+
+  PlayerState({
+    this.current,
+    this.currentSong,
+    this.queue,
+  });
 
   get isPlaying => current == PlayerStates.playing;
 
@@ -28,6 +34,12 @@ class PlayerState {
   get isStopped => current == PlayerStates.stopped;
 
   void pause() {}
+
+  static initialState() => PlayerState(
+        current: PlayerStates.stopped,
+        currentSong: null,
+        queue: [],
+      );
 }
 
 class PlayerController extends StatefulWidget {

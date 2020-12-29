@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
-import 'package:subsound/screens/login/loginscreen.dart';
+import 'package:subsound/state/appstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 
@@ -17,20 +17,14 @@ class WilderunAlbumScreen extends StatelessWidget {
 
   WilderunAlbumScreen({
     @required this.serverData,
-  }) : client = SubsonicContext(
-          serverId: serverData.uri,
-          name: "",
-          endpoint: Uri.tryParse(serverData.uri),
-          user: serverData.username,
-          pass: serverData.password,
-        );
+  }) : client = serverData.toClient();
 
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
       appBar: null,
       disableAppBar: true,
-      body: Center(
+      body: (context) => Center(
         child: AlbumPage(
           ctx: client,
           albumId: WilderunAlbumID,
@@ -47,13 +41,7 @@ class AlbumScreen extends StatelessWidget {
   AlbumScreen({
     @required ServerData serverData,
     @required this.albumId,
-  }) : client = SubsonicContext(
-          serverId: serverData.uri,
-          name: "",
-          endpoint: Uri.tryParse(serverData.uri),
-          user: serverData.username,
-          pass: serverData.password,
-        );
+  }) : client = serverData.toClient();
 
   AlbumScreen.client({
     @required this.client,
@@ -65,7 +53,7 @@ class AlbumScreen extends StatelessWidget {
     return MyScaffold(
       appBar: null,
       disableAppBar: true,
-      body: Center(
+      body: (context) => Center(
         child: AlbumPage(
           ctx: client,
           albumId: albumId,
