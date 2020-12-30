@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -122,13 +124,27 @@ class PlayerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black87,
+      color: Colors.black26,
       child: Center(
-        child: Container(
+        child: ConstrainedBox(
+          constraints: BoxConstraints.tightForFinite(width: 400),
           //color: Colors.tealAccent,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SongTitle(playerState: playerState),
+                ],
+              ),
+              SizedBox(height: 10.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ArtistTitle(playerState: playerState),
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -153,6 +169,37 @@ class PlayerView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class SongTitle extends StatelessWidget {
+  final PlayerState playerState;
+
+  const SongTitle({Key key, this.playerState}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      "Fsdafdsafdsafdsafdsafdsafdssa",
+      style: TextStyle(fontSize: 18.0),
+    );
+  }
+}
+
+class ArtistTitle extends StatelessWidget {
+  final PlayerState playerState;
+
+  const ArtistTitle({Key key, this.playerState}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Text(
+      "Bklbjxcjblkvcxjblkvcxjkl",
+      style: theme.textTheme.subtitle1
+          .copyWith(fontSize: 12.0, color: Colors.white70),
     );
   }
 }
@@ -246,6 +293,7 @@ class ProgressBar extends StatelessWidget {
       child: Column(
         children: [
           Slider(
+            activeColor: Colors.tealAccent,
             label: positionText,
             onChanged: (double newValue) {
               final nextValue = newValue.round();
@@ -357,5 +405,41 @@ class PlayerBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MiniPlayer(size: size);
+  }
+}
+
+class PlayerProvider extends StatefulWidget {
+  @override
+  _PlayerProviderState createState() => _PlayerProviderState();
+}
+
+class _PlayerProviderState extends State<PlayerProvider> {
+  AudioPlayer _player = AudioPlayer();
+  AudioCache _audioCache = AudioCache();
+  final WidgetBuilder builder;
+
+  _PlayerProviderState({
+    this.builder,
+  });
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (kIsWeb) {
+      // Calls to Platform.isIOS fails on web
+      return;
+    }
+    if (Platform.isIOS) {
+      if (_audioCache.fixedPlayer != null) {
+        _audioCache.fixedPlayer.startHeadlessService();
+      }
+      _player.startHeadlessService();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(builder: builder);
   }
 }
