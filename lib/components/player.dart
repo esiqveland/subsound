@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/utils/duration.dart';
 
 class PlayerSong {
@@ -113,11 +114,10 @@ class _PlayerControllerState extends State<PlayerController> {
   }
 }
 
-class PlayerScreen extends StatelessWidget {
-  static final String routeName = "/player";
+class PlayerView extends StatelessWidget {
   final PlayerState playerState;
 
-  const PlayerScreen({Key key, this.playerState}) : super(key: key);
+  const PlayerView({Key key, this.playerState}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +157,19 @@ class PlayerScreen extends StatelessWidget {
   }
 }
 
+class PlayerScreen extends StatelessWidget {
+  static final String routeName = "/player";
+
+  const PlayerScreen({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MyScaffold(
+      body: (context) => PlayerView(),
+    );
+  }
+}
+
 class PlayerSlider extends StatelessWidget {
   final PlayerState playerState;
   final double size;
@@ -171,6 +184,7 @@ class PlayerSlider extends StatelessWidget {
     return ProgressBar(
       // position: position,
       // total: total,
+      onChanged: (nextValue) {},
       position: Duration(seconds: 100),
       total: Duration(seconds: 279),
       size: size,
@@ -208,9 +222,15 @@ class ProgressBar extends StatelessWidget {
   final Duration total;
   final Duration position;
   final double size;
+  final Function(int) onChanged;
 
-  ProgressBar({Key key, this.total, this.position, this.size})
-      : super(key: key);
+  ProgressBar({
+    Key key,
+    @required this.onChanged,
+    this.total,
+    this.position,
+    this.size,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +248,8 @@ class ProgressBar extends StatelessWidget {
           Slider(
             label: positionText,
             onChanged: (double newValue) {
-              final val = newValue.round();
+              final nextValue = newValue.round();
+              this.onChanged(nextValue);
             },
             min: 0,
             max: total.inSeconds.toDouble(),
@@ -306,7 +327,7 @@ class MiniPlayer extends StatelessWidget {
             onTap: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) => PlayerScreen(),
+                builder: (context) => PlayerView(),
                 enableDrag: true,
                 isDismissible: false,
               );

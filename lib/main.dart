@@ -1,5 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/homescreen.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
@@ -12,6 +13,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   RootScreen.routeName: (context) => RootScreen(),
   HomeScreen.routeName: (context) => HomeScreen(),
   LoginScreen.routeName: (context) => LoginScreen(),
+  PlayerScreen.routeName: (context) => PlayerScreen(),
   WilderunScreen.routeName: (context) => WilderunScreen(),
 };
 
