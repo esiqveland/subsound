@@ -17,8 +17,6 @@ final Map<String, WidgetBuilder> appRoutes = {
   WilderunScreen.routeName: (context) => WilderunScreen(),
 };
 
-ServerData initialData;
-
 void main() {
   final Store<AppState> store = createStore();
   store.dispatch(StartupAction());

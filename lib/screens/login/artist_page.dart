@@ -245,8 +245,7 @@ class ArtistPageState extends State<ArtistPage> {
                     artist: snapshot.data,
                     onSelectedAlbum: (album) {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => AlbumScreen.client(
-                                client: ctx,
+                          builder: (context) => AlbumScreen(
                                 albumId: album.id,
                               )));
                     },

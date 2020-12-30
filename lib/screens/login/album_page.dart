@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/state/appstate.dart';
@@ -12,22 +13,21 @@ const WilderunAlbumID = '5015da3a81d22b33a3d7448ba508b1dd';
 
 class WilderunAlbumScreen extends StatelessWidget {
   static final routeName = "/album/wilderun";
-  final ServerData serverData;
-  final SubsonicContext client;
 
-  WilderunAlbumScreen({
-    @required this.serverData,
-  }) : client = serverData.toClient();
+  WilderunAlbumScreen();
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
-      appBar: null,
-      disableAppBar: true,
-      body: (context) => Center(
-        child: AlbumPage(
-          ctx: client,
-          albumId: WilderunAlbumID,
+    return StoreConnector<AppState, ServerData>(
+      converter: (st) => st.state.loginState,
+      builder: (context, state) => MyScaffold(
+        appBar: null,
+        disableAppBar: true,
+        body: (context) => Center(
+          child: AlbumPage(
+            ctx: state.toClient(),
+            albumId: WilderunAlbumID,
+          ),
         ),
       ),
     );
@@ -35,28 +35,24 @@ class WilderunAlbumScreen extends StatelessWidget {
 }
 
 class AlbumScreen extends StatelessWidget {
-  final SubsonicContext client;
   final String albumId;
 
   AlbumScreen({
-    @required ServerData serverData,
-    @required this.albumId,
-  }) : client = serverData.toClient();
-
-  AlbumScreen.client({
-    @required this.client,
     @required this.albumId,
   });
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
-      appBar: null,
-      disableAppBar: true,
-      body: (context) => Center(
-        child: AlbumPage(
-          ctx: client,
-          albumId: albumId,
+    return StoreConnector<AppState, ServerData>(
+      converter: (st) => st.state.loginState,
+      builder: (context, state) => MyScaffold(
+        appBar: null,
+        disableAppBar: true,
+        body: (context) => Center(
+          child: AlbumPage(
+            ctx: state.toClient(),
+            albumId: albumId,
+          ),
         ),
       ),
     );

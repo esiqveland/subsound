@@ -179,7 +179,7 @@ class AlbumsPageState extends State<AlbumsPage> {
     int offset = 0,
   }) {
     return GetAlbumList2(
-      type: GetAlbumListType.alphabeticalByArtist,
+      type: GetAlbumListType.alphabeticalByName,
       size: pageSize,
       offset: offset,
     ).run(ctx).then((value) => value.data).then((List<Album> nextList) {
