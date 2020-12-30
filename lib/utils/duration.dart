@@ -4,6 +4,10 @@ String formatDuration(Duration duration) {
     return "0$n";
   }
 
+  if (duration.inMicroseconds == 0) {
+    return "0:00";
+  }
+
   final hours = duration.inHours;
   var minutes = duration.inMinutes;
   if (minutes > 75) {
