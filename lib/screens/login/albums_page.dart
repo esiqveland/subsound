@@ -33,7 +33,12 @@ class AlbumRow extends StatelessWidget {
       onTap: () {
         this.onTap(album);
       },
-      leading: CoverArtImage(album.coverArtLink, width: 48.0, height: 48.0),
+      leading: CoverArtImage(
+        album.coverArtLink,
+        id: album.coverArtId,
+        width: 48.0,
+        height: 48.0,
+      ),
       title: Text(album.title),
       subtitle: Text(album.artist),
     );
@@ -57,6 +62,7 @@ class AlbumsListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: BouncingScrollPhysics(),
       controller: controller,
       itemCount: albums.length,
       itemBuilder: (context, idx) => Column(
@@ -65,8 +71,7 @@ class AlbumsListView extends StatelessWidget {
             album: albums[idx],
             onTap: (album) {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => AlbumPage(
-                  ctx: ctx,
+                builder: (context) => AlbumScreen(
                   albumId: album.id,
                 ),
               ));
