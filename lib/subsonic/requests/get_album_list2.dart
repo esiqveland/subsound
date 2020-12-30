@@ -37,14 +37,21 @@ class GetAlbumList2 extends BaseRequest<List<Album>> {
     final data =
         jsonDecode(utf8.decode(response.bodyBytes))['subsonic-response'];
 
-    if (data['status'] != 'ok') throw StateError(data);
+    if (data['status'] != 'ok') {
+      throw StateError(data);
+    }
 
-    return SubsonicResponse(
-      ResponseStatus.ok,
-      ctx.version,
-      (data['albumList2']['album'] as List)
-          .map((album) => Album.parse(ctx, album))
-          .toList(),
-    );
+    var albumListData = data['albumList2']['album'];
+    if (albumListData == null) {
+      return SubsonicResponse(ResponseStatus.ok, ctx.version, []);
+    } else {
+      return SubsonicResponse(
+        ResponseStatus.ok,
+        ctx.version,
+        (albumListData as List)
+            .map((album) => Album.parse(ctx, album))
+            .toList(),
+      );
+    }
   }
 }

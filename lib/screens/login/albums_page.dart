@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:subsound/components/covert_art.dart';
+import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/models/album.dart';
 import 'package:subsound/subsonic/requests/get_album_list.dart';
@@ -17,19 +19,63 @@ class AlbumsPage extends StatefulWidget {
 
 class AlbumRow extends StatelessWidget {
   final Album album;
+  final Function(Album) onTap;
 
-  const AlbumRow({Key key, this.album}) : super(key: key);
+  const AlbumRow({
+    Key key,
+    @required this.album,
+    @required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Image.network(album.coverArtLink,
-            scale: 1.0, width: 48.0, height: 48.0),
-        Text(album.artist),
-        Text(" - "),
-        Text(album.title),
-      ],
+    return ListTile(
+      onTap: () {
+        this.onTap(album);
+      },
+      leading: CoverArtImage(album.coverArtLink, width: 48.0, height: 48.0),
+      title: Text(album.title),
+      subtitle: Text(album.artist),
+    );
+  }
+}
+
+class AlbumsListView extends StatelessWidget {
+  final SubsonicContext ctx;
+  final List<Album> albums;
+  final ScrollController controller;
+  final bool isLoading;
+
+  const AlbumsListView({
+    Key key,
+    this.ctx,
+    this.albums,
+    this.controller,
+    this.isLoading,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      controller: controller,
+      itemCount: albums.length,
+      itemBuilder: (context, idx) => Column(
+        children: [
+          AlbumRow(
+            album: albums[idx],
+            onTap: (album) {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => AlbumPage(
+                  ctx: ctx,
+                  albumId: album.id,
+                ),
+              ));
+            },
+          ),
+          if (isLoading && idx == albums.length - 1)
+            CircularProgressIndicator(),
+        ],
+      ),
     );
   }
 }
@@ -37,37 +83,112 @@ class AlbumRow extends StatelessWidget {
 class AlbumsPageState extends State<AlbumsPage> {
   final SubsonicContext ctx;
 
+  final int pageSize = 10;
+  List<Album> _albumList = [];
+  bool hasMore = true;
+  bool isLoading = false;
+  ScrollController _controller;
+
+  Future<List<Album>> initialLoad;
+
   AlbumsPageState(this.ctx);
 
   @override
   void initState() {
     super.initState();
+    _controller = new ScrollController();
+    isLoading = true;
+    initialLoad = load(offset: 0, pageSize: pageSize).then((value) {
+      setState(() {
+        isLoading = false;
+        _albumList.addAll(value);
+      });
+      return value;
+    });
+    initialLoad.whenComplete(() => {
+          setState(() {
+            isLoading = false;
+          })
+        });
+  }
+
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollEndNotification) {
+      if (_controller.position.extentAfter == 0) {
+        loadMore();
+      }
+    }
+    return false;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: FutureBuilder<List<Album>>(
-            future: load(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator();
-              } else {
-                if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
+    return NotificationListener<ScrollNotification>(
+      onNotification: _handleScrollNotification,
+      child: Center(
+          child: FutureBuilder<List<Album>>(
+              future: initialLoad,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return CircularProgressIndicator();
                 } else {
-                  return ListView(
-                    children:
-                        snapshot.data.map((a) => AlbumRow(album: a)).toList(),
-                  );
+                  if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  } else {
+                    _albumList = snapshot.data;
+                    return AlbumsListView(
+                      ctx: ctx,
+                      controller: _controller,
+                      albums: _albumList,
+                      isLoading: isLoading,
+                    );
+                  }
                 }
-              }
-            }));
+              })),
+    );
   }
 
-  Future<List<Album>> load() {
-    return GetAlbumList2(type: GetAlbumListType.alphabeticalByArtist)
-        .run(ctx)
-        .then((value) => value.data);
+  Future<List<Album>> loadMore() {
+    if (hasMore && !isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+      load(
+        pageSize: 10,
+        offset: _albumList.length,
+      ).then((value) {
+        setState(() {
+          _albumList.addAll(value);
+          isLoading = false;
+        });
+      }).whenComplete(() => {
+            setState(() {
+              isLoading = false;
+            })
+          });
+    }
+  }
+
+  Future<List<Album>> load({
+    int pageSize = 50,
+    int offset = 0,
+  }) {
+    return GetAlbumList2(
+      type: GetAlbumListType.alphabeticalByArtist,
+      size: pageSize,
+      offset: offset,
+    ).run(ctx).then((value) => value.data).then((List<Album> nextList) {
+      if (nextList.length < pageSize) {
+        setState(() {
+          hasMore = false;
+        });
+      }
+      return nextList;
+    });
   }
 }
