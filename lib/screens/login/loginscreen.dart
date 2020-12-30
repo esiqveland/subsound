@@ -4,6 +4,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:subsound/screens/login/homescreen.dart';
+import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/ping.dart';
@@ -24,11 +25,9 @@ class LoginScreen extends StatelessWidget {
                 next.username,
                 next.password,
               ))),
-      builder: (context, model) => Scaffold(
-        appBar: AppBar(
-          title: const Text("Server Setup"),
-        ),
-        body: Center(
+      builder: (context, model) => MyScaffold(
+        title: const Text("Settings"),
+        body: (context) => Center(
           child: ServerSetupForm(
             initialData: model.inititalData,
             onSave: model.onSave,
