@@ -6,15 +6,12 @@ import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appstate.dart';
 
-import 'screens/login/artist_page.dart';
-
 final Map<String, WidgetBuilder> appRoutes = {
   Navigator.defaultRouteName: (context) => RootScreen(),
   RootScreen.routeName: (context) => RootScreen(),
   HomeScreen.routeName: (context) => HomeScreen(),
   LoginScreen.routeName: (context) => LoginScreen(),
   PlayerScreen.routeName: (context) => PlayerScreen(),
-  WilderunScreen.routeName: (context) => WilderunScreen(),
 };
 
 void main() {

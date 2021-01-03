@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/player.dart';
-import 'package:subsound/screens/login/artist_page.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/state/appstate.dart';
 
@@ -177,13 +176,6 @@ class _AppScaffold extends StatelessWidget {
                       Navigator.of(context).pushNamed(HomeScreen.routeName);
                     },
                   ),
-                  ListTile(
-                      leading: Icon(Icons.album),
-                      title: Text('Wilderun'),
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(WilderunScreen.routeName);
-                      }),
                 ],
               ),
             ),

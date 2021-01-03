@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
@@ -9,27 +8,6 @@ import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/requests.dart';
 
 import 'myscaffold.dart';
-
-const WilderunID = '5833625b38e3620bc71b46dd2eef49eb';
-
-class WilderunScreen extends StatelessWidget {
-  static final routeName = "/artist/wilderun";
-
-  @override
-  Widget build(BuildContext context) {
-    return StoreConnector<AppState, ServerData>(
-      converter: (st) => st.state.loginState,
-      builder: (context, state) => MyScaffold(
-        body: (context) => Center(
-          child: ArtistPage(
-            ctx: state.toClient(),
-            artistId: WilderunID,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class ArtistScreen extends StatelessWidget {
   final ServerData serverData;

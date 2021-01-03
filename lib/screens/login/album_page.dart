@@ -9,31 +9,6 @@ import 'package:subsound/subsonic/requests/get_album.dart';
 
 import 'myscaffold.dart';
 
-const WilderunAlbumID = '5015da3a81d22b33a3d7448ba508b1dd';
-
-class WilderunAlbumScreen extends StatelessWidget {
-  static final routeName = "/album/wilderun";
-
-  WilderunAlbumScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return StoreConnector<AppState, ServerData>(
-      converter: (st) => st.state.loginState,
-      builder: (context, state) => MyScaffold(
-        appBar: null,
-        disableAppBar: true,
-        body: (context) => Center(
-          child: AlbumPage(
-            ctx: state.toClient(),
-            albumId: WilderunAlbumID,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class AlbumScreen extends StatelessWidget {
   final String albumId;
 
