@@ -14,10 +14,12 @@ final Map<String, WidgetBuilder> appRoutes = {
   PlayerScreen.routeName: (context) => PlayerScreen(),
 };
 
-void main() {
+final navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
   final Store<AppState> store = createStore();
   store.dispatch(StartupAction());
-
+  NavigateAction.setNavigatorKey(navigatorKey);
   runApp(MyApp(
     store: store,
   ));
@@ -40,6 +42,7 @@ class MyApp extends StatelessWidget {
     return StoreProvider(
       store: store,
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Sub:Sound',
         theme: theme.copyWith(
           bottomSheetTheme: theme.bottomSheetTheme.copyWith(
