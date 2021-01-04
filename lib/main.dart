@@ -17,9 +17,9 @@ final Map<String, WidgetBuilder> appRoutes = {
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
+  NavigateAction.setNavigatorKey(navigatorKey);
   final Store<AppState> store = createStore();
   store.dispatch(StartupAction());
-  NavigateAction.setNavigatorKey(navigatorKey);
   runApp(MyApp(
     store: store,
   ));
