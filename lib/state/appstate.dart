@@ -298,6 +298,12 @@ class StartupPlayer extends PlayerActions {
     PlayerActions._player.onDurationChanged.listen((event) {
       dispatch(PlayerDurationChanged(event));
     });
+    PlayerActions._player.onPlayerError.listen((msg) {
+      print('audioPlayer onError : $msg');
+      dispatch(PlayerStateChanged(PlayerStates.stopped));
+      dispatch(PlayerDurationChanged(Duration()));
+      dispatch(PlayerPositionChanged(Duration()));
+    });
     PlayerActions._player.onPlayerStateChanged.listen((event) {
       switch (event) {
         case AudioPlayerState.STOPPED:
