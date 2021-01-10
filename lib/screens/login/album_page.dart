@@ -9,6 +9,13 @@ import 'package:subsound/subsonic/requests/get_album.dart';
 
 import 'myscaffold.dart';
 
+class AlbumViewModel {
+  final ServerData serverData;
+  final Function(SongResult) onPlay;
+
+  AlbumViewModel({this.serverData, this.onPlay});
+}
+
 class AlbumScreen extends StatelessWidget {
   final String albumId;
 
@@ -18,15 +25,23 @@ class AlbumScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, ServerData>(
-      converter: (st) => st.state.loginState,
+    return StoreConnector<AppState, AlbumViewModel>(
+      converter: (st) {
+        return AlbumViewModel(
+          serverData: st.state.loginState,
+          onPlay: (SongResult r) {
+            st.dispatch(PlayerCommandPlayUrl(r.playUrl));
+          },
+        );
+      },
       builder: (context, state) => MyScaffold(
         appBar: null,
         disableAppBar: true,
         body: (context) => Center(
           child: AlbumPage(
-            ctx: state.toClient(),
+            ctx: state.serverData.toClient(),
             albumId: albumId,
+            onPlay: state.onPlay,
           ),
         ),
       ),
@@ -37,44 +52,64 @@ class AlbumScreen extends StatelessWidget {
 class AlbumPage extends StatefulWidget {
   final SubsonicContext ctx;
   final String albumId;
+  final Function(SongResult) onPlay;
 
-  const AlbumPage({Key key, this.ctx, this.albumId}) : super(key: key);
+  const AlbumPage({
+    Key key,
+    this.ctx,
+    this.albumId,
+    this.onPlay,
+  }) : super(key: key);
 
   @override
   State<AlbumPage> createState() {
-    return AlbumPageState(ctx: ctx, albumId: albumId);
+    return AlbumPageState(
+      ctx: ctx,
+      albumId: albumId,
+      onPlay: onPlay,
+    );
   }
 }
 
 class SongRow extends StatelessWidget {
   final SongResult song;
+  final Function(SongResult) onPlay;
 
-  const SongRow({Key key, this.song}) : super(key: key);
+  const SongRow({
+    Key key,
+    @required this.song,
+    @required this.onPlay,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
-        children: [
-          Text("${song.trackNumber}"),
-          Flexible(
-            child: Container(
-              child: Column(
-                children: [
-                  Text(
-                    song.title,
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-                    textAlign: TextAlign.left,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+      child: InkWell(
+        onTap: () {
+          this.onPlay(this.song);
+        },
+        child: Row(
+          children: [
+            Text("${song.trackNumber}"),
+            Flexible(
+              child: Container(
+                child: Column(
+                  children: [
+                    Text(
+                      song.title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                      textAlign: TextAlign.left,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.all(10.0),
               ),
-              margin: EdgeInsets.all(10.0),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       margin: EdgeInsets.all(10.0),
     );
@@ -83,8 +118,13 @@ class SongRow extends StatelessWidget {
 
 class AlbumView extends StatelessWidget {
   final AlbumResult album;
+  final Function(SongResult) onPlay;
 
-  const AlbumView({Key key, this.album}) : super(key: key);
+  const AlbumView({
+    Key key,
+    @required this.album,
+    @required this.onPlay,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +212,10 @@ class AlbumView extends StatelessWidget {
             child: SliverList(
                 delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                return SongRow(song: album.songs[index]);
+                return SongRow(
+                  song: album.songs[index],
+                  onPlay: this.onPlay,
+                );
               },
               childCount: album.songs.length,
             )),
@@ -206,8 +249,9 @@ class AlbumList extends StatelessWidget {
 class AlbumPageState extends State<AlbumPage> {
   final SubsonicContext ctx;
   final String albumId;
+  final Function(SongResult) onPlay;
 
-  AlbumPageState({this.ctx, this.albumId});
+  AlbumPageState({this.ctx, this.albumId, this.onPlay});
 
   @override
   void initState() {
@@ -225,7 +269,10 @@ class AlbumPageState extends State<AlbumPage> {
               if (snapshot.hasError) {
                 return Center(child: Text("${snapshot.error}"));
               } else {
-                return AlbumView(album: snapshot.data);
+                return AlbumView(
+                  album: snapshot.data,
+                  onPlay: this.onPlay,
+                );
               }
             } else {
               return Center(child: CircularProgressIndicator());
