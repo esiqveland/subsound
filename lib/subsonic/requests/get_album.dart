@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:subsound/subsonic/requests/download.dart';
 import 'package:subsound/utils/duration.dart';
 
 import '../base_request.dart';
@@ -41,6 +42,7 @@ class AlbumResult {
 
 class SongResult {
   final String id;
+  final String playUrl;
   final String parent;
   final String title;
   final String artistName;
@@ -62,6 +64,7 @@ class SongResult {
 
   SongResult({
     this.id,
+    this.playUrl,
     this.parent,
     this.title,
     this.artistName,
@@ -138,8 +141,12 @@ class GetAlbum extends BaseRequest<AlbumResult> {
 
       final duration = getDuration(songData['duration']);
 
+      final id = songData['id'];
+      final playUrl = DownloadItem(id).getDownloadUrl(ctx);
+
       return SongResult(
-        id: songData['id'],
+        id: id,
+        playUrl: playUrl,
         parent: songData['parent'],
         title: songData['title'],
         artistName: songData['artist'],
