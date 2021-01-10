@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:async_redux/async_redux.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
@@ -7,16 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
+import 'package:subsound/state/appstate.dart';
 import 'package:subsound/utils/duration.dart';
 
 class PlayerSong {
   String id;
+  String songTitle;
+  String artist;
+  String album;
   String artistId;
   String albumId;
   String coverArtId;
   String coverArtLink;
-  Duration duration;
-  Duration position;
   bool isStarred = false;
 }
 
@@ -26,11 +29,15 @@ class PlayerState {
   final PlayerStates current;
   final PlayerSong currentSong;
   final List<PlayerSong> queue;
+  final Duration duration;
+  final Duration position;
 
   PlayerState({
     this.current,
     this.currentSong,
     this.queue,
+    this.duration,
+    this.position,
   });
 
   get isPlaying => current == PlayerStates.playing;
@@ -42,11 +49,45 @@ class PlayerState {
 
   void pause() {}
 
+  PlayerState copy({
+    PlayerStates current,
+    PlayerSong currentSong,
+    List<PlayerSong> queue,
+    Duration duration,
+    Duration position,
+  }) =>
+      PlayerState(
+        current: current ?? this.current,
+        currentSong: currentSong ?? this.currentSong,
+        queue: queue ?? this.queue,
+        duration: duration ?? this.duration,
+        position: position ?? this.position,
+      );
+
   static initialState() => PlayerState(
         current: PlayerStates.stopped,
         currentSong: null,
         queue: [],
       );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlayerState &&
+          runtimeType == other.runtimeType &&
+          current == other.current &&
+          currentSong == other.currentSong &&
+          queue == other.queue &&
+          duration == other.duration &&
+          position == other.position;
+
+  @override
+  int get hashCode =>
+      current.hashCode ^
+      currentSong.hashCode ^
+      queue.hashCode ^
+      duration.hashCode ^
+      position.hashCode;
 }
 
 class PlayerController extends StatefulWidget {
@@ -243,26 +284,25 @@ class PlayerSlider extends StatelessWidget {
     if (playerState == null || playerState.currentSong == null) {
       return Duration();
     }
-    return playerState.currentSong.duration;
+    return playerState.duration;
   }
 
   static Duration _getPosition(PlayerState playerState) {
     if (playerState == null || playerState.currentSong == null) {
       return Duration();
     }
-    return playerState.currentSong.position;
+    return playerState.position;
   }
 
   static double _getProgressValue(PlayerState playerState) {
     if (playerState == null || playerState.currentSong == null) {
       return 0.9;
     }
-    var duration = playerState.currentSong.duration.inMilliseconds.toDouble();
+    var duration = playerState.duration.inMilliseconds.toDouble();
     if (duration == 0.0) {
       duration = 1.0;
     }
-    return playerState.currentSong.position.inMilliseconds.toDouble() /
-        duration;
+    return playerState.position.inMilliseconds.toDouble() / duration;
   }
 }
 
@@ -356,6 +396,53 @@ class PlayButton extends StatelessWidget {
   }
 }
 
+class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
+  _MiniPlayerModelFactory(widget) : super(widget);
+
+  @override
+  MiniPlayerModel fromStore() {
+    return MiniPlayerModel(
+      songTitle: state.playerState.currentSong?.songTitle,
+      artistTitle: state.playerState.currentSong?.artist,
+      albumTitle: state.playerState.currentSong?.album,
+      duration: state.playerState.duration,
+      position: state.playerState.position,
+      playerState: state.playerState.current,
+      onPlay: () => dispatch(PlayerCommandPlay()),
+      onPause: () => dispatch(PlayerCommandPause()),
+    );
+  }
+}
+
+class MiniPlayerModel extends Vm {
+  final String songTitle;
+  final String artistTitle;
+  final String albumTitle;
+  final Duration duration;
+  final Duration position;
+  final PlayerStates playerState;
+  final Function onPlay;
+  final Function onPause;
+
+  MiniPlayerModel({
+    @required this.songTitle,
+    @required this.artistTitle,
+    @required this.albumTitle,
+    @required this.duration,
+    @required this.position,
+    @required this.playerState,
+    @required this.onPlay,
+    @required this.onPause,
+  }) : super(equals: [
+          artistTitle,
+          songTitle,
+          albumTitle,
+          duration,
+          position,
+          playerState,
+        ]);
+}
+
 class MiniPlayer extends StatelessWidget {
   final double size;
 
@@ -363,36 +450,77 @@ class MiniPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // color: Colors.black54.withOpacity(0.3),
-      child: SizedBox(
-        height: size ?? 50.0,
-        child: ListTile(
-          leading: Icon(
-            Icons.album,
-            color: Colors.white,
-          ),
-          title: InkWell(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => PlayerView(),
-                enableDrag: true,
-                isDismissible: false,
-              );
-            },
-            child: Text("Nothing playing..."),
-          ),
-          trailing: InkWell(
-            onTap: () {},
-            child: Icon(
-              Icons.play_circle_fill,
+    return StoreConnector<AppState, MiniPlayerModel>(
+      vm: _MiniPlayerModelFactory(this),
+      builder: (context, state) => Container(
+        // color: Colors.black54.withOpacity(0.3),
+        child: SizedBox(
+          height: size ?? 50.0,
+          child: ListTile(
+            leading: Icon(
+              Icons.album,
               color: Colors.white,
             ),
+            title: InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => PlayerView(),
+                  enableDrag: true,
+                  isDismissible: false,
+                );
+              },
+              child: Text("Nothing playing..."),
+            ),
+            trailing: PlayPauseIcon(state: state),
           ),
         ),
       ),
     );
+  }
+}
+
+class PlayPauseIcon extends StatelessWidget {
+  final MiniPlayerModel state;
+
+  PlayPauseIcon({Key key, this.state}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        switch (state.playerState) {
+          case PlayerStates.stopped:
+            state.onPlay();
+            break;
+          case PlayerStates.playing:
+            state.onPause();
+            break;
+          case PlayerStates.paused:
+            state.onPlay();
+            break;
+          case PlayerStates.buffering:
+            state.onPause();
+            break;
+        }
+      },
+      child: getIcon(state.playerState),
+    );
+  }
+
+  Widget getIcon(PlayerStates playerState) {
+    switch (playerState) {
+      case PlayerStates.stopped:
+        return Icon(Icons.play_circle_fill);
+      case PlayerStates.playing:
+        return Icon(Icons.pause);
+      case PlayerStates.paused:
+        return Icon(Icons.play_circle_fill);
+      case PlayerStates.buffering:
+        return Icon(Icons.pause);
+      default:
+        return Icon(Icons.play_circle_fill);
+    }
   }
 }
 
