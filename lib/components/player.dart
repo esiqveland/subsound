@@ -71,6 +71,7 @@ class _PlayerControllerState extends State<PlayerController> {
         .openAudioSession(
       focus: AudioFocus.requestFocusAndStopOthers,
       withUI: false,
+      audioFlags: outputToSpeaker | allowBlueTooth | allowAirPlay,
     )
         .then((value) {
       setState(() {
@@ -299,7 +300,7 @@ class ProgressBar extends StatelessWidget {
               final nextValue = newValue.round();
               this.onChanged(nextValue);
             },
-            min: 0,
+            min: 0.0,
             max: total.inSeconds.toDouble(),
             value: position.inSeconds.toDouble(),
             divisions: divisions,
