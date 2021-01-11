@@ -6,6 +6,9 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_cover_art.dart';
 
+const FallbackImageUrl =
+    'https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png';
+
 class CoverArtImage extends StatelessWidget {
   final String id;
   final String url;
@@ -26,7 +29,7 @@ class CoverArtImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      imageUrl: url,
+      imageUrl: url ?? FallbackImageUrl,
       height: height,
       width: width,
       //placeholderFadeInDuration: ,
