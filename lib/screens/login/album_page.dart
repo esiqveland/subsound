@@ -3,17 +3,35 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
+import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 
 import 'myscaffold.dart';
 
-class AlbumViewModel {
+class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
+  _AlbumViewModelFactory(widget) : super(widget);
+
+  @override
+  AlbumViewModel fromStore() {
+    return AlbumViewModel(
+      serverData: state.loginState,
+      onPlay: (SongResult r) {
+        dispatch(PlayerCommandPlaySong(PlayerSong.from(r)));
+      },
+    );
+  }
+}
+
+class AlbumViewModel extends Vm {
   final ServerData serverData;
   final Function(SongResult) onPlay;
 
-  AlbumViewModel({this.serverData, this.onPlay});
+  AlbumViewModel({
+    this.serverData,
+    this.onPlay,
+  }) : super(equals: [serverData]);
 }
 
 class AlbumScreen extends StatelessWidget {
@@ -26,14 +44,7 @@ class AlbumScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AlbumViewModel>(
-      converter: (st) {
-        return AlbumViewModel(
-          serverData: st.state.loginState,
-          onPlay: (SongResult r) {
-            st.dispatch(PlayerCommandPlayUrl(r.playUrl));
-          },
-        );
-      },
+      vm: _AlbumViewModelFactory(this),
       builder: (context, state) => MyScaffold(
         appBar: null,
         disableAppBar: true,

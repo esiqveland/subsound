@@ -269,6 +269,33 @@ class PlayerStateChanged extends PlayerActions {
       );
 }
 
+class PlayerCommandPlaySong extends PlayerActions {
+  final PlayerSong song;
+
+  PlayerCommandPlaySong(this.song);
+
+  @override
+  Future<AppState> reduce() async {
+    final songUrl = song.songUrl;
+    var res = await PlayerActions._player.play(songUrl);
+    if (res == 1) {
+      return state.copy(
+        playerState: state.playerState.copy(
+          current: PlayerStates.playing,
+          currentSong: song,
+        ),
+      );
+    } else {
+      return state.copy(
+        playerState: state.playerState.copy(
+          current: PlayerStates.stopped,
+          currentSong: song,
+        ),
+      );
+    }
+  }
+}
+
 class PlayerCommandPlayUrl extends PlayerActions {
   final String url;
 
@@ -293,10 +320,14 @@ class StartupPlayer extends PlayerActions {
   @override
   Future<AppState> reduce() async {
     PlayerActions._player.onAudioPositionChanged.listen((event) {
-      dispatch(PlayerPositionChanged(event));
+      if (state.playerState.position?.inSeconds != event.inSeconds) {
+        dispatch(PlayerPositionChanged(event));
+      }
     });
     PlayerActions._player.onDurationChanged.listen((event) {
-      dispatch(PlayerDurationChanged(event));
+      if (state.playerState.duration?.inSeconds != event.inSeconds) {
+        dispatch(PlayerDurationChanged(event));
+      }
     });
     PlayerActions._player.onPlayerError.listen((msg) {
       print('audioPlayer onError : $msg');

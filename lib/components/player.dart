@@ -1,26 +1,78 @@
-import 'dart:io';
-
 import 'package:async_redux/async_redux.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/utils/duration.dart';
 
 class PlayerSong {
-  String id;
-  String songTitle;
-  String artist;
-  String album;
-  String artistId;
-  String albumId;
-  String coverArtId;
-  String coverArtLink;
-  bool isStarred = false;
+  final String id;
+  final String songTitle;
+  final String album;
+  final String artist;
+  final String artistId;
+  final String albumId;
+  final String coverArtId;
+  final String coverArtLink;
+  final String songUrl;
+  final bool isStarred;
+
+  PlayerSong({
+    this.id,
+    this.songTitle,
+    this.artist,
+    this.album,
+    this.artistId,
+    this.albumId,
+    this.coverArtId,
+    this.coverArtLink,
+    this.songUrl,
+    this.isStarred = false,
+  });
+
+  static from(SongResult s) => PlayerSong(
+        id: s.id,
+        songTitle: s.title,
+        album: s.albumName,
+        artist: s.artistName,
+        artistId: s.artistId,
+        albumId: s.albumId,
+        coverArtId: s.coverArtId,
+        coverArtLink: s.coverArtLink,
+        songUrl: s.playUrl,
+        isStarred: false,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlayerSong &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          songTitle == other.songTitle &&
+          artist == other.artist &&
+          album == other.album &&
+          artistId == other.artistId &&
+          albumId == other.albumId &&
+          coverArtId == other.coverArtId &&
+          coverArtLink == other.coverArtLink &&
+          songUrl == other.songUrl &&
+          isStarred == other.isStarred;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      songTitle.hashCode ^
+      artist.hashCode ^
+      album.hashCode ^
+      artistId.hashCode ^
+      albumId.hashCode ^
+      coverArtId.hashCode ^
+      coverArtLink.hashCode ^
+      songUrl.hashCode ^
+      isStarred.hashCode;
 }
 
 enum PlayerStates { stopped, playing, paused, buffering }
@@ -90,124 +142,110 @@ class PlayerState {
       position.hashCode;
 }
 
-class PlayerController extends StatefulWidget {
+class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
+  _PlayerViewModelFactory(widget) : super(widget);
+
   @override
-  _PlayerControllerState createState() => _PlayerControllerState();
+  PlayerViewModel fromStore() {
+    return PlayerViewModel(
+      songTitle: state.playerState.currentSong?.songTitle,
+      artistTitle: state.playerState.currentSong?.artist,
+      albumTitle: state.playerState.currentSong?.album,
+      duration: state.playerState.duration,
+      position: state.playerState.position,
+      playerState: state.playerState.current,
+      onPlay: () => dispatch(PlayerCommandPlay()),
+      onPause: () => dispatch(PlayerCommandPause()),
+    );
+  }
 }
 
-class _PlayerControllerState extends State<PlayerController> {
-  // AudioPlayer advancedPlayer;
-  // AudioCache audioCache;
-  PlayerState playerState;
-  FlutterSoundPlayer myPlayer = FlutterSoundPlayer();
-  bool _mPlayerIsInited = false;
+class PlayerViewModel extends Vm {
+  final String songTitle;
+  final String artistTitle;
+  final String albumTitle;
+  final Duration duration;
+  final Duration position;
+  final PlayerStates playerState;
+  final Function onPlay;
+  final Function onPause;
 
-  /// global key so we can pause/resume the player via the api.
-  var playerStateKey = GlobalKey<SoundPlayerUIState>();
-
-  @override
-  void initState() {
-    super.initState();
-    myPlayer
-        .openAudioSession(
-      focus: AudioFocus.requestFocusAndStopOthers,
-      withUI: false,
-      audioFlags: outputToSpeaker | allowBlueTooth | allowAirPlay,
-    )
-        .then((value) {
-      setState(() {
-        // Be careful : openAudioSession return a Future.
-        // Do not access your FlutterSoundPlayer or FlutterSoundRecorder before the completion of the Future
-        _mPlayerIsInited = true;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-
-  final _exampleAudioFilePathMP3 =
-      'https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3';
-
-  void play() async {
-    await myPlayer.startPlayer(
-        fromURI: _exampleAudioFilePathMP3,
-        codec: Codec.mp3,
-        whenFinished: () {
-          setState(() {});
-        });
-    setState(() {});
-  }
-
-  Future<void> stopPlayer() async {
-    if (myPlayer != null) {
-      await myPlayer.stopPlayer();
-    }
-  }
-
-  @override
-  void dispose() {
-    stopPlayer();
-    // Be careful : you must `close` the audio session when you have finished with it.
-    myPlayer.closeAudioSession();
-    myPlayer = null;
-
-    super.dispose();
-  }
+  PlayerViewModel({
+    @required this.songTitle,
+    @required this.artistTitle,
+    @required this.albumTitle,
+    @required this.duration,
+    @required this.position,
+    @required this.playerState,
+    @required this.onPlay,
+    @required this.onPause,
+  }) : super(equals: [
+          artistTitle,
+          songTitle,
+          albumTitle,
+          duration,
+          position,
+          playerState,
+        ]);
 }
 
 class PlayerView extends StatelessWidget {
   final PlayerState playerState;
 
-  const PlayerView({Key key, this.playerState}) : super(key: key);
+  const PlayerView({
+    Key key,
+    this.playerState,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black26,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints.tightForFinite(width: 400),
-          //color: Colors.tealAccent,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SongTitle(playerState: playerState),
-                ],
-              ),
-              SizedBox(height: 10.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ArtistTitle(playerState: playerState),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  PlayerSlider(playerState: playerState, size: 300.0),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  InkWell(
-                    onTap: () {},
-                    child: Icon(Icons.skip_previous, size: 42.0),
-                  ),
-                  PlayButton(state: playerState, size: 72.0),
-                  InkWell(
-                    onTap: () {},
-                    child: Icon(Icons.skip_next, size: 42.0),
-                  ),
-                ],
-              ),
-            ],
+      child: StoreConnector<AppState, PlayerState>(
+        //vm: _PlayerViewModelFactory(this),
+        converter: (st) => st.state.playerState,
+        builder: (context, vm) => Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints.tightForFinite(width: 400),
+            //color: Colors.tealAccent,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SongTitle(playerState: vm),
+                  ],
+                ),
+                SizedBox(height: 10.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ArtistTitle(playerState: vm),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    PlayerSlider(playerState: vm, size: 300.0),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {},
+                      child: Icon(Icons.skip_previous, size: 42.0),
+                    ),
+                    PlayButton(state: vm, size: 72.0),
+                    InkWell(
+                      onTap: () {},
+                      child: Icon(Icons.skip_next, size: 42.0),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -223,7 +261,7 @@ class SongTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      "Fsdafdsafdsafdsafdsafdsafdssa",
+      playerState.currentSong?.songTitle ?? 'Fdasfdsafdsafdsafdsz',
       style: TextStyle(fontSize: 18.0),
     );
   }
@@ -239,7 +277,7 @@ class ArtistTitle extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Text(
-      "Bklbjxcjblkvcxjblkvcxjkl",
+      playerState.currentSong?.artist ?? "Bklbjxcjblkvcxjblkvcxjkl",
       style: theme.textTheme.subtitle1
           .copyWith(fontSize: 12.0, color: Colors.white70),
     );
@@ -271,25 +309,23 @@ class PlayerSlider extends StatelessWidget {
     final position = _getPosition(playerState);
 
     return ProgressBar(
-      // position: position,
-      // total: total,
       onChanged: (nextValue) {},
-      position: Duration(seconds: 100),
-      total: Duration(seconds: 279),
+      position: position,
+      total: total,
       size: size,
     );
   }
 
   static Duration _getMax(PlayerState playerState) {
     if (playerState == null || playerState.currentSong == null) {
-      return Duration();
+      return Duration(seconds: 279);
     }
     return playerState.duration;
   }
 
   static Duration _getPosition(PlayerState playerState) {
     if (playerState == null || playerState.currentSong == null) {
-      return Duration();
+      return Duration(seconds: 100);
     }
     return playerState.position;
   }
@@ -450,27 +486,36 @@ class MiniPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, MiniPlayerModel>(
-      vm: _MiniPlayerModelFactory(this),
-      builder: (context, state) => Container(
-        // color: Colors.black54.withOpacity(0.3),
-        child: SizedBox(
-          height: size ?? 50.0,
+    return SizedBox(
+      height: 50.0,
+      child: StoreConnector<AppState, MiniPlayerModel>(
+        vm: _MiniPlayerModelFactory(this),
+        builder: (context, state) => Container(
           child: ListTile(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => PlayerView(),
+                enableDrag: true,
+                isDismissible: false,
+              );
+            },
+            visualDensity: VisualDensity(horizontal: 0, vertical: 0),
+            dense: true,
+            isThreeLine: true,
             leading: Icon(
               Icons.album,
               color: Colors.white,
             ),
-            title: InkWell(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => PlayerView(),
-                  enableDrag: true,
-                  isDismissible: false,
-                );
-              },
-              child: Text("Nothing playing..."),
+            title: Text(
+              state.songTitle ?? 'Nothing playing',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+              state.artistTitle ?? '',
+              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0),
+              overflow: TextOverflow.ellipsis,
             ),
             trailing: PlayPauseIcon(state: state),
           ),
@@ -534,41 +579,5 @@ class PlayerBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MiniPlayer(size: size);
-  }
-}
-
-class PlayerProvider extends StatefulWidget {
-  @override
-  _PlayerProviderState createState() => _PlayerProviderState();
-}
-
-class _PlayerProviderState extends State<PlayerProvider> {
-  AudioPlayer _player = AudioPlayer();
-  AudioCache _audioCache = AudioCache();
-  final WidgetBuilder builder;
-
-  _PlayerProviderState({
-    this.builder,
-  });
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (kIsWeb) {
-      // Calls to Platform.isIOS fails on web
-      return;
-    }
-    if (Platform.isIOS) {
-      if (_audioCache.fixedPlayer != null) {
-        _audioCache.fixedPlayer.startHeadlessService();
-      }
-      _player.startHeadlessService();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Builder(builder: builder);
   }
 }
