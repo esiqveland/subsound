@@ -247,6 +247,20 @@ class PlayerCommandPause extends PlayerActions {
   }
 }
 
+class PlayerCommandSeekTo extends PlayerActions {
+  final int seekToPosition;
+  PlayerCommandSeekTo(this.seekToPosition);
+
+  @override
+  Future<AppState> reduce() async {
+    final pos = Duration(seconds: seekToPosition);
+    await PlayerActions._player.seek(pos);
+    return state.copy(
+      playerState: state.playerState.copy(position: pos),
+    );
+  }
+}
+
 class PlayerDurationChanged extends PlayerActions {
   final Duration duration;
 

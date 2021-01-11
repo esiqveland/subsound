@@ -156,6 +156,7 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
       playerState: state.playerState.current,
       onPlay: () => dispatch(PlayerCommandPlay()),
       onPause: () => dispatch(PlayerCommandPause()),
+      onSeek: (val) => dispatch(PlayerCommandSeekTo(val)),
     );
   }
 }
@@ -169,6 +170,7 @@ class PlayerViewModel extends Vm {
   final PlayerStates playerState;
   final Function onPlay;
   final Function onPause;
+  final Function(int) onSeek;
 
   PlayerViewModel({
     @required this.songTitle,
@@ -179,6 +181,7 @@ class PlayerViewModel extends Vm {
     @required this.playerState,
     @required this.onPlay,
     @required this.onPause,
+    @required this.onSeek,
   }) : super(equals: [
           artistTitle,
           songTitle,
@@ -201,9 +204,8 @@ class PlayerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black26,
-      child: StoreConnector<AppState, PlayerState>(
-        //vm: _PlayerViewModelFactory(this),
-        converter: (st) => st.state.playerState,
+      child: StoreConnector<AppState, PlayerViewModel>(
+        vm: _PlayerViewModelFactory(this),
         builder: (context, vm) => Center(
           child: ConstrainedBox(
             constraints: BoxConstraints.tightForFinite(width: 400),
@@ -214,14 +216,14 @@ class PlayerView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SongTitle(playerState: vm),
+                    SongTitle(songTitle: vm.songTitle),
                   ],
                 ),
                 SizedBox(height: 10.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ArtistTitle(playerState: vm),
+                    ArtistTitle(artistName: vm.artistTitle),
                   ],
                 ),
                 Row(
@@ -254,30 +256,30 @@ class PlayerView extends StatelessWidget {
 }
 
 class SongTitle extends StatelessWidget {
-  final PlayerState playerState;
+  final String songTitle;
 
-  const SongTitle({Key key, this.playerState}) : super(key: key);
+  const SongTitle({Key key, this.songTitle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      playerState.currentSong?.songTitle ?? 'Fdasfdsafdsafdsafdsz',
+      songTitle ?? 'Fdasfdsafdsafdsafdsz',
       style: TextStyle(fontSize: 18.0),
     );
   }
 }
 
 class ArtistTitle extends StatelessWidget {
-  final PlayerState playerState;
+  final String artistName;
 
-  const ArtistTitle({Key key, this.playerState}) : super(key: key);
+  const ArtistTitle({Key key, this.artistName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Text(
-      playerState.currentSong?.artist ?? "Bklbjxcjblkvcxjblkvcxjkl",
+      artistName ?? "Bklbjxcjblkvcxjblkvcxjkl",
       style: theme.textTheme.subtitle1
           .copyWith(fontSize: 12.0, color: Colors.white70),
     );
@@ -298,10 +300,14 @@ class PlayerScreen extends StatelessWidget {
 }
 
 class PlayerSlider extends StatelessWidget {
-  final PlayerState playerState;
+  final PlayerViewModel playerState;
   final double size;
 
-  PlayerSlider({Key key, this.playerState, this.size}) : super(key: key);
+  PlayerSlider({
+    Key key,
+    this.playerState,
+    this.size,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -309,22 +315,22 @@ class PlayerSlider extends StatelessWidget {
     final position = _getPosition(playerState);
 
     return ProgressBar(
-      onChanged: (nextValue) {},
+      onChanged: playerState.onSeek,
       position: position,
       total: total,
       size: size,
     );
   }
 
-  static Duration _getMax(PlayerState playerState) {
-    if (playerState == null || playerState.currentSong == null) {
+  static Duration _getMax(PlayerViewModel playerState) {
+    if (playerState == null || playerState.duration == null) {
       return Duration(seconds: 279);
     }
     return playerState.duration;
   }
 
-  static Duration _getPosition(PlayerState playerState) {
-    if (playerState == null || playerState.currentSong == null) {
+  static Duration _getPosition(PlayerViewModel playerState) {
+    if (playerState == null || playerState.position == null) {
       return Duration(seconds: 100);
     }
     return playerState.position;
@@ -372,9 +378,13 @@ class ProgressBar extends StatelessWidget {
           Slider(
             activeColor: Colors.tealAccent,
             label: positionText,
-            onChanged: (double newValue) {
+            onChangeEnd: (double newValue) {
               final nextValue = newValue.round();
               this.onChanged(nextValue);
+            },
+            onChanged: (double newValue) {
+              final nextValue = newValue.round();
+              //this.onChanged(nextValue);
             },
             min: 0.0,
             max: total.inSeconds.toDouble(),
@@ -395,7 +405,7 @@ class ProgressBar extends StatelessWidget {
 }
 
 class PlayButton extends StatelessWidget {
-  final PlayerState state;
+  final PlayerViewModel state;
   final double size;
 
   const PlayButton({
@@ -407,25 +417,40 @@ class PlayButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
-      child: _getIcon(),
+      onTap: () {
+        switch (state.playerState) {
+          case PlayerStates.stopped:
+            state.onPlay();
+            break;
+          case PlayerStates.playing:
+            state.onPause();
+            break;
+          case PlayerStates.paused:
+            state.onPlay();
+            break;
+          case PlayerStates.buffering:
+            state.onPause();
+            break;
+        }
+      },
+      child: _getIcon(state.playerState),
     );
   }
 
-  _getIcon() {
-    if (state == null || state.current == null) {
+  _getIcon(PlayerStates current) {
+    if (current == null) {
       return Icon(Icons.play_arrow, size: size);
     }
-    if (state.current == PlayerStates.playing) {
+    if (current == PlayerStates.playing) {
       return Icon(Icons.pause, size: size);
     }
-    if (state.current == PlayerStates.paused) {
+    if (current == PlayerStates.paused) {
       return Icon(Icons.play_arrow, size: size);
     }
-    if (state.current == PlayerStates.stopped) {
+    if (current == PlayerStates.stopped) {
       return Icon(Icons.play_arrow, size: size);
     }
-    if (state.current == PlayerStates.buffering) {
+    if (current == PlayerStates.buffering) {
       return Icon(Icons.pause, size: size);
     }
     return Icon(Icons.play_arrow, size: size);
