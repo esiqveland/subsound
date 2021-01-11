@@ -2,6 +2,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
@@ -151,6 +152,8 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
       songTitle: state.playerState.currentSong?.songTitle,
       artistTitle: state.playerState.currentSong?.artist,
       albumTitle: state.playerState.currentSong?.album,
+      coverArtLink: state.playerState.currentSong?.coverArtLink,
+      coverArtId: state.playerState.currentSong?.coverArtId,
       duration: state.playerState.duration,
       position: state.playerState.position,
       playerState: state.playerState.current,
@@ -165,6 +168,8 @@ class PlayerViewModel extends Vm {
   final String songTitle;
   final String artistTitle;
   final String albumTitle;
+  final String coverArtLink;
+  final String coverArtId;
   final Duration duration;
   final Duration position;
   final PlayerStates playerState;
@@ -176,6 +181,8 @@ class PlayerViewModel extends Vm {
     @required this.songTitle,
     @required this.artistTitle,
     @required this.albumTitle,
+    @required this.coverArtLink,
+    @required this.coverArtId,
     @required this.duration,
     @required this.position,
     @required this.playerState,
@@ -186,6 +193,8 @@ class PlayerViewModel extends Vm {
           artistTitle,
           songTitle,
           albumTitle,
+          coverArtLink,
+          coverArtId,
           duration,
           position,
           playerState,
@@ -213,6 +222,10 @@ class PlayerView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                CoverArtImage(
+                  vm.coverArtLink,
+                  fit: BoxFit.fitWidth,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -348,6 +361,63 @@ class PlayerSlider extends StatelessWidget {
   }
 }
 
+class CachedSliderState extends State<CachedSlider> {
+  double valueOverride;
+  String labelOverride;
+
+  @override
+  Widget build(BuildContext context) {
+    return Slider.adaptive(
+      activeColor: Colors.tealAccent,
+      label: labelOverride ?? widget.label,
+      min: 0.0,
+      max: widget.max.toDouble(),
+      value: valueOverride ?? widget.value.toDouble(),
+      divisions: widget.divisions,
+      onChangeEnd: (double newValue) {
+        final nextValue = newValue.round();
+        widget.onChanged(nextValue);
+        this.setState(() {
+          this.valueOverride = null;
+          this.labelOverride = null;
+        });
+      },
+      onChanged: (double newValue) {
+        final nextValue = newValue.round();
+        this.setState(() {
+          this.valueOverride = newValue;
+          this.labelOverride = formatDuration(Duration(seconds: nextValue));
+        });
+      },
+      semanticFormatterCallback: (double newValue) {
+        return formatDuration(Duration(seconds: newValue.round()));
+      },
+    );
+  }
+}
+
+class CachedSlider extends StatefulWidget {
+  final String label;
+  final int value;
+  final int max;
+  final int divisions;
+  final Function(int) onChanged;
+
+  const CachedSlider({
+    Key key,
+    this.label,
+    this.value,
+    this.max,
+    this.divisions,
+    this.onChanged,
+  }) : super(key: key);
+
+  @override
+  State<CachedSlider> createState() {
+    return CachedSliderState();
+  }
+}
+
 class ProgressBar extends StatelessWidget {
   final Duration total;
   final Duration position;
@@ -370,26 +440,18 @@ class ProgressBar extends StatelessWidget {
     var remainingText = "-" + formatDuration(remaining);
 
     final divisions = total.inSeconds < 1 ? 1 : total.inSeconds;
+    final value = position?.inSeconds ?? 1;
 
     return Container(
       width: size,
       child: Column(
         children: [
-          Slider(
-            activeColor: Colors.tealAccent,
+          CachedSlider(
             label: positionText,
-            onChangeEnd: (double newValue) {
-              final nextValue = newValue.round();
-              this.onChanged(nextValue);
-            },
-            onChanged: (double newValue) {
-              final nextValue = newValue.round();
-              //this.onChanged(nextValue);
-            },
-            min: 0.0,
-            max: total.inSeconds.toDouble(),
-            value: position.inSeconds.toDouble(),
+            value: value,
+            max: total.inSeconds,
             divisions: divisions,
+            onChanged: onChanged,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -416,8 +478,8 @@ class PlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
+    return IconButton(
+      onPressed: () {
         switch (state.playerState) {
           case PlayerStates.stopped:
             state.onPlay();
@@ -433,7 +495,10 @@ class PlayButton extends StatelessWidget {
             break;
         }
       },
-      child: _getIcon(state.playerState),
+      splashRadius: 40.0,
+      iconSize: size,
+      hoverColor: Colors.tealAccent,
+      icon: _getIcon(state.playerState),
     );
   }
 
@@ -466,6 +531,8 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
       songTitle: state.playerState.currentSong?.songTitle,
       artistTitle: state.playerState.currentSong?.artist,
       albumTitle: state.playerState.currentSong?.album,
+      coverArtLink: state.playerState.currentSong?.coverArtLink,
+      coverArtId: state.playerState.currentSong?.coverArtId,
       duration: state.playerState.duration,
       position: state.playerState.position,
       playerState: state.playerState.current,
@@ -479,6 +546,8 @@ class MiniPlayerModel extends Vm {
   final String songTitle;
   final String artistTitle;
   final String albumTitle;
+  final String coverArtLink;
+  final String coverArtId;
   final Duration duration;
   final Duration position;
   final PlayerStates playerState;
@@ -489,6 +558,8 @@ class MiniPlayerModel extends Vm {
     @required this.songTitle,
     @required this.artistTitle,
     @required this.albumTitle,
+    @required this.coverArtLink,
+    @required this.coverArtId,
     @required this.duration,
     @required this.position,
     @required this.playerState,
@@ -498,6 +569,8 @@ class MiniPlayerModel extends Vm {
           artistTitle,
           songTitle,
           albumTitle,
+          coverArtLink,
+          coverArtId,
           duration,
           position,
           playerState,
@@ -528,9 +601,10 @@ class MiniPlayer extends StatelessWidget {
             visualDensity: VisualDensity(horizontal: 0, vertical: 0),
             dense: true,
             isThreeLine: true,
-            leading: Icon(
-              Icons.album,
-              color: Colors.white,
+            leading: CoverArtImage(
+              state.coverArtLink,
+              height: 40.0,
+              fit: BoxFit.scaleDown,
             ),
             title: Text(
               state.songTitle ?? 'Nothing playing',
