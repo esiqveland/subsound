@@ -222,17 +222,29 @@ class PlayerView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                vm.coverArtLink != null
-                    ? CoverArtImage(
-                        vm.coverArtLink,
-                        height: 250,
-                        width: 250,
-                        fit: BoxFit.cover,
-                      )
-                    : Padding(
-                        padding: EdgeInsets.only(left: 10.0),
-                        child: Icon(Icons.album),
-                      ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: 100,
+                    maxHeight: MediaQuery.of(context).size.width * 0.8,
+                    minWidth: 100,
+                    maxWidth: MediaQuery.of(context).size.width * 0.8,
+                  ),
+                  child: SizedBox.expand(
+                    child: FittedBox(
+                      child: vm.coverArtLink != null
+                          ? CoverArtImage(
+                              vm.coverArtLink,
+                              // height: 250,
+                              // width: 250,
+                              fit: BoxFit.cover,
+                            )
+                          : Padding(
+                              padding: EdgeInsets.only(left: 10.0),
+                              child: Icon(Icons.album),
+                            ),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -318,6 +330,7 @@ class PlayerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MyScaffold(
       body: (context) => PlayerView(),
+      disableBottomBar: true,
     );
   }
 }

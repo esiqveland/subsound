@@ -31,7 +31,7 @@ final navBarItems = [
         label: 'Player',
         icon: Icon(Icons.play_circle_outline_outlined),
       ), (context) {
-    Navigator.of(context).pushReplacementNamed(PlayerScreen.routeName);
+    Navigator.of(context).pushNamed(PlayerScreen.routeName);
   }),
   // NavItems(
   //     BottomNavigationBarItem(
@@ -63,10 +63,8 @@ class BottomNavigationBarWidget extends StatefulWidget {
 
 class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   int currentIndex;
-  final List<NavItems> navItems;
 
   _BottomNavigationBarWidgetState({
-    this.navItems,
     this.currentIndex = 0,
   });
 
@@ -75,12 +73,12 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (idx) {
-        navBarItems[idx].handler(context);
+        widget.navItems[idx].handler(context);
         setState(() {
-          currentIndex = idx;
+          this.currentIndex = idx;
         });
       },
-      items: navBarItems.map((item) => item.item).toList(),
+      items: widget.navItems.map((item) => item.item).toList(),
     );
   }
 }
@@ -92,6 +90,7 @@ class MyScaffold extends StatelessWidget {
   final WidgetBuilder body;
   final Widget title;
   final bool disableAppBar;
+  final bool disableBottomBar;
 
   MyScaffold({
     Key key,
@@ -99,6 +98,7 @@ class MyScaffold extends StatelessWidget {
     this.appBar,
     this.title,
     this.disableAppBar = false,
+    this.disableBottomBar = false,
   }) : super(key: key);
 
   @override
@@ -112,6 +112,7 @@ class MyScaffold extends StatelessWidget {
               body: body,
               appBar: appBar,
               disableAppBar: disableAppBar,
+              disableBottomBar: disableBottomBar,
             ),
     );
   }
@@ -122,6 +123,7 @@ class _AppScaffold extends StatelessWidget {
   final WidgetBuilder body;
   final Widget title;
   final bool disableAppBar;
+  final bool disableBottomBar;
 
   _AppScaffold({
     Key key,
@@ -129,6 +131,7 @@ class _AppScaffold extends StatelessWidget {
     this.appBar,
     this.title,
     this.disableAppBar = false,
+    this.disableBottomBar = false,
   }) : super(key: key);
 
   @override
@@ -141,7 +144,9 @@ class _AppScaffold extends StatelessWidget {
                 title: title,
               ),
       body: Container(
-        padding: EdgeInsets.only(bottom: PlayerBottomBarSize),
+        padding: disableBottomBar
+            ? null
+            : EdgeInsets.only(bottom: PlayerBottomBarSize),
         child: Builder(
           builder: body,
         ),
@@ -180,7 +185,9 @@ class _AppScaffold extends StatelessWidget {
                 ],
               ),
             ),
-      bottomSheet: PlayerBottomBar(height: PlayerBottomBarSize),
+      bottomSheet: disableBottomBar
+          ? null
+          : PlayerBottomBar(height: PlayerBottomBarSize),
       bottomNavigationBar: BottomNavigationBarWidget(navItems: navBarItems),
     );
   }
