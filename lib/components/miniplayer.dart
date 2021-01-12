@@ -91,101 +91,102 @@ class MiniPlayer extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return SizedBox(
-      child: StoreConnector<AppState, MiniPlayerModel>(
-        vm: _MiniPlayerModelFactory(this),
-        builder: (context, state) => Column(
-          children: [
-            Container(
-              height: miniProgressBarHeight,
-              color: Colors.white38,
-              child: Stack(
       height: height,
+      child: Container(
+        color: Colors.pinkAccent,
+        child: StoreConnector<AppState, MiniPlayerModel>(
+          vm: _MiniPlayerModelFactory(this),
+          builder: (context, state) => Column(
+            children: [
+              Stack(
                 children: [
-                  Positioned(
-                    top: 0.0,
-                    left: 0.0,
-                    child: Container(
-                      color: Colors.white,
-                      height: miniProgressBarHeight,
-                      width: screenWidth * state.playbackProgress,
-                    ),
+                  Container(
+                    padding: EdgeInsets.all(0),
+                    height: miniProgressBarHeight,
+                    color: Colors.white38,
+                  ),
+                  Container(
+                    color: Colors.white,
+                    height: miniProgressBarHeight,
+                    width: screenWidth * state.playbackProgress,
                   ),
                 ],
               ),
-            ),
-            Container(
-              child: InkWell(
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => PlayerView(),
-                    enableDrag: true,
-                    isDismissible: false,
-                  );
-                },
-                child: Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      state.coverArtLink != null
-                          ? CoverArtImage(
-                              state.coverArtLink,
-                              height: size,
-                              fit: BoxFit.cover,
-                            )
-                          : Padding(
-                              padding: EdgeInsets.only(left: 10.0),
-                              child: Icon(Icons.album),
+              Container(
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) => PlayerView(),
+                      enableDrag: true,
+                      isDismissible: false,
+                    );
+                  },
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        state.coverArtLink != null
+                            ? CoverArtImage(
+                                state.coverArtLink,
+                                height: 50.0,
+                                fit: BoxFit.fitWidth,
+                              )
+                            : Padding(
+                                padding: EdgeInsets.only(left: 10.0),
+                                child: Icon(Icons.album),
+                              ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              state.songTitle ?? 'Nothing playing',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 12.0),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            state.songTitle ?? 'Nothing playing',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 12.0),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            state.artistTitle ?? 'Artistic',
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal, fontSize: 11.0),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(5.0),
-                        child: PlayPauseIcon(state: state),
-                      ),
-                    ],
+                            Text(
+                              state.artistTitle ?? 'Artistic',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 11.0),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(5.0),
+                          child: PlayPauseIcon(state: state),
+                        ),
+                      ],
+                    ),
+                    // ListTile(
+                    //   onTap: ,
+                    //   visualDensity: VisualDensity(horizontal: 0, vertical: 0),
+                    //   dense: true,
+                    //   isThreeLine: true,
+                    //   leading: CoverArtImage(
+                    //     state.coverArtLink,
+                    //     height: 40.0,
+                    //     fit: BoxFit.scaleDown,
+                    //   ),
+                    //   title: Text(
+                    //     state.songTitle ?? 'Nothing playing',
+                    //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+                    //     overflow: TextOverflow.ellipsis,
+                    //   ),
+                    //   subtitle: Text(
+                    //     state.artistTitle ?? '',
+                    //     style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0),
+                    //     overflow: TextOverflow.ellipsis,
+                    //   ),
+                    //   trailing: PlayPauseIcon(state: state),
+                    // ),
                   ),
-                  // ListTile(
-                  //   onTap: ,
-                  //   visualDensity: VisualDensity(horizontal: 0, vertical: 0),
-                  //   dense: true,
-                  //   isThreeLine: true,
-                  //   leading: CoverArtImage(
-                  //     state.coverArtLink,
-                  //     height: 40.0,
-                  //     fit: BoxFit.scaleDown,
-                  //   ),
-                  //   title: Text(
-                  //     state.songTitle ?? 'Nothing playing',
-                  //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
-                  //     overflow: TextOverflow.ellipsis,
-                  //   ),
-                  //   subtitle: Text(
-                  //     state.artistTitle ?? '',
-                  //     style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0),
-                  //     overflow: TextOverflow.ellipsis,
-                  //   ),
-                  //   trailing: PlayPauseIcon(state: state),
-                  // ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
