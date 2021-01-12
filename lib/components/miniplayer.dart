@@ -7,13 +7,13 @@ import 'package:subsound/state/appstate.dart';
 // DraggableScrollableSheet
 // or BottomSheet ?
 class PlayerBottomBar extends StatelessWidget {
-  final double size;
+  final double height;
 
-  PlayerBottomBar({Key key, this.size}) : super(key: key);
+  PlayerBottomBar({Key key, this.height}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MiniPlayer(size: size);
+    return MiniPlayer(height: height);
   }
 }
 
@@ -82,16 +82,15 @@ class MiniPlayerModel extends Vm {
 const miniProgressBarHeight = 2.0;
 
 class MiniPlayer extends StatelessWidget {
-  final double size;
+  final double height;
 
-  const MiniPlayer({Key key, this.size}) : super(key: key);
+  const MiniPlayer({Key key, this.height}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return SizedBox(
-      height: 50.0 + 2 * miniProgressBarHeight,
       child: StoreConnector<AppState, MiniPlayerModel>(
         vm: _MiniPlayerModelFactory(this),
         builder: (context, state) => Column(
@@ -100,6 +99,7 @@ class MiniPlayer extends StatelessWidget {
               height: miniProgressBarHeight,
               color: Colors.white38,
               child: Stack(
+      height: height,
                 children: [
                   Positioned(
                     top: 0.0,

@@ -85,7 +85,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   }
 }
 
-const PlayerBottomBarSize = 56.0;
+const PlayerBottomBarSize = 50.0;
 
 class MyScaffold extends StatelessWidget {
   final Widget appBar;
@@ -180,7 +180,7 @@ class _AppScaffold extends StatelessWidget {
                 ],
               ),
             ),
-      bottomSheet: PlayerBottomBar(size: PlayerBottomBarSize),
+      bottomSheet: PlayerBottomBar(height: PlayerBottomBarSize),
       bottomNavigationBar: BottomNavigationBarWidget(navItems: navBarItems),
     );
   }
