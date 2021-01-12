@@ -222,9 +222,19 @@ class PlayerView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CoverArtImage(
-                  vm.coverArtLink,
-                  fit: BoxFit.fitWidth,
+                vm.coverArtLink != null
+                    ? CoverArtImage(
+                        vm.coverArtLink,
+                        height: 250,
+                        width: 250,
+                        fit: BoxFit.cover,
+                      )
+                    : Padding(
+                        padding: EdgeInsets.only(left: 10.0),
+                        child: Icon(Icons.album),
+                      ),
+                SizedBox(
+                  height: 20,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
