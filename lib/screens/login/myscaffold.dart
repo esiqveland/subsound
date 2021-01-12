@@ -58,7 +58,7 @@ class BottomNavigationBarWidget extends StatefulWidget {
 
   @override
   _BottomNavigationBarWidgetState createState() =>
-      _BottomNavigationBarWidgetState(navItems: navItems);
+      _BottomNavigationBarWidgetState();
 }
 
 class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
