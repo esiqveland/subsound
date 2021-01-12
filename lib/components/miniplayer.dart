@@ -93,7 +93,7 @@ class MiniPlayer extends StatelessWidget {
     return SizedBox(
       height: height,
       child: Container(
-        color: Colors.pinkAccent,
+        // color: Colors.pinkAccent,
         child: StoreConnector<AppState, MiniPlayerModel>(
           vm: _MiniPlayerModelFactory(this),
           builder: (context, state) => Column(
