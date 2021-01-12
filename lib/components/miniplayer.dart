@@ -22,6 +22,10 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
 
   @override
   MiniPlayerModel fromStore() {
+    final pos = state.playerState.position?.inSeconds ?? 0;
+    final dur = state.playerState.duration?.inSeconds ?? 1;
+    final playbackProgress = pos / dur;
+
     return MiniPlayerModel(
       songTitle: state.playerState.currentSong?.songTitle,
       artistTitle: state.playerState.currentSong?.artist,
@@ -30,6 +34,7 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
       coverArtId: state.playerState.currentSong?.coverArtId,
       duration: state.playerState.duration,
       position: state.playerState.position,
+      playbackProgress: playbackProgress,
       playerState: state.playerState.current,
       onPlay: () => dispatch(PlayerCommandPlay()),
       onPause: () => dispatch(PlayerCommandPause()),
@@ -45,6 +50,7 @@ class MiniPlayerModel extends Vm {
   final String coverArtId;
   final Duration duration;
   final Duration position;
+  final double playbackProgress;
   final PlayerStates playerState;
   final Function onPlay;
   final Function onPause;
@@ -57,6 +63,7 @@ class MiniPlayerModel extends Vm {
     @required this.coverArtId,
     @required this.duration,
     @required this.position,
+    @required this.playbackProgress,
     @required this.playerState,
     @required this.onPlay,
     @required this.onPause,
@@ -72,6 +79,8 @@ class MiniPlayerModel extends Vm {
         ]);
 }
 
+const miniProgressBarHeight = 2.0;
+
 class MiniPlayer extends StatelessWidget {
   final double size;
 
@@ -79,54 +88,104 @@ class MiniPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return SizedBox(
-      height: 50.0,
+      height: 50.0 + 2 * miniProgressBarHeight,
       child: StoreConnector<AppState, MiniPlayerModel>(
         vm: _MiniPlayerModelFactory(this),
-        builder: (context, state) => Container(
-          child: Container(
-            child: Stack(
-              children: [
-                Positioned(
+        builder: (context, state) => Column(
+          children: [
+            Container(
+              height: miniProgressBarHeight,
+              color: Colors.white38,
+              child: Stack(
+                children: [
+                  Positioned(
                     top: 0.0,
                     left: 0.0,
-                    child: CoverArtImage(
-                      state.coverArtLink,
-                      height: size,
-                      fit: BoxFit.scaleDown,
-                    )),
-              ],
+                    child: Container(
+                      color: Colors.white,
+                      height: miniProgressBarHeight,
+                      width: screenWidth * state.playbackProgress,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            // ListTile(
-            //   onTap: () {
-            //     showModalBottomSheet(
-            //       context: context,
-            //       builder: (context) => PlayerView(),
-            //       enableDrag: true,
-            //       isDismissible: false,
-            //     );
-            //   },
-            //   visualDensity: VisualDensity(horizontal: 0, vertical: 0),
-            //   dense: true,
-            //   isThreeLine: true,
-            //   leading: CoverArtImage(
-            //     state.coverArtLink,
-            //     height: 40.0,
-            //     fit: BoxFit.scaleDown,
-            //   ),
-            //   title: Text(
-            //     state.songTitle ?? 'Nothing playing',
-            //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
-            //     overflow: TextOverflow.ellipsis,
-            //   ),
-            //   subtitle: Text(
-            //     state.artistTitle ?? '',
-            //     style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0),
-            //     overflow: TextOverflow.ellipsis,
-            //   ),
-            //   trailing: PlayPauseIcon(state: state),
-            // ),
-          ),
+            Container(
+              child: InkWell(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => PlayerView(),
+                    enableDrag: true,
+                    isDismissible: false,
+                  );
+                },
+                child: Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      state.coverArtLink != null
+                          ? CoverArtImage(
+                              state.coverArtLink,
+                              height: size,
+                              fit: BoxFit.cover,
+                            )
+                          : Padding(
+                              padding: EdgeInsets.only(left: 10.0),
+                              child: Icon(Icons.album),
+                            ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            state.songTitle ?? 'Nothing playing',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12.0),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            state.artistTitle ?? 'Artistic',
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal, fontSize: 11.0),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(5.0),
+                        child: PlayPauseIcon(state: state),
+                      ),
+                    ],
+                  ),
+                  // ListTile(
+                  //   onTap: ,
+                  //   visualDensity: VisualDensity(horizontal: 0, vertical: 0),
+                  //   dense: true,
+                  //   isThreeLine: true,
+                  //   leading: CoverArtImage(
+                  //     state.coverArtLink,
+                  //     height: 40.0,
+                  //     fit: BoxFit.scaleDown,
+                  //   ),
+                  //   title: Text(
+                  //     state.songTitle ?? 'Nothing playing',
+                  //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+                  //     overflow: TextOverflow.ellipsis,
+                  //   ),
+                  //   subtitle: Text(
+                  //     state.artistTitle ?? '',
+                  //     style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0),
+                  //     overflow: TextOverflow.ellipsis,
+                  //   ),
+                  //   trailing: PlayPauseIcon(state: state),
+                  // ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -140,8 +199,8 @@ class PlayPauseIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
+    return IconButton(
+      onPressed: () {
         switch (state.playerState) {
           case PlayerStates.stopped:
             state.onPlay();
@@ -157,7 +216,8 @@ class PlayPauseIcon extends StatelessWidget {
             break;
         }
       },
-      child: getIcon(state.playerState),
+      splashRadius: 16.0,
+      icon: getIcon(state.playerState),
     );
   }
 
