@@ -73,10 +73,10 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (idx) {
-        widget.navItems[idx].handler(context);
         setState(() {
           this.currentIndex = idx;
         });
+        widget.navItems[idx].handler(context);
       },
       items: widget.navItems.map((item) => item.item).toList(),
     );
