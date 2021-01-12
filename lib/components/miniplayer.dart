@@ -97,6 +97,7 @@ class MiniPlayer extends StatelessWidget {
         child: StoreConnector<AppState, MiniPlayerModel>(
           vm: _MiniPlayerModelFactory(this),
           builder: (context, state) => Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Stack(
                 children: [
@@ -113,6 +114,7 @@ class MiniPlayer extends StatelessWidget {
                 ],
               ),
               Container(
+                height: height - miniProgressBarHeight,
                 child: InkWell(
                   onTap: () {
                     showModalBottomSheet(
@@ -155,7 +157,7 @@ class MiniPlayer extends StatelessWidget {
                           ],
                         ),
                         Container(
-                          padding: EdgeInsets.all(5.0),
+                          padding: EdgeInsets.only(right: 5.0),
                           child: PlayPauseIcon(state: state),
                         ),
                       ],
