@@ -89,6 +89,7 @@ class MiniPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final playerHeight = height - miniProgressBarHeight;
 
     return SizedBox(
       height: height,
@@ -113,8 +114,8 @@ class MiniPlayer extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                height: height - miniProgressBarHeight,
+              SizedBox(
+                height: playerHeight,
                 child: InkWell(
                   onTap: () {
                     showModalBottomSheet(
@@ -131,8 +132,8 @@ class MiniPlayer extends StatelessWidget {
                         state.coverArtLink != null
                             ? CoverArtImage(
                                 state.coverArtLink,
-                                height: 50.0,
-                                fit: BoxFit.fitWidth,
+                                height: playerHeight,
+                                fit: BoxFit.fitHeight,
                               )
                             : Padding(
                                 padding: EdgeInsets.only(left: 10.0),
@@ -162,28 +163,6 @@ class MiniPlayer extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // ListTile(
-                    //   onTap: ,
-                    //   visualDensity: VisualDensity(horizontal: 0, vertical: 0),
-                    //   dense: true,
-                    //   isThreeLine: true,
-                    //   leading: CoverArtImage(
-                    //     state.coverArtLink,
-                    //     height: 40.0,
-                    //     fit: BoxFit.scaleDown,
-                    //   ),
-                    //   title: Text(
-                    //     state.songTitle ?? 'Nothing playing',
-                    //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
-                    //     overflow: TextOverflow.ellipsis,
-                    //   ),
-                    //   subtitle: Text(
-                    //     state.artistTitle ?? '',
-                    //     style: TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0),
-                    //     overflow: TextOverflow.ellipsis,
-                    //   ),
-                    //   trailing: PlayPauseIcon(state: state),
-                    // ),
                   ),
                 ),
               ),
