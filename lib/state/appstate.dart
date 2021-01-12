@@ -13,12 +13,26 @@ Store<AppState> createStore() => Store<AppState>(
       initialState: AppState.initialState(),
       actionObservers: [Log.printer(formatter: Log.verySimpleFormatter)],
       stateObservers: [StateLogger()],
+      errorObserver: MyErrorObserver(),
     );
 
 class StateLogger implements StateObserver<AppState> {
   @override
   void observe(ReduxAction<AppState> action, AppState stateIni,
       AppState stateEnd, int dispatchCount) {}
+}
+
+class MyErrorObserver<St> implements ErrorObserver<St> {
+  @override
+  bool observe(
+    Object error,
+    StackTrace stackTrace,
+    ReduxAction<St> action,
+    Store store,
+  ) {
+    print("Error thrown during $action: $error");
+    return true;
+  }
 }
 
 class StartupAction extends ReduxAction<AppState> {
