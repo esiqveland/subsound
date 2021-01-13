@@ -30,13 +30,16 @@ Non-goals:
  - EQ/Gain
 
 ## TODO:
- - [ ] Playback support
+ - [X] Playback support
+ - [ ] Media players support (lock screens)
+ - [ ] Queue support
  - [X] cache artwork
  - [X] download files
  - [ ] cache files
  - [ ] Album page: Star button in song list
  - [ ] Album page: summary in bottom of song list
  - [ ] Album page: play button
+ - [X] Album page: play on click
  - [ ] Album page: Slide to enqueue
  - [ ] Artist page: play button
  - [ ] Setup sqlite database + migrations
