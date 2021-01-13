@@ -225,6 +225,15 @@ class ServerData {
           password == other.password;
 }
 
+class DisplayError extends ReduxAction<AppState> {
+  final String errorMessage;
+
+  DisplayError(this.errorMessage);
+
+  @override
+  Future<AppState> reduce() async {}
+}
+
 abstract class PlayerActions extends ReduxAction<AppState> {
   static final String playerId = 'e5dde786-5365-11eb-ae93-0242ac130002';
   static final AudioCache _cache = AudioCache();
@@ -362,6 +371,7 @@ class StartupPlayer extends PlayerActions {
       dispatch(PlayerStateChanged(PlayerStates.stopped));
       dispatch(PlayerDurationChanged(Duration()));
       dispatch(PlayerPositionChanged(Duration()));
+      dispatch(DisplayError('Error playing: $msg'));
     });
     PlayerActions._player.onPlayerStateChanged.listen((event) {
       switch (event) {
