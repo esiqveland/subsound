@@ -188,7 +188,8 @@ class _AppScaffold extends StatelessWidget {
       bottomSheet: disableBottomBar
           ? null
           : PlayerBottomBar(height: PlayerBottomBarSize),
-      bottomNavigationBar: BottomNavigationBarWidget(navItems: navBarItems),
+      bottomNavigationBar:
+          BottomNavigationBarWidget(navItems: navBarItems),
     );
   }
 }
