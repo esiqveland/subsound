@@ -239,10 +239,7 @@ class PlayerView extends StatelessWidget {
                               // width: 250,
                               fit: BoxFit.cover,
                             )
-                          : Padding(
-                              padding: EdgeInsets.only(left: 10.0),
-                              child: Icon(Icons.album),
-                            ),
+                          : Icon(Icons.album),
                     ),
                   ),
                 ),
