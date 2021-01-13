@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 
