@@ -51,8 +51,8 @@ class ArtistPage extends StatefulWidget {
 }
 
 class AlbumRow extends StatelessWidget {
-  final AlbumResult album;
-  final Function(AlbumResult) onSelectedAlbum;
+  final AlbumResultSimple album;
+  final Function(AlbumResultSimple) onSelectedAlbum;
 
   const AlbumRow({
     Key key,
@@ -109,7 +109,7 @@ class AlbumRow extends StatelessWidget {
 
 class ArtistView extends StatelessWidget {
   final ArtistResult artist;
-  final Function(AlbumResult) onSelectedAlbum;
+  final Function(AlbumResultSimple) onSelectedAlbum;
 
   const ArtistView({Key key, this.artist, this.onSelectedAlbum})
       : super(key: key);
@@ -170,8 +170,8 @@ class ArtistView extends StatelessWidget {
 
 class AlbumList extends StatelessWidget {
   final ArtistResult artist;
-  final List<AlbumResult> albums;
-  final Function(AlbumResult) onSelectedAlbum;
+  final List<AlbumResultSimple> albums;
+  final Function(AlbumResultSimple) onSelectedAlbum;
 
   const AlbumList({
     Key key,

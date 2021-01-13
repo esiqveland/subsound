@@ -108,9 +108,6 @@ class SongResult {
   }
 }
 
-const FallbackImageUrl =
-    'https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png';
-
 class GetAlbum extends BaseRequest<AlbumResult> {
   final String id;
 
@@ -196,15 +193,4 @@ class GetAlbum extends BaseRequest<AlbumResult> {
       albumResult,
     );
   }
-}
-
-Duration getDuration(dynamic durationParam) {
-  if (durationParam is String) {
-    return Duration(seconds: int.parse(durationParam));
-  }
-  if (durationParam is int) {
-    return Duration(seconds: durationParam);
-  }
-
-  return Duration(seconds: 0);
 }

@@ -7,7 +7,7 @@ import '../base_request.dart';
 import '../subsonic.dart';
 import 'get_cover_art.dart';
 
-class AlbumResult {
+class AlbumResultSimple {
   final String id;
   final String parent;
   final String title;
@@ -23,7 +23,7 @@ class AlbumResult {
   final bool isVideo;
   final DateTime createdAt;
 
-  AlbumResult(
+  AlbumResultSimple(
       this.id,
       this.parent,
       this.title,
@@ -39,6 +39,23 @@ class AlbumResult {
       this.isVideo,
       this.createdAt);
 
+  AlbumResultSimple.named({
+    this.id,
+    this.parent,
+    this.title,
+    this.name,
+    this.artistName,
+    this.artistId,
+    this.coverArtId,
+    this.coverArtLink,
+    this.year,
+    this.duration,
+    this.songCount,
+    this.playCount,
+    this.isVideo,
+    this.createdAt,
+  });
+
   String durationNice() {
     return formatDuration(duration);
   }
@@ -50,14 +67,11 @@ class ArtistResult {
   final String coverArtId;
   final String coverArtLink;
   final int albumCount;
-  final List<AlbumResult> albums;
+  final List<AlbumResultSimple> albums;
 
   ArtistResult(this.id, this.name, this.coverArtId, this.coverArtLink,
       this.albumCount, this.albums);
 }
-
-const FallbackImageUrl =
-    'https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png';
 
 class GetArtist extends BaseRequest<ArtistResult> {
   final String id;
@@ -89,7 +103,7 @@ class GetArtist extends BaseRequest<ArtistResult> {
 
       final duration = getDuration(album['duration']);
 
-      return AlbumResult(
+      return AlbumResultSimple(
         album['id'],
         album['parent'],
         album['title'],
@@ -137,15 +151,4 @@ class GetArtist extends BaseRequest<ArtistResult> {
       artistResult,
     );
   }
-}
-
-Duration getDuration(dynamic durationParam) {
-  if (durationParam is String) {
-    return Duration(seconds: int.parse(durationParam));
-  }
-  if (durationParam is int) {
-    return Duration(seconds: durationParam);
-  }
-
-  return Duration(seconds: 0);
 }
