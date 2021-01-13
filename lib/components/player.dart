@@ -327,6 +327,14 @@ class PlayerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "NOW PLAYING",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12.0),
+        ),
+      ),
       body: (context) => PlayerView(),
       disableBottomBar: true,
     );
