@@ -169,17 +169,28 @@ class _AppScaffold extends StatelessWidget {
                     ),
                   ),
                   ListTile(
-                    leading: Icon(Icons.settings),
-                    title: Text("Settings"),
-                    onTap: () {
-                      Navigator.of(context).pushNamed(LoginScreen.routeName);
-                    },
-                  ),
-                  ListTile(
                     leading: Icon(Icons.music_note),
                     title: Text("Artists"),
                     onTap: () {
                       Navigator.of(context).pushNamed(HomeScreen.routeName);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.album),
+                    title: Text("Albums"),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => HomeScreen(
+                                initialTabIndex: 1,
+                              )));
+                    },
+                  ),
+                  Divider(),
+                  ListTile(
+                    leading: Icon(Icons.settings),
+                    title: Text("Settings"),
+                    onTap: () {
+                      Navigator.of(context).pushNamed(LoginScreen.routeName);
                     },
                   ),
                 ],
