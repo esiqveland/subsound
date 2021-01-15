@@ -1,5 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:subsound/screens/browsing/starred_page.dart';
 import 'package:subsound/screens/login/albums_page.dart';
 import 'package:subsound/screens/login/artists_page.dart';
 import 'package:subsound/state/appstate.dart';
@@ -9,12 +10,20 @@ import 'myscaffold.dart';
 class HomeScreen extends StatelessWidget {
   static final routeName = "/home";
 
+  final int initialTabIndex;
+
+  const HomeScreen({
+    Key key,
+    this.initialTabIndex,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, ServerData>(
       converter: (st) => st.state.loginState,
       builder: (context, state) => DefaultTabController(
-        length: 2,
+        length: 3,
+        initialIndex: initialTabIndex ?? 0,
         child: MyScaffold(
           appBar: AppBar(
             bottom: TabBar(
@@ -26,6 +35,9 @@ class HomeScreen extends StatelessWidget {
                 Tab(
                   text: "Albums",
                 ),
+                Tab(
+                  text: "Starred",
+                ),
                 //Tab(icon: Icon(Icons.add_shopping_cart)),
               ],
             ),
@@ -35,6 +47,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Center(child: ArtistsPage(ctx: state.toClient())),
                 Center(child: AlbumsPage(ctx: state.toClient())),
+                Center(child: StarredPage(ctx: state.toClient())),
               ],
             ),
           ),
