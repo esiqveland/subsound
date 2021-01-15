@@ -313,8 +313,10 @@ class ArtistTitle extends StatelessWidget {
 
     return Text(
       artistName ?? "Bklbjxcjblkvcxjblkvcxjkl",
-      style: theme.textTheme.subtitle1
-          .copyWith(fontSize: 12.0, color: Colors.white70),
+      style: theme.textTheme.subtitle1.copyWith(
+        fontSize: 12.0,
+        color: Colors.white70,
+      ),
     );
   }
 }
