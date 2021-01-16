@@ -6,7 +6,12 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/playerstate.dart';
+import 'package:subsound/subsonic/base_request.dart';
 import 'package:subsound/subsonic/context.dart';
+import 'package:subsound/subsonic/requests/get_starred2.dart';
+import 'package:uuid/uuid.dart';
+
+final uuid = Uuid();
 
 Store<AppState> createStore() => Store<AppState>(
       initialState: AppState.initialState(),
@@ -80,6 +85,29 @@ class RestoreServerState extends ReduxAction<AppState> {
   }
 }
 
+class DataState {
+  final GetStarred2Result starred2;
+
+  DataState({this.starred2});
+
+  DataState copy({
+    GetStarred2Result starred2,
+  }) =>
+      DataState(
+        starred2: starred2 ?? this.starred2,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DataState &&
+          runtimeType == other.runtimeType &&
+          starred2 == other.starred2;
+
+  @override
+  int get hashCode => starred2.hashCode;
+}
+
 enum StartUpState { loading, done }
 
 class AppState {
@@ -88,6 +116,7 @@ class AppState {
   final UserState userState;
   final TodoState todoState;
   final PlayerState playerState;
+  final DataState dataState;
 
   AppState({
     this.startUpState,
@@ -95,6 +124,7 @@ class AppState {
     this.userState,
     this.todoState,
     this.playerState,
+    this.dataState,
   });
 
   AppState copy({
@@ -103,6 +133,7 @@ class AppState {
     UserState userState,
     TodoState todoState,
     PlayerState playerState,
+    DataState dataState,
   }) {
     return AppState(
       startUpState: startUpState ?? this.startUpState,
@@ -110,6 +141,7 @@ class AppState {
       userState: userState ?? this.userState,
       todoState: todoState ?? this.todoState,
       playerState: playerState ?? this.playerState,
+      dataState: dataState ?? this.dataState,
     );
   }
 
@@ -231,4 +263,38 @@ class DisplayError extends ReduxAction<AppState> {
 
   @override
   Future<AppState> reduce() async {}
+}
+
+class GetStarred2Action extends ReduxAction<AppState> {
+  @override
+  Future<AppState> reduce() async {
+    final subsonicResponse =
+        await GetStarred2().run(state.loginState.toClient());
+    return state.copy(
+      dataState: state.dataState.copy(
+        starred2: subsonicResponse.data,
+      ),
+    );
+  }
+}
+
+class RunRequest<T> extends ReduxAction<AppState> {
+  final String requestId;
+  final BaseRequest<T> req;
+
+  RunRequest({
+    String requestId,
+    this.req,
+  }) : this.requestId = requestId ?? uuid.v1();
+
+  @override
+  Future<AppState> reduce() async {
+    final subsonicResponse =
+        await GetStarred2().run(state.loginState.toClient());
+    return state.copy(
+      dataState: state.dataState.copy(
+        starred2: subsonicResponse.data,
+      ),
+    );
+  }
 }
