@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:subsound/components/covert_art.dart';
+import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
@@ -153,6 +154,7 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
       songTitle: state.playerState.currentSong?.songTitle,
       artistTitle: state.playerState.currentSong?.artist,
       albumTitle: state.playerState.currentSong?.album,
+      albumId: state.playerState.currentSong?.albumId,
       coverArtLink: state.playerState.currentSong?.coverArtLink,
       coverArtId: state.playerState.currentSong?.coverArtId,
       duration: state.playerState.duration,
@@ -169,6 +171,7 @@ class PlayerViewModel extends Vm {
   final String songTitle;
   final String artistTitle;
   final String albumTitle;
+  final String albumId;
   final String coverArtLink;
   final String coverArtId;
   final Duration duration;
@@ -182,6 +185,7 @@ class PlayerViewModel extends Vm {
     @required this.songTitle,
     @required this.artistTitle,
     @required this.albumTitle,
+    @required this.albumId,
     @required this.coverArtLink,
     @required this.coverArtId,
     @required this.duration,
@@ -194,6 +198,7 @@ class PlayerViewModel extends Vm {
           artistTitle,
           songTitle,
           albumTitle,
+          albumId,
           coverArtLink,
           coverArtId,
           duration,
@@ -231,15 +236,30 @@ class PlayerView extends StatelessWidget {
                     maxWidth: MediaQuery.of(context).size.width * 0.8,
                   ),
                   child: SizedBox.expand(
-                    child: FittedBox(
-                      child: vm.coverArtLink != null
-                          ? CoverArtImage(
-                              vm.coverArtLink,
-                              // height: 250,
-                              // width: 250,
-                              fit: BoxFit.cover,
-                            )
-                          : Icon(Icons.album),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (vm.albumId != null) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AlbumScreen(albumId: vm.albumId),
+                            ),
+                          );
+                        }
+                      },
+                      child: Hero(
+                        tag: vm.coverArtId,
+                        child: FittedBox(
+                          child: vm.coverArtLink != null
+                              ? CoverArtImage(
+                                  vm.coverArtLink,
+                                  // height: 250,
+                                  // width: 250,
+                                  fit: BoxFit.cover,
+                                )
+                              : Icon(Icons.album),
+                        ),
+                      ),
                     ),
                   ),
                 ),
