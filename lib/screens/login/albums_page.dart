@@ -104,17 +104,23 @@ class AlbumsPageState extends State<AlbumsPage> {
     _controller = new ScrollController();
     isLoading = true;
     initialLoad = load(offset: 0, pageSize: pageSize).then((value) {
+      if (!this.mounted) {
+        return value;
+      }
       setState(() {
         isLoading = false;
         _albumList.addAll(value);
       });
       return value;
     });
-    initialLoad.whenComplete(() => {
-          setState(() {
-            isLoading = false;
-          })
-        });
+    initialLoad.whenComplete(() {
+      if (!this.mounted) {
+        return;
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
