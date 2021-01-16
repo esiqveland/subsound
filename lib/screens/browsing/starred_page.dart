@@ -3,6 +3,7 @@ import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
+import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 
 class StarredPage extends StatefulWidget {
@@ -44,6 +45,34 @@ class StarredSongRow extends StatelessWidget {
   }
 }
 
+class StarredAlbumRow extends StatelessWidget {
+  final AlbumResultSimple album;
+  final Function(AlbumResultSimple) onTap;
+
+  const StarredAlbumRow({
+    Key key,
+    @required this.album,
+    @required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () {
+        this.onTap(album);
+      },
+      leading: CoverArtImage(
+        album.coverArtLink,
+        id: album.coverArtId,
+        width: 48.0,
+        height: 48.0,
+      ),
+      title: Text(album.title),
+      subtitle: Text(album.artistName),
+    );
+  }
+}
+
 class StarredListView extends StatelessWidget {
   final SubsonicContext ctx;
   final GetStarred2Result data;
@@ -57,25 +86,31 @@ class StarredListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //final itemCount = data.albums.length + data.songs.length;
-    final itemCount = data.songs.length;
+    // final itemCount = data.songs.length;
+    final itemCount = data.albums.length;
     return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      itemCount: itemCount,
-      itemBuilder: (context, idx) => Column(
-        children: [
-          StarredSongRow(
-            songResult: data.songs[idx],
-            onTap: (SongResult song) {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => AlbumScreen(
-                  albumId: song.albumId,
-                ),
-              ));
-            },
-          ),
-        ],
-      ),
-    );
+        physics: BouncingScrollPhysics(),
+        itemCount: itemCount,
+        // itemBuilder: (context, idx) => StarredSongRow(
+        //       songResult: data.songs[idx],
+        //       onTap: (SongResult song) {
+        //         Navigator.of(context).push(MaterialPageRoute(
+        //           builder: (context) => AlbumScreen(
+        //             albumId: song.albumId,
+        //           ),
+        //         ));
+        //       },
+        //     ));
+        itemBuilder: (context, idx) => StarredAlbumRow(
+              album: data.albums[idx],
+              onTap: (AlbumResultSimple album) {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AlbumScreen(
+                    albumId: album.id,
+                  ),
+                ));
+              },
+            ));
   }
 }
 
