@@ -190,12 +190,15 @@ class AlbumView extends StatelessWidget {
                 children: [
                   ConstrainedBox(
                     constraints: BoxConstraints.tightFor(width: 450.0),
-                    child: CoverArtImage(
-                      album.coverArtLink,
-                      id: album.coverArtId,
-                      height: expandedHeight * 1.6,
-                      width: expandedHeight * 1.6,
-                      fit: BoxFit.cover,
+                    child: Hero(
+                      tag: album.coverArtId,
+                      child: CoverArtImage(
+                        album.coverArtLink,
+                        id: album.coverArtId,
+                        height: expandedHeight * 1.6,
+                        width: expandedHeight * 1.6,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   const DecoratedBox(

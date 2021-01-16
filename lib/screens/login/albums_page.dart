@@ -33,11 +33,14 @@ class AlbumRow extends StatelessWidget {
       onTap: () {
         this.onTap(album);
       },
-      leading: CoverArtImage(
-        album.coverArtLink,
-        id: album.coverArtId,
-        width: 48.0,
-        height: 48.0,
+      leading: Hero(
+        tag: album.coverArtId,
+        child: CoverArtImage(
+          album.coverArtLink,
+          id: album.coverArtId,
+          width: 48.0,
+          height: 48.0,
+        ),
       ),
       title: Text(album.title),
       subtitle: Text(album.artist),
