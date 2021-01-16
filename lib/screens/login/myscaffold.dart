@@ -185,6 +185,16 @@ class _AppScaffold extends StatelessWidget {
                               )));
                     },
                   ),
+                  ListTile(
+                    leading: Icon(Icons.star),
+                    title: Text("Starred"),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => HomeScreen(
+                                initialTabIndex: 2,
+                              )));
+                    },
+                  ),
                   Divider(),
                   ListTile(
                     leading: Icon(Icons.settings),
