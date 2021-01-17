@@ -17,6 +17,7 @@ final Map<String, WidgetBuilder> appRoutes = {
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   NavigateAction.setNavigatorKey(navigatorKey);
 
   final Store<AppState> store = createStore();
