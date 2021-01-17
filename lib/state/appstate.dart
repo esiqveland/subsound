@@ -96,6 +96,8 @@ class DataState {
         starred2: starred2 ?? this.starred2,
       );
 
+  static DataState initialState() => DataState();
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -150,6 +152,7 @@ class AppState {
         userState: UserState.initialState(),
         todoState: TodoState.initialState(),
         playerState: PlayerState.initialState(),
+        dataState: DataState.initialState(),
       );
 
   @override
@@ -161,7 +164,8 @@ class AppState {
           loginState == other.loginState &&
           userState == other.userState &&
           todoState == other.todoState &&
-          playerState == other.playerState;
+          playerState == other.playerState &&
+          dataState == other.dataState;
 
   @override
   int get hashCode =>
@@ -169,7 +173,8 @@ class AppState {
       loginState.hashCode ^
       userState.hashCode ^
       todoState.hashCode ^
-      playerState.hashCode;
+      playerState.hashCode ^
+      dataState.hashCode;
 }
 
 class Todo {}
