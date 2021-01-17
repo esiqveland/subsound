@@ -18,8 +18,20 @@ class PlayerPositionChanged extends PlayerActions {
   PlayerPositionChanged(this.position);
 
   @override
-  AppState reduce() =>
-      state.copy(playerState: state.playerState.copy(position: position));
+  AppState reduce() {
+    if (position == state.playerState.position) {
+      return state;
+    }
+    if (position > state.playerState.duration) {
+      return state.copy(
+        playerState:
+            state.playerState.copy(position: state.playerState.duration),
+      );
+    }
+    return state.copy(
+      playerState: state.playerState.copy(position: position),
+    );
+  }
 }
 
 class PlayerCommandPlay extends PlayerActions {
@@ -57,14 +69,30 @@ class PlayerCommandSeekTo extends PlayerActions {
 }
 
 class PlayerDurationChanged extends PlayerActions {
-  final Duration duration;
+  final Duration nextDuration;
 
-  PlayerDurationChanged(this.duration);
+  PlayerDurationChanged(this.nextDuration);
 
   @override
-  AppState reduce() => state.copy(
-        playerState: state.playerState.copy(duration: duration),
+  AppState reduce() {
+    if (state.playerState.duration?.inMilliseconds !=
+        nextDuration.inMilliseconds) {
+      if (nextDuration < state.playerState.position) {
+        return state.copy(
+          playerState: state.playerState.copy(
+            position: nextDuration,
+            duration: nextDuration,
+          ),
+        );
+      }
+      return state.copy(
+        playerState: state.playerState.copy(
+          duration: nextDuration,
+        ),
       );
+    }
+    return state;
+  }
 }
 
 class PlayerStateChanged extends PlayerActions {
