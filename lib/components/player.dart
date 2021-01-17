@@ -479,32 +479,54 @@ class CachedSliderState extends State<CachedSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return Slider.adaptive(
-      activeColor: Colors.tealAccent,
-      label: labelOverride ?? widget.label,
-      min: 0.0,
-      max: widget.max.toDouble(),
-      value: valueOverride ?? widget.value.toDouble(),
-      divisions: widget.divisions,
-      onChangeEnd: (double newValue) {
-        final nextValue = newValue.round();
-        widget.onChanged(nextValue);
-        this.setState(() {
-          this.valueOverride = null;
-          this.labelOverride = null;
-        });
-      },
-      onChanged: (double newValue) {
-        final nextValue = newValue.round();
-        this.setState(() {
-          this.valueOverride = newValue;
-          this.labelOverride = formatDuration(Duration(seconds: nextValue));
-        });
-      },
-      semanticFormatterCallback: (double newValue) {
-        return formatDuration(Duration(seconds: newValue.round()));
-      },
+    return SliderTheme(
+      data: SliderThemeData(
+        trackShape: CustomTrackShape(),
+      ),
+      child: Slider.adaptive(
+        activeColor: Colors.tealAccent,
+        label: labelOverride ?? widget.label,
+        min: 0.0,
+        max: widget.max.toDouble(),
+        value: valueOverride ?? widget.value.toDouble(),
+        divisions: widget.divisions,
+        onChangeEnd: (double newValue) {
+          final nextValue = newValue.round();
+          widget.onChanged(nextValue);
+          this.setState(() {
+            this.valueOverride = null;
+            this.labelOverride = null;
+          });
+        },
+        onChanged: (double newValue) {
+          final nextValue = newValue.round();
+          this.setState(() {
+            this.valueOverride = newValue;
+            this.labelOverride = formatDuration(Duration(seconds: nextValue));
+          });
+        },
+        semanticFormatterCallback: (double newValue) {
+          return formatDuration(Duration(seconds: newValue.round()));
+        },
+      ),
     );
+  }
+}
+
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  Rect getPreferredRect({
+    @required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    @required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double trackHeight = sliderTheme.trackHeight;
+    final double trackLeft = offset.dx;
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
   }
 }
 
@@ -556,7 +578,7 @@ class ProgressBar extends StatelessWidget {
     final divisions = total.inSeconds < 1 ? 1 : total.inSeconds;
     final value = position?.inSeconds ?? 1;
 
-    return Container(
+    return SizedBox(
       width: size,
       child: Column(
         children: [
@@ -565,6 +587,7 @@ class ProgressBar extends StatelessWidget {
             value: value,
             max: total.inSeconds,
             divisions: divisions,
+            width: size,
             onChanged: onChanged,
           ),
           Row(
