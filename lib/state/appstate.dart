@@ -28,6 +28,9 @@ class StateLogger implements StateObserver<AppState> {
     AppState stateEnd,
     int dispatchCount,
   ) {
+    // log('action=$action');
+    // log('current=$stateIni');
+    log('next=$stateEnd');
   }
 }
 
