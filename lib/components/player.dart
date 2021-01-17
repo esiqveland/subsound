@@ -5,9 +5,11 @@ import 'package:flutter/widgets.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
+import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
+import 'package:subsound/subsonic/requests/star.dart';
 import 'package:subsound/utils/duration.dart';
 
 class PlayerSong {
@@ -76,6 +78,27 @@ class PlayerSong {
       coverArtLink.hashCode ^
       songUrl.hashCode ^
       isStarred.hashCode;
+
+  PlayerSong copy({
+    bool isStarred,
+  }) =>
+      PlayerSong(
+        id: id,
+        songTitle: songTitle,
+        artist: artist,
+        album: album,
+        artistId: artistId,
+        albumId: albumId,
+        coverArtId: coverArtId,
+        coverArtLink: coverArtLink,
+        songUrl: songUrl,
+        isStarred: isStarred ?? this.isStarred,
+      );
+
+  @override
+  String toString() {
+    return 'PlayerSong{id: $id, songTitle: $songTitle, album: $album, artist: $artist, artistId: $artistId, albumId: $albumId, coverArtId: $coverArtId, coverArtLink: $coverArtLink, songUrl: $songUrl, isStarred: $isStarred}';
+  }
 }
 
 enum PlayerStates { stopped, playing, paused, buffering }
@@ -143,6 +166,11 @@ class PlayerState {
       queue.hashCode ^
       duration.hashCode ^
       position.hashCode;
+
+  @override
+  String toString() {
+    return 'PlayerState{current: $current, currentSong: $currentSong, queue: $queue, duration: $duration, position: $position}';
+  }
 }
 
 class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
@@ -151,15 +179,19 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
   @override
   PlayerViewModel fromStore() {
     return PlayerViewModel(
+      songId: state.playerState.currentSong?.id,
       songTitle: state.playerState.currentSong?.songTitle,
       artistTitle: state.playerState.currentSong?.artist,
       albumTitle: state.playerState.currentSong?.album,
       albumId: state.playerState.currentSong?.albumId,
       coverArtLink: state.playerState.currentSong?.coverArtLink,
       coverArtId: state.playerState.currentSong?.coverArtId,
+      isStarred: state.playerState.currentSong?.isStarred,
       duration: state.playerState.duration,
       position: state.playerState.position,
       playerState: state.playerState.current,
+      onStar: (String id) => dispatch(StarIdCommand(SongId(songId: id))),
+      onUnstar: (String id) => dispatch(UnstarIdCommand(SongId(songId: id))),
       onPlay: () => dispatch(PlayerCommandPlay()),
       onPause: () => dispatch(PlayerCommandPause()),
       onSeek: (val) => dispatch(PlayerCommandSeekTo(val)),
@@ -168,39 +200,49 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
 }
 
 class PlayerViewModel extends Vm {
+  final String songId;
   final String songTitle;
   final String artistTitle;
   final String albumTitle;
   final String albumId;
   final String coverArtLink;
   final String coverArtId;
+  final bool isStarred;
   final Duration duration;
   final Duration position;
   final PlayerStates playerState;
+  final Function(String) onStar;
+  final Function(String) onUnstar;
   final Function onPlay;
   final Function onPause;
   final Function(int) onSeek;
 
   PlayerViewModel({
+    @required this.songId,
     @required this.songTitle,
     @required this.artistTitle,
     @required this.albumTitle,
     @required this.albumId,
     @required this.coverArtLink,
     @required this.coverArtId,
+    @required this.isStarred,
     @required this.duration,
     @required this.position,
     @required this.playerState,
+    @required this.onStar,
+    @required this.onUnstar,
     @required this.onPlay,
     @required this.onPause,
     @required this.onSeek,
   }) : super(equals: [
-          artistTitle,
+          songId,
           songTitle,
+          artistTitle,
           albumTitle,
           albumId,
           coverArtLink,
           coverArtId,
+          isStarred,
           duration,
           position,
           playerState,
@@ -266,23 +308,51 @@ class PlayerView extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SongTitle(songTitle: vm.songTitle),
-                  ],
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.67,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SongTitle(songTitle: vm.songTitle),
+                            SizedBox(height: 10.0),
+                            ArtistTitle(artistName: vm.artistTitle),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          if (vm.isStarred) {
+                            vm.onUnstar(vm.songId);
+                          } else {
+                            vm.onStar(vm.songId);
+                          }
+                        },
+                        child: Icon(
+                          vm.isStarred
+                              ? Icons.star
+                              : Icons.star_border_outlined,
+                          color: Theme.of(context).accentColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 10.0),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ArtistTitle(artistName: vm.artistTitle),
-                  ],
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    PlayerSlider(playerState: vm, size: 300.0),
+                    PlayerSlider(
+                      playerState: vm,
+                      size: MediaQuery.of(context).size.width * 0.8,
+                    ),
                   ],
                 ),
                 Row(
@@ -316,8 +386,9 @@ class SongTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      songTitle ?? 'Fdasfdsafdsafdsafdsz',
+      songTitle ?? '',
       style: TextStyle(fontSize: 18.0),
+      overflow: TextOverflow.fade,
     );
   }
 }
@@ -332,11 +403,12 @@ class ArtistTitle extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Text(
-      artistName ?? "Bklbjxcjblkvcxjblkvcxjkl",
+      artistName ?? "",
       style: theme.textTheme.subtitle1.copyWith(
         fontSize: 12.0,
         color: Colors.white70,
       ),
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
@@ -441,6 +513,7 @@ class CachedSlider extends StatefulWidget {
   final int value;
   final int max;
   final int divisions;
+  final double width;
   final Function(int) onChanged;
 
   const CachedSlider({
@@ -449,6 +522,7 @@ class CachedSlider extends StatefulWidget {
     this.value,
     this.max,
     this.divisions,
+    this.width,
     this.onChanged,
   }) : super(key: key);
 
