@@ -145,6 +145,8 @@ class PlayerState {
   static initialState() => PlayerState(
         current: PlayerStates.stopped,
         currentSong: null,
+        duration: Duration.zero,
+        position: Duration.zero,
         queue: [],
       );
 

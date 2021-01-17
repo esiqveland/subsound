@@ -128,14 +128,22 @@ class PlayerCommandPlayUrl extends PlayerActions {
 class StartupPlayer extends PlayerActions {
   @override
   Future<AppState> reduce() async {
-    PlayerActions._player.onAudioPositionChanged.listen((event) {
-      if (state.playerState.position?.inSeconds != event.inSeconds) {
-        dispatch(PlayerPositionChanged(event));
+    PlayerActions._player.onAudioPositionChanged.listen((nextPosition) {
+      if (state.playerState.position?.inSeconds != nextPosition.inSeconds) {
+        if (nextPosition > state.playerState.duration) {
+          dispatch(PlayerPositionChanged(state.playerState.duration));
+        } else {
+          dispatch(PlayerPositionChanged(nextPosition));
+        }
       }
     });
-    PlayerActions._player.onDurationChanged.listen((event) {
-      if (state.playerState.duration?.inSeconds != event.inSeconds) {
-        dispatch(PlayerDurationChanged(event));
+    PlayerActions._player.onDurationChanged.listen((nextDuration) {
+      if (state.playerState.duration?.inMilliseconds !=
+          nextDuration.inMilliseconds) {
+        if (nextDuration < state.playerState.position) {
+          dispatch(PlayerPositionChanged(nextDuration));
+        }
+        dispatch(PlayerDurationChanged(nextDuration));
       }
     });
     PlayerActions._player.onPlayerError.listen((msg) {

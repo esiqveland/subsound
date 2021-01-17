@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:collection/collection.dart';
@@ -21,8 +22,13 @@ Store<AppState> createStore() => Store<AppState>(
 
 class StateLogger implements StateObserver<AppState> {
   @override
-  void observe(ReduxAction<AppState> action, AppState stateIni,
-      AppState stateEnd, int dispatchCount) {}
+  void observe(
+    ReduxAction<AppState> action,
+    AppState stateIni,
+    AppState stateEnd,
+    int dispatchCount,
+  ) {
+  }
 }
 
 class MyErrorObserver<St> implements ErrorObserver<St> {
@@ -175,6 +181,11 @@ class AppState {
       todoState.hashCode ^
       playerState.hashCode ^
       dataState.hashCode;
+
+  @override
+  String toString() {
+    return 'AppState{startUpState: $startUpState, loginState: $loginState, userState: $userState, todoState: $todoState, playerState: $playerState, dataState: $dataState}';
+  }
 }
 
 class Todo {}
