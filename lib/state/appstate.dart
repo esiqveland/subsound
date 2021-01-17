@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/playerstate.dart';
-import 'package:subsound/subsonic/base_request.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:uuid/uuid.dart';
@@ -254,47 +253,4 @@ class ServerData {
           uri == other.uri &&
           username == other.username &&
           password == other.password;
-}
-
-class DisplayError extends ReduxAction<AppState> {
-  final String errorMessage;
-
-  DisplayError(this.errorMessage);
-
-  @override
-  Future<AppState> reduce() async {}
-}
-
-class GetStarred2Action extends ReduxAction<AppState> {
-  @override
-  Future<AppState> reduce() async {
-    final subsonicResponse =
-        await GetStarred2().run(state.loginState.toClient());
-    return state.copy(
-      dataState: state.dataState.copy(
-        starred2: subsonicResponse.data,
-      ),
-    );
-  }
-}
-
-class RunRequest<T> extends ReduxAction<AppState> {
-  final String requestId;
-  final BaseRequest<T> req;
-
-  RunRequest({
-    String requestId,
-    this.req,
-  }) : this.requestId = requestId ?? uuid.v1();
-
-  @override
-  Future<AppState> reduce() async {
-    final subsonicResponse =
-        await GetStarred2().run(state.loginState.toClient());
-    return state.copy(
-      dataState: state.dataState.copy(
-        starred2: subsonicResponse.data,
-      ),
-    );
-  }
 }
