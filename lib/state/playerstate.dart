@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -61,6 +63,10 @@ class PlayerCommandSeekTo extends PlayerActions {
   @override
   Future<AppState> reduce() async {
     final pos = Duration(seconds: seekToPosition);
+    if (pos > state.playerState.duration) {
+      log("SeekTo invalid position=$pos dur=${state.playerState.duration}");
+      return state;
+    }
     await PlayerActions._player.seek(pos);
     return state.copy(
       playerState: state.playerState.copy(position: pos),
