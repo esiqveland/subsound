@@ -23,8 +23,9 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
 
   @override
   MiniPlayerModel fromStore() {
-    final pos = state.playerState.position?.inSeconds ?? 0;
-    final dur = state.playerState.duration?.inSeconds ?? 1;
+    final pos = state.playerState.position?.inMilliseconds ?? 0;
+    final durSafe = state.playerState.duration?.inMilliseconds ?? 1;
+    final dur = durSafe == 0 ? 1 : durSafe;
     final playbackProgress = pos / dur;
 
     return MiniPlayerModel(
