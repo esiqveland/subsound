@@ -28,7 +28,7 @@ dependencies:
   path_provider: ^1.6.24
   async_redux: ^6.0.3
   #audioplayer: ^0.8.1
-  audioplayers: 0.17.0
+  audioplayers: 0.17.2
   flutter_sound: ^7.5.0
   cached_network_image: ^2.5.0
   flutter_sticky_header: ^0.5.0
