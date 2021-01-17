@@ -2,6 +2,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:subsound/components/player.dart';
+import 'package:subsound/state/errors.dart';
 
 import 'appstate.dart';
 
