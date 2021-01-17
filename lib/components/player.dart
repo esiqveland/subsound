@@ -22,6 +22,7 @@ class PlayerSong {
   final String coverArtId;
   final String coverArtLink;
   final String songUrl;
+  final Duration duration;
   final bool isStarred;
 
   PlayerSong({
@@ -34,6 +35,7 @@ class PlayerSong {
     this.coverArtId,
     this.coverArtLink,
     this.songUrl,
+    this.duration,
     this.isStarred = false,
   });
 
@@ -47,6 +49,7 @@ class PlayerSong {
         coverArtId: s.coverArtId,
         coverArtLink: s.coverArtLink,
         songUrl: s.playUrl,
+        duration: s.duration,
         isStarred: false,
       );
 
@@ -64,6 +67,7 @@ class PlayerSong {
           coverArtId == other.coverArtId &&
           coverArtLink == other.coverArtLink &&
           songUrl == other.songUrl &&
+          duration == other.duration &&
           isStarred == other.isStarred;
 
   @override
@@ -77,6 +81,7 @@ class PlayerSong {
       coverArtId.hashCode ^
       coverArtLink.hashCode ^
       songUrl.hashCode ^
+      duration.hashCode ^
       isStarred.hashCode;
 
   PlayerSong copy({
@@ -92,6 +97,7 @@ class PlayerSong {
         coverArtId: coverArtId,
         coverArtLink: coverArtLink,
         songUrl: songUrl,
+        duration: duration,
         isStarred: isStarred ?? this.isStarred,
       );
 
