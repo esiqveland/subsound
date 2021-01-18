@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
@@ -103,17 +104,19 @@ class MyScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, StartUpState>(
-      converter: (state) => state.state.startUpState,
-      builder: (context, state) => state == StartUpState.loading
-          ? _SplashScreen()
-          : _AppScaffold(
-              title: title,
-              body: body,
-              appBar: appBar,
-              disableAppBar: disableAppBar,
-              disableBottomBar: disableBottomBar,
-            ),
+    return AudioServiceWidget(
+      child: StoreConnector<AppState, StartUpState>(
+        converter: (state) => state.state.startUpState,
+        builder: (context, state) => state == StartUpState.loading
+            ? _SplashScreen()
+            : _AppScaffold(
+                title: title,
+                body: body,
+                appBar: appBar,
+                disableAppBar: disableAppBar,
+                disableBottomBar: disableBottomBar,
+              ),
+      ),
     );
   }
 }
