@@ -122,28 +122,37 @@ class MyScaffold extends StatelessWidget {
   }
 }
 
-class _AppScaffoldState extends State<_AppScaffold> {
-  int currentIndex;
+class _AppScaffold extends StatelessWidget {
+  final Widget appBar;
+  final WidgetBuilder body;
+  final Widget title;
+  final bool disableAppBar;
+  final bool disableBottomBar;
 
-  _AppScaffoldState({
-    this.currentIndex = 0,
-  });
+  _AppScaffold({
+    Key key,
+    this.body,
+    this.appBar,
+    this.title,
+    this.disableAppBar = false,
+    this.disableBottomBar = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.disableAppBar
+      appBar: disableAppBar
           ? null
-          : widget.appBar ??
+          : appBar ??
               AppBar(
-                title: widget.title,
+                title: title,
               ),
       body: Container(
-        padding: widget.disableBottomBar
+        padding: disableBottomBar
             ? null
             : EdgeInsets.only(bottom: PlayerBottomBarSize),
         child: Builder(
-          builder: widget.body,
+          builder: body,
         ),
       ),
       drawer: Navigator.of(context).canPop()
@@ -201,42 +210,11 @@ class _AppScaffoldState extends State<_AppScaffold> {
                 ],
               ),
             ),
-      bottomSheet: widget.disableBottomBar
+      bottomSheet: disableBottomBar
           ? null
           : PlayerBottomBar(height: PlayerBottomBarSize),
-      bottomNavigationBar: BottomNavigationBar(
-        items: navBarItemsList,
-        currentIndex: currentIndex,
-        onTap: (idx) {
-          setState(() {
-            this.currentIndex = idx;
-          });
-          navBarItems[idx].handler(context);
-        },
-      ),
+      bottomNavigationBar: BottomNavigationBarWidget(navItems: navBarItems),
     );
-  }
-}
-
-class _AppScaffold extends StatefulWidget {
-  final Widget appBar;
-  final WidgetBuilder body;
-  final Widget title;
-  final bool disableAppBar;
-  final bool disableBottomBar;
-
-  _AppScaffold({
-    Key key,
-    this.body,
-    this.appBar,
-    this.title,
-    this.disableAppBar = false,
-    this.disableBottomBar = false,
-  }) : super(key: key);
-
-  @override
-  _AppScaffoldState createState() {
-    return _AppScaffoldState();
   }
 }
 
