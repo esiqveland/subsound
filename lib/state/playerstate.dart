@@ -31,16 +31,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // Broadcast that we're connecting, and what controls are available.
     AudioServiceBackground.setState(
       controls: [MediaControl.pause, MediaControl.play],
-      playing: false,
+      playing: _player.playing,
       processingState: AudioProcessingState.ready,
     );
-    // Broadcast that we're playing, and what controls are available.
-    AudioServiceBackground.setState(
-      controls: [MediaControl.pause, MediaControl.stop],
-      playing: false,
-      processingState: AudioProcessingState.ready,
-    );
-    //final session = await AudioSession.instance;
     // Handle unplugged headphones.
     // session.becomingNoisyEventStream.listen((_) {
     //   if (_playing) onPause();
@@ -89,6 +82,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         ],
       );
     });
+
+    _broadcastState();
   }
 
   /// Broadcasts the current state to all clients.
@@ -97,7 +92,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
       controls: [
         MediaControl.skipToPrevious,
         if (_player.playing) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
         MediaControl.skipToNext,
       ],
       systemActions: [
@@ -145,12 +139,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
   // Future<Function> onPlayFromMediaId(String mediaId) {}
 
   @override
-  Future<Function> onPlayMediaItem(MediaItem mediaItem) async {
+  Future<void> onPlayMediaItem(MediaItem mediaItem) async {
     final dur = await _player.setUrl(mediaItem.id);
+    await AudioServiceBackground.setMediaItem(mediaItem);
+    await _broadcastState();
   }
 
   @override
-  Future<Function> onTaskRemoved() {}
+  Future<void> onTaskRemoved() async {
+    ///   if (!AudioServiceBackground.state.playing) {
+    ///     await onStop();
+    ///   }
+    await super.onTaskRemoved();
+  }
 
   @override
   onPlay() => _player.play();
@@ -183,6 +184,9 @@ abstract class PlayerActions extends ReduxAction<AppState> {
     if (!AudioService.connected) {
       await dispatchFuture(StartupPlayer());
     }
+    if (!AudioService.running) {
+      await dispatchFuture(StartupPlayer());
+    }
   }
 }
 
@@ -213,7 +217,9 @@ class PlayerCommandPlay extends PlayerActions {
   Future<AppState> reduce() async {
     AudioService.play();
     return state.copy(
-      playerState: state.playerState.copy(current: PlayerStates.playing),
+      playerState: state.playerState.copy(
+        current: PlayerStates.playing,
+      ),
     );
   }
 }
@@ -298,6 +304,8 @@ class PlayerCommandPlaySong extends PlayerActions {
       artist: song?.artist,
       album: song?.album,
       title: song?.songTitle,
+      displayTitle: song?.songTitle,
+      displaySubtitle: song?.artist,
       artUri: song?.coverArtLink,
       duration: song?.duration ?? state.playerState.duration,
     ));
@@ -328,11 +336,12 @@ class StartupPlayer extends ReduxAction<AppState> {
       androidEnableQueue: false,
 
       // Enable this if you want the Android service to exit the foreground state on pause.
-      //androidStopForegroundOnPause: true,
+      androidStopForegroundOnPause: false,
+      androidNotificationClickStartsActivity: true,
+      androidShowNotificationBadge: false,
       androidNotificationColor: 0xFF2196f3,
       androidNotificationIcon: 'mipmap/ic_launcher',
       //params: DownloadAudioTask.createStartParams(downloadManager),
-      androidStopForegroundOnPause: false,
     );
     log('StartupPlayer: success=$success');
 
@@ -374,7 +383,6 @@ class StartupPlayer extends ReduxAction<AppState> {
       if (item?.duration != null) {
         dispatch(PlayerDurationChanged(item.duration));
       }
-      dispatch(PlayerStateChanged(PlayerStates.stopped));
     });
     // PlayerActions._player.onPlayerError.listen((msg) {
     //   print('audioPlayer onError : $msg');
