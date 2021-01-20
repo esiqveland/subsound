@@ -51,6 +51,7 @@ final navBarItems = [
     },
   )
 ];
+final navBarItemsList = navBarItems.map((e) => e.item).toList();
 
 class BottomNavigationBarWidget extends StatefulWidget {
   final List<NavItems> navItems;
