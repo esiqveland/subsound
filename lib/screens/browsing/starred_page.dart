@@ -18,29 +18,37 @@ class StarredPage extends StatefulWidget {
 }
 
 class StarredSongRow extends StatelessWidget {
-  final SongResult songResult;
-  final Function(SongResult) onTap;
+  final SongResult song;
+  final Function(SongResult) onTapRow;
+  final Function(SongResult) onTapCover;
 
   const StarredSongRow({
     Key key,
-    @required this.songResult,
-    @required this.onTap,
+    @required this.song,
+    @required this.onTapRow,
+    @required this.onTapCover,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      dense: true,
       onTap: () {
-        this.onTap(songResult);
+        this.onTapRow(song);
       },
-      leading: CoverArtImage(
-        songResult.coverArtLink,
-        id: songResult.coverArtId,
-        width: 48.0,
-        height: 48.0,
+      leading: GestureDetector(
+        onTap: () {
+          this.onTapCover(song);
+        },
+        child: CoverArtImage(
+          song.coverArtLink,
+          id: song.coverArtId,
+          width: 48.0,
+          height: 48.0,
+        ),
       ),
-      title: Text(songResult.title),
-      subtitle: Text(songResult.artistName),
+      title: Text(song.title),
+      subtitle: Text(song.artistName),
     );
   }
 }
@@ -57,6 +65,10 @@ class StarredAlbumRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return Container(
+    //   height: 100.0,
+    //   child: Text(album.name),
+    // );
     return ListTile(
       onTap: () {
         this.onTap(album);
@@ -64,8 +76,8 @@ class StarredAlbumRow extends StatelessWidget {
       leading: CoverArtImage(
         album.coverArtLink,
         id: album.coverArtId,
-        width: 48.0,
-        height: 48.0,
+        width: 72.0,
+        height: 72.0,
       ),
       title: Text(album.title),
       subtitle: Text(album.artistName),
@@ -73,9 +85,24 @@ class StarredAlbumRow extends StatelessWidget {
   }
 }
 
+class StarredItem {
+  final SongResult song;
+  final AlbumResultSimple album;
+
+  StarredItem({this.song, this.album});
+
+  SongResult getSong() {
+    return song;
+  }
+
+  AlbumResultSimple getAlbum() {
+    return album;
+  }
+}
+
 class StarredListView extends StatelessWidget {
   final SubsonicContext ctx;
-  final GetStarred2Result data;
+  final List<StarredItem> data;
 
   const StarredListView({
     Key key,
@@ -87,30 +114,55 @@ class StarredListView extends StatelessWidget {
   Widget build(BuildContext context) {
     //final itemCount = data.albums.length + data.songs.length;
     // final itemCount = data.songs.length;
-    final itemCount = data.albums.length;
+    final itemCount = data.length;
     return ListView.builder(
-        physics: BouncingScrollPhysics(),
-        itemCount: itemCount,
-        // itemBuilder: (context, idx) => StarredSongRow(
-        //       songResult: data.songs[idx],
-        //       onTap: (SongResult song) {
-        //         Navigator.of(context).push(MaterialPageRoute(
-        //           builder: (context) => AlbumScreen(
-        //             albumId: song.albumId,
-        //           ),
-        //         ));
-        //       },
-        //     ));
-        itemBuilder: (context, idx) => StarredAlbumRow(
-              album: data.albums[idx],
-              onTap: (AlbumResultSimple album) {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => AlbumScreen(
-                    albumId: album.id,
-                  ),
-                ));
-              },
-            ));
+      physics: BouncingScrollPhysics(),
+      itemCount: itemCount,
+      itemBuilder: (context, idx) => StarredRow(
+        item: data[idx],
+      ),
+    );
+  }
+}
+
+class StarredRow extends StatelessWidget {
+  final StarredItem item;
+  final Function(StarredItem) onPlay;
+
+  const StarredRow({
+    Key key,
+    this.item,
+    this.onPlay,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    if (item.getAlbum() != null) {
+      return StarredAlbumRow(
+        album: item.getAlbum(),
+        onTap: (AlbumResultSimple album) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => AlbumScreen(
+              albumId: album.id,
+            ),
+          ));
+        },
+      );
+    }
+    if (item.getSong() != null) {
+      return StarredSongRow(
+        song: item.getSong(),
+        onTapCover: (SongResult song) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => AlbumScreen(
+              albumId: song.albumId,
+            ),
+          ));
+        },
+        onTapRow: (SongResult song) {
+          this.onPlay(item);
+        },
+      );
+    }
   }
 }
 
@@ -152,7 +204,42 @@ class StarredPageState extends State<StarredPage> {
                   _data = snapshot.data;
                   return StarredListView(
                     ctx: ctx,
-                    data: _data,
+                    data: [
+                      ..._data.albums
+                          .map((album) => StarredItem(album: album))
+                          .toList(),
+                      ..._data.songs.map((e) => StarredItem(song: e)).toList(),
+                    ]..sort((a, b) {
+                        if (a.getAlbum() != null) {
+                          if (b.getAlbum() != null) {
+                            return a
+                                    .getAlbum()
+                                    .createdAt
+                                    .compareTo(b.getAlbum().createdAt) *
+                                -1;
+                          } else {
+                            return a
+                                    .getAlbum()
+                                    .createdAt
+                                    .compareTo(b.getSong().createdAt) *
+                                -1;
+                          }
+                        } else {
+                          if (b.getAlbum() != null) {
+                            return a
+                                    .getSong()
+                                    .createdAt
+                                    .compareTo(b.getAlbum().createdAt) *
+                                -1;
+                          } else {
+                            return a
+                                    .getSong()
+                                    .createdAt
+                                    .compareTo(b.getSong().createdAt) *
+                                -1;
+                          }
+                        }
+                      }),
                   );
                 }
               }
