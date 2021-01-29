@@ -1,6 +1,10 @@
+import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
+import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/album_page.dart';
+import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
@@ -100,6 +104,13 @@ class StarredItem {
   }
 }
 
+class StarredViewModel {
+  final Function(SongResult) onPlaySong;
+  final Function(AlbumResultSimple) onPlayAlbum;
+
+  StarredViewModel({this.onPlaySong, this.onPlayAlbum});
+}
+
 class StarredListView extends StatelessWidget {
   final SubsonicContext ctx;
   final List<StarredItem> data;
@@ -115,11 +126,25 @@ class StarredListView extends StatelessWidget {
     //final itemCount = data.albums.length + data.songs.length;
     // final itemCount = data.songs.length;
     final itemCount = data.length;
-    return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      itemCount: itemCount,
-      itemBuilder: (context, idx) => StarredRow(
-        item: data[idx],
+    return StoreConnector<AppState, StarredViewModel>(
+      converter: (st) => StarredViewModel(
+        onPlayAlbum: (album) {},
+        onPlaySong: (song) =>
+            st.dispatch(PlayerCommandPlaySong(PlayerSong.from(song))),
+      ),
+      builder: (context, model) => ListView.builder(
+        physics: BouncingScrollPhysics(),
+        itemCount: itemCount,
+        itemBuilder: (context, idx) => StarredRow(
+          onPlay: (item) {
+            if (item.getSong() != null) {
+              model.onPlaySong(item.getSong());
+            } else if (item.getAlbum() != null) {
+              model.onPlayAlbum(item.getAlbum());
+            } else {}
+          },
+          item: data[idx],
+        ),
       ),
     );
   }
