@@ -60,11 +60,13 @@ class StarredSongRow extends StatelessWidget {
 class StarredAlbumRow extends StatelessWidget {
   final AlbumResultSimple album;
   final Function(AlbumResultSimple) onTap;
+  final Function(AlbumResultSimple) onTapCover;
 
   const StarredAlbumRow({
     Key key,
     @required this.album,
     @required this.onTap,
+    @required this.onTapCover,
   }) : super(key: key);
 
   @override
@@ -128,7 +130,7 @@ class StarredListView extends StatelessWidget {
     final itemCount = data.length;
     return StoreConnector<AppState, StarredViewModel>(
       converter: (st) => StarredViewModel(
-        onPlayAlbum: (album) {},
+        onPlayAlbum: (album) => st.dispatch(PlayerCommandPlayAlbum(album)),
         onPlaySong: (song) =>
             st.dispatch(PlayerCommandPlaySong(PlayerSong.from(song))),
       ),
@@ -165,6 +167,9 @@ class StarredRow extends StatelessWidget {
       return StarredAlbumRow(
         album: item.getAlbum(),
         onTap: (AlbumResultSimple album) {
+          this.onPlay(item);
+        },
+        onTapCover: (album) {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => AlbumScreen(
               albumId: album.id,

@@ -7,6 +7,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/storage/cache.dart';
+import 'package:subsound/subsonic/requests/get_album.dart';
+import 'package:subsound/subsonic/requests/get_artist.dart';
 
 //final task = AudioPlayerTask();
 // Must be a top-level function
@@ -289,6 +291,22 @@ class PlayerStateChanged extends PlayerActions {
   AppState reduce() => state.copy(
         playerState: state.playerState.copy(current: nextState),
       );
+}
+
+class PlayerCommandPlayAlbum extends PlayerActions {
+  final AlbumResultSimple album;
+
+  PlayerCommandPlayAlbum(this.album);
+
+  @override
+  Future<AppState> reduce() async {
+    final albumData = await GetAlbum(album.id).run(state.loginState.toClient());
+    final song = albumData.data.songs.first;
+
+    dispatch(PlayerCommandPlaySong(PlayerSong.from(song)));
+
+    return state;
+  }
 }
 
 class PlayerCommandPlaySong extends PlayerActions {
