@@ -27,7 +27,13 @@ class Search3 extends BaseRequest<Search3Result> {
   final CountOffset artist, album, song;
   final String musicFolderId;
 
-  Search3(this.query, {this.artist, this.album, this.song, this.musicFolderId});
+  Search3(
+    this.query, {
+    this.artist,
+    this.album,
+    this.song,
+    this.musicFolderId,
+  });
 
   @override
   Future<SubsonicResponse<Search3Result>> run(SubsonicContext ctx) async {
