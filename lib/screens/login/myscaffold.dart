@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
@@ -109,7 +110,7 @@ class MyScaffold extends StatelessWidget {
       child: StoreConnector<AppState, StartUpState>(
         converter: (state) => state.state.startUpState,
         builder: (context, state) => state == StartUpState.loading
-            ? _SplashScreen()
+            ? SplashScreen()
             : _AppScaffold(
                 title: title,
                 body: body,
@@ -240,23 +241,41 @@ class RootScreen extends StatelessWidget {
   }
 }
 
-class _SplashScreen extends StatelessWidget {
+class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
         //color: Colors.white,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.play_arrow_outlined,
-              size: 36.0,
-            ),
             Text(
-              "Sub:Sound",
-              style: TextStyle(fontSize: 40.0),
+              "Sub",
+              style: TextStyle(
+                fontSize: 40.0,
+                color: Theme.of(context).primaryColor,
+                decoration: TextDecoration.none,
+              ),
               textAlign: TextAlign.center,
             ),
+            SizedBox(height: 20.0),
+            Icon(
+              Icons.play_arrow,
+              size: 36.0,
+            ),
+            SizedBox(height: 20.0),
+            Text(
+              "Sound",
+              style: TextStyle(
+                fontSize: 32.0,
+                color: Theme.of(context).primaryColor,
+                decoration: TextDecoration.none,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20.0),
+            //CircularProgressIndicator(),
           ],
         ),
       ),
