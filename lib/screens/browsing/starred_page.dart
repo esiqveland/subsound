@@ -131,8 +131,9 @@ class StarredListView extends StatelessWidget {
     return StoreConnector<AppState, StarredViewModel>(
       converter: (st) => StarredViewModel(
         onPlayAlbum: (album) => st.dispatch(PlayerCommandPlayAlbum(album)),
-        onPlaySong: (song) =>
-            st.dispatch(PlayerCommandPlaySong(PlayerSong.from(song))),
+        onPlaySong: (song) => st.dispatch(PlayerCommandPlaySong(
+          PlayerSong.from(song),
+        )),
       ),
       builder: (context, model) => ListView.builder(
         physics: BouncingScrollPhysics(),
@@ -161,6 +162,7 @@ class StarredRow extends StatelessWidget {
     this.item,
     this.onPlay,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     if (item.getAlbum() != null) {
