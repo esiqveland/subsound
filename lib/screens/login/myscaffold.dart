@@ -254,7 +254,9 @@ class SplashScreen extends StatelessWidget {
               "Sub",
               style: TextStyle(
                 fontSize: 40.0,
-                color: Theme.of(context).primaryColor,
+                //color: Theme.of(context).primaryColor,
+                //color: Colors.tealAccent,
+                color: Colors.white,
                 decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
@@ -269,7 +271,9 @@ class SplashScreen extends StatelessWidget {
               "Sound",
               style: TextStyle(
                 fontSize: 32.0,
-                color: Theme.of(context).primaryColor,
+                //color: Theme.of(context).primaryColor,
+                //color: Colors.tealAccent,
+                color: Colors.white,
                 decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
