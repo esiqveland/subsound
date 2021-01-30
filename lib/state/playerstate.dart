@@ -309,6 +309,27 @@ class PlayerCommandPlayAlbum extends PlayerActions {
   }
 }
 
+class PlayerCommandSetCurrentPlaying extends PlayerActions {
+  final PlayerSong song;
+  final PlayerStates playerstate;
+
+  PlayerCommandSetCurrentPlaying(
+    this.song, {
+    this.playerstate = PlayerStates.stopped,
+  });
+
+  @override
+  AppState reduce() {
+    return state.copy(
+      playerState: state.playerState.copy(
+        current: playerstate,
+        currentSong: song,
+        duration: song?.duration ?? Duration.zero,
+      ),
+    );
+  }
+}
+
 class PlayerCommandPlaySong extends PlayerActions {
   final PlayerSong song;
 
@@ -317,7 +338,13 @@ class PlayerCommandPlaySong extends PlayerActions {
   @override
   Future<AppState> reduce() async {
     final songUrl = song.songUrl;
-    await AudioService.playMediaItem(MediaItem(
+
+    dispatch(PlayerCommandSetCurrentPlaying(
+      song,
+      playerstate: PlayerStates.stopped,
+    ));
+
+    final res = await AudioService.playMediaItem(MediaItem(
       id: songUrl,
       artist: song?.artist,
       album: song?.album,
@@ -328,6 +355,7 @@ class PlayerCommandPlaySong extends PlayerActions {
       duration: song?.duration ?? state.playerState.duration,
     ));
     AudioService.play();
+
     return state.copy(
       playerState: state.playerState.copy(
         current: PlayerStates.playing,
