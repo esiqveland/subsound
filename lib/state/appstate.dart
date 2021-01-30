@@ -242,12 +242,11 @@ class ServerData {
     );
   }
 
-  static initialState() =>
-      ServerData(uri: 'https://', username: '', password: '');
+  static initialState() => ServerData(uri: '', username: '', password: '');
 
   static fromPrefs(SharedPreferences prefs) {
     return new ServerData(
-      uri: prefs.getString("uri") ?? "https://",
+      uri: prefs.getString("uri") ?? "",
       username: prefs.getString("username") ?? "",
       password: prefs.getString("password") ?? "",
     );
