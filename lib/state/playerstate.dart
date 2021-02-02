@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
@@ -32,7 +33,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<Function> onStart(Map<String, dynamic> params) async {
     // Broadcast that we're connecting, and what controls are available.
     AudioServiceBackground.setState(
-      controls: [MediaControl.pause, MediaControl.play],
+      systemActions: getActions(),
+      controls: getControls(),
+      androidCompactActions: [0, 1],
       playing: _player.playing,
       processingState: AudioProcessingState.ready,
     );
@@ -88,20 +91,29 @@ class AudioPlayerTask extends BackgroundAudioTask {
     _broadcastState();
   }
 
+  List<MediaAction> getActions() {
+    return [
+      if (_player.playing) MediaAction.pause else MediaAction.play,
+      // MediaAction.seekTo,
+      // MediaAction.seekForward,
+      // MediaAction.seekBackward,
+    ];
+  }
+
+  List<MediaControl> getControls() {
+    return [
+      MediaControl.skipToPrevious,
+      if (_player.playing) MediaControl.pause else MediaControl.play,
+      MediaControl.skipToNext,
+    ];
+  }
+
   /// Broadcasts the current state to all clients.
   Future<void> _broadcastState() async {
     await AudioServiceBackground.setState(
-      controls: [
-        MediaControl.skipToPrevious,
-        if (_player.playing) MediaControl.pause else MediaControl.play,
-        MediaControl.skipToNext,
-      ],
-      systemActions: [
-        MediaAction.seekTo,
-        MediaAction.seekForward,
-        MediaAction.seekBackward,
-      ],
-      androidCompactActions: [0, 1, 3],
+      controls: getControls(),
+      systemActions: getActions(),
+      androidCompactActions: [0, 1],
       processingState: _getProcessingState(),
       playing: _player.playing,
       position: _player.position,
@@ -116,7 +128,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     //if (_skipState != null) return _skipState;
     switch (_player.processingState) {
       case ProcessingState.idle:
-        return AudioProcessingState.stopped;
+        return AudioProcessingState.ready;
       case ProcessingState.loading:
         return AudioProcessingState.connecting;
       case ProcessingState.buffering:
@@ -202,14 +214,17 @@ class PlayerPositionChanged extends PlayerActions {
     if (position == state.playerState.position) {
       return state;
     }
+    var correctPosition = position;
     if (position > state.playerState.duration) {
-      return state.copy(
-        playerState:
-            state.playerState.copy(position: state.playerState.duration),
-      );
+      correctPosition = state.playerState.duration;
     }
+    PlayerStartListenPlayerPosition.updateListeners(PositionUpdate(
+      duration: state.playerState.duration,
+      position: position,
+    ));
+
     return state.copy(
-      playerState: state.playerState.copy(position: position),
+      playerState: state.playerState.copy(position: correctPosition),
     );
   }
 }
@@ -218,6 +233,10 @@ class PlayerCommandPlay extends PlayerActions {
   @override
   Future<AppState> reduce() async {
     AudioService.play();
+    final current = AudioService.currentMediaItem;
+    if (current == null) {
+      return null;
+    }
     return state.copy(
       playerState: state.playerState.copy(
         current: PlayerStates.playing,
@@ -330,6 +349,62 @@ class PlayerCommandSetCurrentPlaying extends PlayerActions {
   }
 }
 
+class PositionUpdate {
+  final Duration position;
+  final Duration duration;
+
+  PositionUpdate({this.position, this.duration});
+}
+
+//typedef PositionListener = Function(PositionUpdate);
+abstract class PositionListener {
+  void next(PositionUpdate pos);
+}
+
+class PlayerStopListenPlayerPosition extends ReduxAction<AppState> {
+  final PositionListener listener;
+
+  PlayerStopListenPlayerPosition(this.listener);
+
+  @override
+  AppState reduce() {
+    PlayerStartListenPlayerPosition.removeListener(listener);
+    return state.copy();
+  }
+}
+
+class PlayerStartListenPlayerPosition extends ReduxAction<AppState> {
+  static final List<PositionListener> _listeners = [];
+
+  static updateListeners(PositionUpdate pos) {
+    _listeners.forEach((l) => l.next(pos));
+  }
+
+  static removeListener(PositionListener l) {
+    _listeners.removeWhere((element) => element == l);
+  }
+
+  static addListener(PositionListener l) {
+    // if (_listeners.length > 4) {
+    //   throw new Exception(
+    //       'unexpected number of position listeners: ${_listeners.length} did you forget to cleanup somewhere?');
+    // }
+
+    if (!_listeners.contains(l)) {
+      _listeners.add(l);
+    }
+  }
+
+  final PositionListener listener;
+  PlayerStartListenPlayerPosition(this.listener);
+
+  @override
+  AppState reduce() {
+    PlayerStartListenPlayerPosition.addListener(listener);
+    return state.copy();
+  }
+}
+
 class PlayerCommandPlaySong extends PlayerActions {
   final PlayerSong song;
 
@@ -366,19 +441,30 @@ class PlayerCommandPlaySong extends PlayerActions {
   }
 }
 
+extension Formatter on PlaybackState {
+  String format() {
+    return "PlaybackState={playing=${playing}, actions=${actions}, processingState=${describeEnum(processingState)}, updateTime=${updateTime},}";
+  }
+}
+
 class StartupPlayer extends ReduxAction<AppState> {
   @override
   Future<AppState> reduce() async {
     if (!AudioService.connected) {
+      log('StartupPlayer: not connected: ${AudioService.connected}');
       await AudioService.connect();
+      log('StartupPlayer: not connected after: ${AudioService.connected}');
     }
 
     if (AudioService.running) {
+      log('StartupPlayer: already running');
       return state.copy();
+    } else {
+      log('StartupPlayer: not running: will start');
     }
     final success = await AudioService.start(
       backgroundTaskEntrypoint: _entrypoint,
-      androidNotificationChannelName: 'Subsound',
+      //androidNotificationChannelName: 'Subsound',
       androidEnableQueue: false,
 
       // Enable this if you want the Android service to exit the foreground state on pause.
@@ -394,22 +480,28 @@ class StartupPlayer extends ReduxAction<AppState> {
     AudioService.createPositionStream(
       steps: 800,
       minPeriod: Duration(milliseconds: 500),
-      maxPeriod: Duration(milliseconds: 1200),
-    ).listen((event) {
-      log("createPositionStream $event");
-      if (event == null) {
+      maxPeriod: Duration(milliseconds: 500),
+      //: Duration(milliseconds: 1000),
+    ).listen((pos) {
+      //log("createPositionStream $pos");
+      if (pos == null) {
         return;
       }
-      if (state.playerState.position?.inSeconds != event.inSeconds) {
-        dispatch(PlayerPositionChanged(event));
+      PlayerStartListenPlayerPosition.updateListeners(PositionUpdate(
+        duration: state.playerState.duration,
+        position: pos,
+      ));
+      if (state.playerState.position?.inSeconds != pos.inSeconds) {
+        //dispatch(PlayerPositionChanged(pos));
       }
     });
     AudioService.positionStream.listen((pos) {});
     AudioService.runningStream.listen((event) {
       log("runningStream: event=$event");
     });
+
     AudioService.playbackStateStream.listen((event) {
-      log("playbackStateStream $event");
+      log("playbackStateStream event=${event?.format()}");
       if (event == null) {
         return;
       }
@@ -421,7 +513,7 @@ class StartupPlayer extends ReduxAction<AppState> {
       }
     });
     AudioService.currentMediaItemStream.listen((MediaItem item) {
-      log("currentMediaItemStream $item");
+      log("currentMediaItemStream ${item?.toString()}");
       if (item == null) {
         return;
       }
