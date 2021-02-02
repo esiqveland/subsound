@@ -5,7 +5,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:subsound/components/player.dart';
+import 'package:subsound/components/player.dart' hide PlayerState;
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
@@ -19,8 +19,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   // e.g. just_audio
   final _player = AudioPlayer();
   StreamSubscription<PlaybackEvent> _eventSubscription;
+  StreamSubscription<ProcessingState> _streamSubscription;
+  StreamSubscription<PlayerState> _stateSubscription;
 
   MediaItem get currentMediaItem => AudioServiceBackground.mediaItem;
+  MediaItem lastMediaItem;
 
   AudioPlayerTask() : super(cacheManager: ArtworkCacheManager());
 
@@ -46,12 +49,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     _eventSubscription = _player.playbackEventStream.listen((event) {
       _broadcastState();
     });
-    final item = currentMediaItem;
-    if (item != null) {
-      AudioServiceBackground.setMediaItem(item);
-    }
     // Special processing for state transitions.
-    _player.processingStateStream.listen((state) {
+    _streamSubscription = _player.processingStateStream.listen((state) {
       switch (state) {
         case ProcessingState.completed:
           // In this example, the service stops when reaching the end.
@@ -68,10 +67,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
     });
 
     // Listen to state changes on the player...
-    _player.playerStateStream.listen((playerState) {
+    _stateSubscription = _player.playerStateStream.listen((playerState) {
       // ... and forward them to all audio_service clients.
       _broadcastState();
     });
+
+    final item = currentMediaItem ?? lastMediaItem;
+    if (item != null) {
+      AudioServiceBackground.setMediaItem(item);
+    }
 
     _broadcastState();
   }
@@ -137,6 +141,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
+    lastMediaItem = mediaItem;
     final dur = await _player.setUrl(mediaItem.id);
     await AudioServiceBackground.setMediaItem(mediaItem);
     await _broadcastState();
@@ -166,8 +171,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
   onStop() async {
     log('Task: onStop called');
     // Stop and dispose of the player.
-    await _player.dispose();
     _eventSubscription.cancel();
+    _streamSubscription.cancel();
+    _stateSubscription.cancel();
+    await _player.dispose();
     // Shut down the background task.
     await super.onStop();
   }
