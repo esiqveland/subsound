@@ -16,8 +16,11 @@ import 'package:subsound/subsonic/requests/get_artist.dart';
 void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
 
 class AudioPlayerTask extends BackgroundAudioTask {
+  // e.g. just_audio
   final _player = AudioPlayer();
-  StreamSubscription<PlaybackEvent> _eventSubscription; // e.g. just_audio
+  StreamSubscription<PlaybackEvent> _eventSubscription;
+
+  MediaItem get currentMediaItem => AudioServiceBackground.mediaItem;
 
   AudioPlayerTask() : super(cacheManager: ArtworkCacheManager());
 
@@ -32,13 +35,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<Function> onStart(Map<String, dynamic> params) async {
     // Broadcast that we're connecting, and what controls are available.
-    AudioServiceBackground.setState(
-      systemActions: getActions(),
-      controls: getControls(),
-      androidCompactActions: [0, 1],
-      playing: _player.playing,
-      processingState: AudioProcessingState.ready,
-    );
+    _broadcastState();
+
     // Handle unplugged headphones.
     // session.becomingNoisyEventStream.listen((_) {
     //   if (_playing) onPause();
@@ -48,7 +46,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
     _eventSubscription = _player.playbackEventStream.listen((event) {
       _broadcastState();
     });
-
+    final item = currentMediaItem;
+    if (item != null) {
+      AudioServiceBackground.setMediaItem(item);
+    }
     // Special processing for state transitions.
     _player.processingStateStream.listen((state) {
       switch (state) {
@@ -69,23 +70,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // Listen to state changes on the player...
     _player.playerStateStream.listen((playerState) {
       // ... and forward them to all audio_service clients.
-      AudioServiceBackground.setState(
-        playing: playerState.playing,
-        // Every state from the audio player gets mapped onto an audio_service state.
-        processingState: {
-          ProcessingState.idle: AudioProcessingState.none,
-          ProcessingState.loading: AudioProcessingState.connecting,
-          ProcessingState.buffering: AudioProcessingState.buffering,
-          ProcessingState.ready: AudioProcessingState.ready,
-          ProcessingState.completed: AudioProcessingState.completed,
-        }[playerState.processingState],
-        // Tell clients what buttons/controls should be enabled in the
-        // current state.
-        controls: [
-          playerState.playing ? MediaControl.pause : MediaControl.play,
-          MediaControl.stop,
-        ],
-      );
+      _broadcastState();
     });
 
     _broadcastState();
@@ -113,7 +98,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await AudioServiceBackground.setState(
       controls: getControls(),
       systemActions: getActions(),
-      androidCompactActions: [0, 1],
+      androidCompactActions: [1],
       processingState: _getProcessingState(),
       playing: _player.playing,
       position: _player.position,
@@ -128,7 +113,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     //if (_skipState != null) return _skipState;
     switch (_player.processingState) {
       case ProcessingState.idle:
-        return AudioProcessingState.ready;
+        return AudioProcessingState.none;
       case ProcessingState.loading:
         return AudioProcessingState.connecting;
       case ProcessingState.buffering:
@@ -137,8 +122,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return AudioProcessingState.ready;
       case ProcessingState.completed:
         return AudioProcessingState.completed;
-      default:
-        throw Exception("Invalid state: ${_player.processingState}");
     }
   }
 
