@@ -297,9 +297,14 @@ class PlayerStateChanged extends PlayerActions {
   PlayerStateChanged(this.nextState);
 
   @override
-  AppState reduce() => state.copy(
-        playerState: state.playerState.copy(current: nextState),
-      );
+  AppState reduce() {
+    if (state.playerState.current == nextState) {
+      return null;
+    }
+    return state.copy(
+      playerState: state.playerState.copy(current: nextState),
+    );
+  }
 }
 
 class PlayerCommandPlayAlbum extends PlayerActions {
@@ -495,11 +500,39 @@ class StartupPlayer extends ReduxAction<AppState> {
       if (event == null) {
         return;
       }
-      if (event.playing && state.playerState.current != PlayerStates.playing) {
-        dispatch(PlayerStateChanged(PlayerStates.playing));
-      }
-      if (!event.playing && state.playerState.current != PlayerStates.stopped) {
-        dispatch(PlayerStateChanged(PlayerStates.stopped));
+
+      switch (event.processingState) {
+        case AudioProcessingState.none:
+        case AudioProcessingState.connecting:
+          dispatch(PlayerStateChanged(PlayerStates.stopped));
+          break;
+        case AudioProcessingState.ready:
+        case AudioProcessingState.buffering:
+          if (event.playing) {
+            dispatch(PlayerStateChanged(PlayerStates.playing));
+          } else {
+            dispatch(PlayerStateChanged(PlayerStates.buffering));
+          }
+          break;
+        case AudioProcessingState.fastForwarding:
+          break;
+        case AudioProcessingState.rewinding:
+          break;
+        case AudioProcessingState.skippingToPrevious:
+          break;
+        case AudioProcessingState.skippingToNext:
+          break;
+        case AudioProcessingState.skippingToQueueItem:
+          break;
+        case AudioProcessingState.completed:
+          dispatch(PlayerStateChanged(PlayerStates.stopped));
+          break;
+        case AudioProcessingState.stopped:
+          dispatch(PlayerStateChanged(PlayerStates.stopped));
+          break;
+        case AudioProcessingState.error:
+          dispatch(PlayerStateChanged(PlayerStates.stopped));
+          break;
       }
     });
     AudioService.currentMediaItemStream.listen((MediaItem item) {
