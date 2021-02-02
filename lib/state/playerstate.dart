@@ -503,10 +503,18 @@ class StartupPlayer extends ReduxAction<AppState> {
 
       switch (event.processingState) {
         case AudioProcessingState.none:
+          dispatch(PlayerStateChanged(PlayerStates.stopped));
+          break;
         case AudioProcessingState.connecting:
           dispatch(PlayerStateChanged(PlayerStates.stopped));
           break;
         case AudioProcessingState.ready:
+          if (event.playing) {
+            dispatch(PlayerStateChanged(PlayerStates.playing));
+          } else {
+            dispatch(PlayerStateChanged(PlayerStates.paused));
+          }
+          break;
         case AudioProcessingState.buffering:
           if (event.playing) {
             dispatch(PlayerStateChanged(PlayerStates.playing));
