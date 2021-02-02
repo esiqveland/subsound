@@ -557,18 +557,22 @@ class PlayerSlider extends StatelessWidget {
     );
   }
 
-  static Duration _getDuration(PositionUpdate playerState) {
-    if (playerState == null || playerState.duration == null) {
-      return Duration(seconds: 279);
+  static Duration _getDuration(PositionUpdate nextPos) {
+    if (nextPos?.duration == null) {
+      return Duration(seconds: 1);
     }
-    return playerState.duration;
+    return nextPos.duration;
   }
 
-  static Duration _getPosition(PositionUpdate playerState) {
-    if (playerState == null || playerState.position == null) {
-      return Duration(seconds: 100);
+  static Duration _getPosition(PositionUpdate nextPos) {
+    if (nextPos?.position == null) {
+      return Duration(seconds: 0);
     }
-    return playerState.position;
+    if (nextPos.position > nextPos.duration) {
+      return nextPos.duration;
+    } else {
+      return nextPos.position;
+    }
   }
 }
 
