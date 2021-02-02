@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
@@ -40,6 +43,10 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
       playerState: state.playerState.current,
       onPlay: () => dispatch(PlayerCommandPlay()),
       onPause: () => dispatch(PlayerCommandPause()),
+      onStartListen: (listener) =>
+          dispatch(PlayerStartListenPlayerPosition(listener)),
+      onStopListen: (listener) =>
+          dispatch(PlayerStopListenPlayerPosition(listener)),
     );
   }
 }
@@ -56,6 +63,8 @@ class MiniPlayerModel extends Vm {
   final PlayerStates playerState;
   final Function onPlay;
   final Function onPause;
+  final Function(PositionListener) onStartListen;
+  final Function(PositionListener) onStopListen;
 
   MiniPlayerModel({
     @required this.songTitle,
@@ -69,6 +78,8 @@ class MiniPlayerModel extends Vm {
     @required this.playerState,
     @required this.onPlay,
     @required this.onPause,
+    @required this.onStartListen,
+    @required this.onStopListen,
   }) : super(equals: [
           artistTitle,
           songTitle,
@@ -81,12 +92,114 @@ class MiniPlayerModel extends Vm {
         ]);
 }
 
+class MiniPlayerProgressBar extends StatefulWidget {
+  final double height;
+  final Function(PositionListener) onInitListen;
+  final Function(PositionListener) onFinishListen;
+
+  MiniPlayerProgressBar({
+    Key key,
+    this.height,
+    this.onInitListen,
+    this.onFinishListen,
+  }) : super(key: key);
+
+  @override
+  State<MiniPlayerProgressBar> createState() {
+    return MiniPlayerProgressBarState();
+  }
+}
+
+class MiniPlayerProgressBarState extends State<MiniPlayerProgressBar>
+    implements PositionListener {
+  StreamController<PositionUpdate> stream;
+
+  @override
+  void next(PositionUpdate pos) {
+    stream.add(pos);
+  }
+
+  @override
+  void reassemble() {
+    widget.onFinishListen(this);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return StreamBuilder<PositionUpdate>(
+      stream: stream.stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final next = snapshot.data;
+          final pos = next.position?.inMilliseconds ?? 0;
+          final durSafe = next.duration?.inMilliseconds ?? 1;
+          final dur = durSafe == 0 ? 1 : durSafe;
+          final playbackProgress = pos / dur;
+
+          return Stack(
+            children: [
+              Container(
+                padding: EdgeInsets.all(0),
+                height: widget.height,
+                color: Colors.white38,
+              ),
+              Container(
+                color: Colors.white,
+                height: widget.height,
+                width: screenWidth * playbackProgress,
+              ),
+            ],
+          );
+        } else {
+          return Stack(
+            children: [
+              Container(
+                padding: EdgeInsets.all(0),
+                height: widget.height,
+                color: Colors.white38,
+              ),
+              Container(
+                color: Colors.white,
+                height: widget.height,
+                width: screenWidth * 0.0,
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    stream = StreamController<PositionUpdate>(
+      onListen: () {},
+      onCancel: () {
+        widget.onFinishListen(this);
+      },
+    );
+    log('onInitListen');
+    widget.onInitListen(this);
+  }
+
+  @override
+  void dispose() {
+    log('onFinishListen');
+    stream.close();
+    widget.onFinishListen(this);
+    super.dispose();
+  }
+}
+
 const miniProgressBarHeight = 2.0;
 
 class MiniPlayer extends StatelessWidget {
   final double height;
 
-  const MiniPlayer({Key key, this.height}) : super(key: key);
+  MiniPlayer({Key key, this.height}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -98,23 +211,14 @@ class MiniPlayer extends StatelessWidget {
       child: Container(
         // color: Colors.pinkAccent,
         child: StoreConnector<AppState, MiniPlayerModel>(
-          vm: _MiniPlayerModelFactory(this),
+          vm: () => _MiniPlayerModelFactory(this),
           builder: (context, state) => Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Stack(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(0),
-                    height: miniProgressBarHeight,
-                    color: Colors.white38,
-                  ),
-                  Container(
-                    color: Colors.white,
-                    height: miniProgressBarHeight,
-                    width: screenWidth * state.playbackProgress,
-                  ),
-                ],
+              MiniPlayerProgressBar(
+                height: miniProgressBarHeight,
+                onInitListen: state.onStartListen,
+                onFinishListen: state.onStopListen,
               ),
               SizedBox(
                 height: playerHeight,

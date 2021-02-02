@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +53,7 @@ class PlayerSong {
         coverArtLink: s.coverArtLink,
         songUrl: s.playUrl,
         duration: s.duration,
+        //isStarred: s.starred,
         isStarred: false,
       );
 
@@ -202,6 +206,10 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
       onUnstar: (String id) => dispatch(UnstarIdCommand(SongId(songId: id))),
       onPlay: () => dispatch(PlayerCommandPlay()),
       onPause: () => dispatch(PlayerCommandPause()),
+      onStartListen: (listener) =>
+          dispatch(PlayerStartListenPlayerPosition(listener)),
+      onStopListen: (listener) =>
+          dispatch(PlayerStopListenPlayerPosition(listener)),
       onSeek: (val) => dispatch(PlayerCommandSeekTo(val)),
     );
   }
@@ -223,6 +231,8 @@ class PlayerViewModel extends Vm {
   final Function(String) onUnstar;
   final Function onPlay;
   final Function onPause;
+  final Function(PositionListener) onStartListen;
+  final Function(PositionListener) onStopListen;
   final Function(int) onSeek;
 
   PlayerViewModel({
@@ -241,6 +251,8 @@ class PlayerViewModel extends Vm {
     @required this.onUnstar,
     @required this.onPlay,
     @required this.onPause,
+    @required this.onStartListen,
+    @required this.onStopListen,
     @required this.onSeek,
   }) : super(equals: [
           songId,
@@ -270,7 +282,7 @@ class PlayerView extends StatelessWidget {
     return Container(
       color: Colors.black26,
       child: StoreConnector<AppState, PlayerViewModel>(
-        vm: _PlayerViewModelFactory(this),
+        vm: () => _PlayerViewModelFactory(this),
         builder: (context, vm) => Center(
           child: ConstrainedBox(
             constraints: BoxConstraints.tightForFinite(width: 400),
@@ -297,18 +309,15 @@ class PlayerView extends StatelessWidget {
                           );
                         }
                       },
-                      child: Hero(
-                        tag: vm.coverArtId,
-                        child: FittedBox(
-                          child: vm.coverArtLink != null
-                              ? CoverArtImage(
-                                  vm.coverArtLink,
-                                  // height: 250,
-                                  // width: 250,
-                                  fit: BoxFit.cover,
-                                )
-                              : Icon(Icons.album),
-                        ),
+                      child: FittedBox(
+                        child: vm.coverArtLink != null
+                            ? CoverArtImage(
+                                vm.coverArtLink,
+                                // height: 250,
+                                // width: 250,
+                                fit: BoxFit.cover,
+                              )
+                            : Icon(Icons.album),
                       ),
                     ),
                   ),
@@ -357,7 +366,7 @@ class PlayerView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    PlayerSlider(
+                    UpdatingPlayerSlider(
                       playerState: vm,
                       size: MediaQuery.of(context).size.width * 0.8,
                     ),
@@ -443,20 +452,102 @@ class PlayerScreen extends StatelessWidget {
   }
 }
 
-class PlayerSlider extends StatelessWidget {
+class UpdatingPlayerSlider extends StatefulWidget {
   final PlayerViewModel playerState;
   final double size;
 
-  PlayerSlider({
+  const UpdatingPlayerSlider({
     Key key,
     this.playerState,
     this.size,
   }) : super(key: key);
 
   @override
+  State<UpdatingPlayerSlider> createState() {
+    return UpdatingPlayerSliderState();
+  }
+}
+
+class UpdatingPlayerSliderState extends State<UpdatingPlayerSlider>
+    implements PositionListener {
+  StreamController<PositionUpdate> stream;
+
+  @override
+  void next(PositionUpdate pos) {
+    stream.add(pos);
+  }
+
+  @override
+  void reassemble() {
+    widget.playerState.onStopListen(this);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final total = _getMax(playerState);
-    final position = _getPosition(playerState);
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return StreamBuilder<PositionUpdate>(
+      stream: stream.stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return PlayerSlider(
+            playerState: widget.playerState,
+            pos: snapshot.data,
+            size: widget.size,
+          );
+        } else {
+          return PlayerSlider(
+            playerState: widget.playerState,
+            pos: PositionUpdate(
+              position: widget.playerState.position,
+              duration: widget.playerState.duration,
+            ),
+            size: widget.size,
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    stream = StreamController<PositionUpdate>(
+      onListen: () {},
+      onCancel: () {
+        log('UpdatingPlayerSliderState: onCancel');
+        widget.playerState.onStopListen(this);
+      },
+    );
+    log('UpdatingPlayerSliderState: onInitListen');
+    widget.playerState.onStartListen(this);
+  }
+
+  @override
+  void dispose() {
+    log('UpdatingPlayerSliderState: onFinishListen');
+    widget.playerState.onStopListen(this);
+    stream.close();
+    super.dispose();
+  }
+}
+
+class PlayerSlider extends StatelessWidget {
+  final PlayerViewModel playerState;
+  final PositionUpdate pos;
+  final double size;
+
+  PlayerSlider({
+    Key key,
+    this.playerState,
+    this.pos,
+    this.size,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final total = _getDuration(pos);
+    final position = _getPosition(pos);
 
     return ProgressBar(
       onChanged: playerState.onSeek,
@@ -466,14 +557,14 @@ class PlayerSlider extends StatelessWidget {
     );
   }
 
-  static Duration _getMax(PlayerViewModel playerState) {
+  static Duration _getDuration(PositionUpdate playerState) {
     if (playerState == null || playerState.duration == null) {
       return Duration(seconds: 279);
     }
     return playerState.duration;
   }
 
-  static Duration _getPosition(PlayerViewModel playerState) {
+  static Duration _getPosition(PositionUpdate playerState) {
     if (playerState == null || playerState.position == null) {
       return Duration(seconds: 100);
     }
