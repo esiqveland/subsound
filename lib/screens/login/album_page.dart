@@ -45,7 +45,7 @@ class AlbumScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AlbumViewModel>(
-      vm: _AlbumViewModelFactory(this),
+      vm: () => _AlbumViewModelFactory(this),
       builder: (context, state) => MyScaffold(
         appBar: null,
         disableAppBar: true,
@@ -256,7 +256,13 @@ class AlbumList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: this.songs.map((s) => SongRow(song: s)).toList(),
+      children: this
+          .songs
+          .map((s) => SongRow(
+                song: s,
+                onPlay: (SongResult s) {},
+              ))
+          .toList(),
     );
   }
 }
