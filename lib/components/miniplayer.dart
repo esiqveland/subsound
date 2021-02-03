@@ -224,12 +224,7 @@ class MiniPlayer extends StatelessWidget {
                 height: playerHeight,
                 child: InkWell(
                   onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) => PlayerView(),
-                      enableDrag: true,
-                      isDismissible: false,
-                    );
+                    Navigator.of(context).pushNamed(PlayerScreen.routeName);
                   },
                   child: Container(
                     child: Row(
