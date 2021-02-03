@@ -11,9 +11,12 @@ A subsonic music player.
 ## Goals
 
 - [X] Browsing content
+- [X] Audio playback
+- [X] Starred songs
+- [ ] Media players support (lock screens)
+  - [X] Android
+  - [ ] ios
 - [ ] A nice, smooth interface
-- [ ] Audio playback
-- [ ] Starred songs
 - [ ] Offline support
   - [ ] Sync content for local access in database
   - [ ] Selective caching
@@ -31,7 +34,8 @@ Non-goals:
 
 ## TODO:
  - [X] Playback support
- - [ ] Media players support (lock screens)
+ - [X] Media players support (lock screens) for Android
+ - [ ] Media players support (lock screens) for ios
  - [ ] Queue support
  - [X] cache artwork
  - [X] download files
