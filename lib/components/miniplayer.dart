@@ -38,7 +38,6 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
       coverArtLink: state.playerState.currentSong?.coverArtLink,
       coverArtId: state.playerState.currentSong?.coverArtId,
       duration: state.playerState.duration,
-      position: state.playerState.position,
       playbackProgress: playbackProgress,
       playerState: state.playerState.current,
       onPlay: () => dispatch(PlayerCommandPlay()),
@@ -58,7 +57,6 @@ class MiniPlayerModel extends Vm {
   final String coverArtLink;
   final String coverArtId;
   final Duration duration;
-  final Duration position;
   final double playbackProgress;
   final PlayerStates playerState;
   final Function onPlay;
@@ -73,7 +71,6 @@ class MiniPlayerModel extends Vm {
     @required this.coverArtLink,
     @required this.coverArtId,
     @required this.duration,
-    @required this.position,
     @required this.playbackProgress,
     @required this.playerState,
     @required this.onPlay,
@@ -87,7 +84,6 @@ class MiniPlayerModel extends Vm {
           coverArtLink,
           coverArtId,
           duration,
-          position,
           playerState,
         ]);
 }
