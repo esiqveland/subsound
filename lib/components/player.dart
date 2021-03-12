@@ -198,7 +198,7 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
       albumId: state.playerState.currentSong?.albumId,
       coverArtLink: state.playerState.currentSong?.coverArtLink,
       coverArtId: state.playerState.currentSong?.coverArtId,
-      isStarred: state.playerState.currentSong?.isStarred,
+      isStarred: state.playerState.currentSong?.isStarred ?? false,
       duration: state.playerState.duration,
       position: state.playerState.position,
       playerState: state.playerState.current,
