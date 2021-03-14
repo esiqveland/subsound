@@ -9,8 +9,10 @@ import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
+import 'package:subsound/subsonic/models/album.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
+import 'package:subsound/subsonic/requests/get_artists.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/utils/utils.dart';
 import 'package:uuid/uuid.dart';
@@ -164,14 +166,46 @@ class Albums {
     next[a.id] = a;
     return Albums(next);
   }
+
+  addAll(List<Album> data) {
+    final next = Map.of(albums);
+    data.forEach((a) {
+      next[a.id] = a;
+    });
+    return Albums(next);
+  }
+}
+
+class Artists {
+  final Map<String, ArtistResult> artists;
+
+  Artists(this.artists);
+
+  Artists add(ArtistResult a) {
+    final next = Map.of(artists);
+    next[a.id] = a;
+    return Artists(next);
+  }
+
+  addAll(GetArtistsData data) {
+    final next = Map.of(artists);
+    data.index.forEach((i) {
+      i.artist.forEach((a) {
+        next[a.id] = a;
+      });
+    });
+
+    return Artists(next);
+  }
 }
 
 class DataState {
   final Starred stars;
   final Albums albums;
   final Songs songs;
+  final Artists artists;
 
-  DataState({this.stars, this.albums, this.songs});
+  DataState({this.stars, this.albums, this.songs, this.artists});
 
   DataState copy({
     Starred stars,
