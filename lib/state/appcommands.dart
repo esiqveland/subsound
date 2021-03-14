@@ -75,10 +75,24 @@ class RefreshStarredCommand extends RunRequest {
   Future<AppState> reduce() async {
     final subsonicResponse =
         await GetStarred2().run(state.loginState.toClient());
+
+    final starred = Starred.of(subsonicResponse.data);
+
+    final dataState = state.dataState.copy(
+      stars: starred,
+    );
+
+    final song = state.playerState.currentSong?.copy(
+      isStarred: dataState.isSongStarred(state.playerState.currentSong.id),
+    );
+
+    final playerState = state.playerState.copy(
+      currentSong: song,
+    );
+
     return state.copy(
-      dataState: state.dataState.copy(
-        stars: Starred.of(subsonicResponse.data),
-      ),
+      playerState: playerState,
+      dataState: dataState,
     );
   }
 }
