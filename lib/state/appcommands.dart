@@ -1,12 +1,15 @@
+import 'dart:developer';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/errors.dart';
-import 'package:subsound/subsonic/base_request.dart';
+import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
+import 'package:subsound/subsonic/requests/ping.dart';
 import 'package:subsound/subsonic/requests/star.dart';
 import 'package:subsound/subsonic/response.dart';
 
-class StarIdCommand extends ReduxAction<AppState> {
+class StarIdCommand extends RunRequest {
   final ItemId id;
 
   StarIdCommand(this.id);
@@ -21,14 +24,19 @@ class StarIdCommand extends ReduxAction<AppState> {
             )
           : state.playerState;
 
-      return state.copy(playerState: next);
+      store.dispatchFuture(RefreshStarredCommand());
+
+      return state.copy(
+        playerState: next,
+      );
     } else {
       dispatch(DisplayError("something went wrong"));
     }
+    return null;
   }
 }
 
-class UnstarIdCommand extends ReduxAction<AppState> {
+class UnstarIdCommand extends RunRequest {
   final ItemId id;
 
   UnstarIdCommand(this.id);
@@ -43,43 +51,104 @@ class UnstarIdCommand extends ReduxAction<AppState> {
             )
           : state.playerState;
 
-      return state.copy(playerState: next);
+      var itemId = id.getId;
+      var stars = state.dataState.stars.remove(itemId);
+
+      return state.copy(
+        dataState: state.dataState.copy(
+          stars: stars,
+        ),
+        playerState: next,
+      );
     } else {
       dispatch(DisplayError("something went wrong"));
     }
+    return null;
   }
 }
 
-class GetStarred2Action extends ReduxAction<AppState> {
+class RefreshStarredCommand extends RunRequest {
   @override
   Future<AppState> reduce() async {
     final subsonicResponse =
         await GetStarred2().run(state.loginState.toClient());
     return state.copy(
       dataState: state.dataState.copy(
-        starred2: subsonicResponse.data,
+        stars: Starred.of(subsonicResponse.data),
       ),
     );
   }
 }
 
-class RunRequest<T> extends ReduxAction<AppState> {
+class GetAlbumCommand extends RunRequest {
+  final String albumId;
+
+  GetAlbumCommand({this.albumId});
+
+  @override
+  Future<AppState> reduce() async {
+    final subsonicResponse =
+        await GetAlbum(albumId).run(state.loginState.toClient());
+
+    final albums = state.dataState.albums.add(subsonicResponse.data);
+
+    return state.copy(
+      dataState: state.dataState.copy(
+        albums: albums,
+      ),
+    );
+  }
+}
+
+class GetSongCommand extends RunRequest {
+  final String songId;
+
+  GetSongCommand({this.songId});
+
+  @override
+  Future<AppState> reduce() async {
+    final subsonicResponse =
+        await Song(songId).run(state.loginState.toClient());
+
+    final albums = state.dataState.albums.add(subsonicResponse.data);
+
+    return state.copy(
+      dataState: state.dataState.copy(
+        albums: albums,
+      ),
+    );
+  }
+}
+
+class RefreshAppState extends ReduxAction<AppState> {
+  @override
+  Future<AppState> reduce() async {
+    if (!state.loginState.isValid) {
+      return null;
+    }
+
+    final ctx = state.loginState.toClient();
+    try {
+      final ping = await Ping().run(ctx);
+      if (ping.status != ResponseStatus.ok) {
+        log('ping failed: ${ping.data}');
+        return null;
+      }
+
+      await store.dispatchFuture(RefreshStarredCommand());
+    } catch (err) {
+      log('RefreshAppState error: ', error: err);
+    }
+    return null;
+  }
+}
+
+abstract class RunRequest extends ReduxAction<AppState> {
   final String requestId;
-  final BaseRequest<T> req;
 
   RunRequest({
     String requestId,
-    this.req,
   }) : this.requestId = requestId ?? uuid.v1();
 
-  @override
-  Future<AppState> reduce() async {
-    final subsonicResponse =
-        await GetStarred2().run(state.loginState.toClient());
-    return state.copy(
-      dataState: state.dataState.copy(
-        starred2: subsonicResponse.data,
-      ),
-    );
-  }
+  Future<AppState> reduce();
 }

@@ -6,9 +6,13 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
+import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
+import 'package:subsound/subsonic/requests/get_album.dart';
+import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
+import 'package:subsound/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
 final uuid = Uuid();
@@ -51,6 +55,7 @@ class StartupAction extends ReduxAction<AppState> {
   @override
   Future<AppState> reduce() async {
     final restored = await store.dispatchFuture(RestoreServerState());
+    store.dispatchFuture(RefreshAppState());
     final startedPlayer = await store.dispatchFuture(StartupPlayer());
     await Future.delayed(Duration(seconds: 1));
     return state.copy(startUpState: StartUpState.done);
@@ -93,29 +98,94 @@ class RestoreServerState extends ReduxAction<AppState> {
   }
 }
 
-class DataState {
-  final GetStarred2Result starred2;
+class Starred {
+  final Map<String, SongResult> songs;
+  final Map<String, AlbumResultSimple> albums;
 
-  DataState({this.starred2});
+  Starred(this.songs, this.albums);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Starred &&
+          runtimeType == other.runtimeType &&
+          songs == other.songs &&
+          albums == other.albums;
+
+  @override
+  int get hashCode => songs.hashCode ^ albums.hashCode;
+
+  static of(GetStarred2Result r) {
+    var songs = r.songs.toMap((s) => MapEntry(s.id, s));
+    var albums = r.albums.toMap((a) => MapEntry(a.id, a));
+    return Starred(songs, albums);
+  }
+
+  Starred remove(String itemId) {
+    var songs = Map.of(this.songs);
+    songs.remove(itemId);
+    var albums = Map.of(this.albums);
+    albums.remove(itemId);
+    return Starred(songs, albums);
+  }
+
+  Starred addSong(SongResult s) {
+    var songs = Map.of(this.songs);
+    songs[s.id] = s;
+    return Starred(songs, albums);
+  }
+
+  Starred addAlbum(AlbumResultSimple r) {
+    var albums = Map.of(this.albums);
+    albums[r.id] = r;
+    return Starred(songs, albums);
+  }
+}
+
+class Albums {
+  final Map<String, AlbumResult> albums;
+
+  Albums(this.albums);
+
+  Albums add(AlbumResult a) {
+    final next = Map.of(albums);
+    next[a.id] = a;
+    return Albums(next);
+  }
+}
+
+class DataState {
+  final Starred stars;
+  final Albums albums;
+
+  DataState({this.stars, this.albums});
 
   DataState copy({
-    GetStarred2Result starred2,
+    Starred stars,
+    Albums albums,
   }) =>
       DataState(
-        starred2: starred2 ?? this.starred2,
+        stars: stars ?? this.stars,
+        albums: albums ?? this.albums,
       );
 
   static DataState initialState() => DataState();
+
+  bool isStarred(SongResult s) => stars?.songs?.containsKey(s.id) ?? false;
+  bool isAlbumStarred(AlbumResult a) =>
+      stars?.albums?.containsKey(a.id) ?? false;
+  bool isAlbumIdStarred(String albumId) =>
+      stars?.albums?.containsKey(albumId) ?? false;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is DataState &&
           runtimeType == other.runtimeType &&
-          starred2 == other.starred2;
+          stars == other.stars;
 
   @override
-  int get hashCode => starred2.hashCode;
+  int get hashCode => stars.hashCode;
 }
 
 enum StartUpState { loading, done }
@@ -241,6 +311,9 @@ class ServerData {
       pass: password,
     );
   }
+
+  bool get isValid =>
+      uri.isNotEmpty && username.isNotEmpty && password.isNotEmpty;
 
   static initialState() => ServerData(uri: '', username: '', password: '');
 
