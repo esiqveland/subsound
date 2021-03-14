@@ -108,6 +108,67 @@ class SongResult {
   }
 }
 
+class GetSongRequest extends BaseRequest<SongResult> {
+  final String id;
+
+  GetSongRequest(this.id);
+
+  @override
+  String get sinceVersion => '1.8.0';
+
+  @override
+  Future<SubsonicResponse<SongResult>> run(SubsonicContext ctx) async {
+    final response = await ctx.client
+        .get(ctx.buildRequestUri('getSong', params: {'id': this.id}));
+
+    final data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    if (data['subsonic-response']['status'] != 'ok') {
+      throw StateError(data);
+    }
+
+    final songData = data['subsonic-response']['song'];
+    final songArtId = songData['coverArt'] ?? FallbackImageUrl;
+    final coverArtLink = (songArtId != null)
+        ? GetCoverArt(songArtId).getImageUrl(ctx)
+        : FallbackImageUrl;
+
+    final duration = getDuration(songData['duration']);
+
+    final id = songData['id'];
+    final playUrl = DownloadItem(id).getDownloadUrl(ctx);
+
+    final songResult = SongResult(
+      id: id,
+      playUrl: playUrl,
+      parent: songData['parent'],
+      title: songData['title'],
+      artistName: songData['artist'],
+      artistId: songData['artistId'],
+      albumName: songData['album'],
+      albumId: songData['albumId'],
+      coverArtId: songArtId,
+      coverArtLink: coverArtLink,
+      year: songData['year'] ?? 0,
+      duration: duration,
+      isVideo: songData['isVideo'] ?? false,
+      createdAt: DateTime.parse(songData['created']),
+      type: songData['type'],
+      bitRate: songData['bitRate'] ?? 0,
+      trackNumber: songData['track'] ?? 0,
+      fileSize: songData['size'] ?? 0,
+      contentType: songData['contentType'] ?? '',
+      suffix: songData['suffix'] ?? '',
+    );
+
+    return SubsonicResponse(
+      ResponseStatus.ok,
+      data['subsonic-response']['version'],
+      songResult,
+    );
+  }
+}
+
 class GetAlbum extends BaseRequest<AlbumResult> {
   final String id;
 

@@ -4,6 +4,8 @@ import 'package:async_redux/async_redux.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/errors.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
+import 'package:subsound/subsonic/requests/get_album_list.dart';
+import 'package:subsound/subsonic/requests/get_album_list2.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/ping.dart';
 import 'package:subsound/subsonic/requests/star.dart';
@@ -108,13 +110,42 @@ class GetSongCommand extends RunRequest {
   @override
   Future<AppState> reduce() async {
     final subsonicResponse =
-        await Song(songId).run(state.loginState.toClient());
+        await GetSongRequest(songId).run(state.loginState.toClient());
 
-    final albums = state.dataState.albums.add(subsonicResponse.data);
+    final songs = state.dataState.songs.add(subsonicResponse.data);
 
     return state.copy(
       dataState: state.dataState.copy(
-        albums: albums,
+        songs: songs,
+      ),
+    );
+  }
+}
+
+class GetAlbumsCommand extends RunRequest {
+  final int pageSize;
+  final int offset;
+  final GetAlbumListType type;
+
+  GetAlbumsCommand({
+    this.type = GetAlbumListType.alphabeticalByName,
+    this.pageSize = 50,
+    this.offset = 0,
+  });
+
+  @override
+  Future<AppState> reduce() async {
+    final subsonicResponse = await GetAlbumList2(
+      type: this.type,
+      size: this.pageSize,
+      offset: this.offset,
+    ).run(state.loginState.toClient());
+
+    final songs = state.dataState.songs.add(subsonicResponse.data);
+
+    return state.copy(
+      dataState: state.dataState.copy(
+        songs: songs,
       ),
     );
   }

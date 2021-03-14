@@ -142,6 +142,18 @@ class Starred {
   }
 }
 
+class Songs {
+  final Map<String, SongResult> _songs;
+
+  Songs(this._songs);
+
+  Songs add(SongResult s) {
+    final next = Map.of(_songs);
+    next[s.id] = s;
+    return Songs(next);
+  }
+}
+
 class Albums {
   final Map<String, AlbumResult> albums;
 
@@ -157,19 +169,26 @@ class Albums {
 class DataState {
   final Starred stars;
   final Albums albums;
+  final Songs songs;
 
-  DataState({this.stars, this.albums});
+  DataState({this.stars, this.albums, this.songs});
 
   DataState copy({
     Starred stars,
     Albums albums,
+    Songs songs,
   }) =>
       DataState(
         stars: stars ?? this.stars,
         albums: albums ?? this.albums,
+        songs: songs ?? this.songs,
       );
 
-  static DataState initialState() => DataState();
+  static DataState initialState() => DataState(
+        stars: Starred({}, {}),
+        albums: Albums({}),
+        songs: Songs({}),
+      );
 
   bool isStarred(SongResult s) => stars?.songs?.containsKey(s.id) ?? false;
   bool isAlbumStarred(AlbumResult a) =>
