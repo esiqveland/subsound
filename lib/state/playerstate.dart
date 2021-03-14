@@ -334,11 +334,14 @@ class PlayerCommandSetCurrentPlaying extends PlayerActions {
 
   @override
   AppState reduce() {
+    final next = song.copy(
+      isStarred: state.dataState.isSongStarred(song.id),
+    );
     return state.copy(
       playerState: state.playerState.copy(
         current: playerstate,
-        currentSong: song,
-        duration: song?.duration ?? Duration.zero,
+        currentSong: next,
+        duration: next?.duration ?? Duration.zero,
       ),
     );
   }
@@ -426,10 +429,14 @@ class PlayerCommandPlaySong extends PlayerActions {
     ));
     AudioService.play();
 
+    final next = song.copy(
+      isStarred: state.dataState.isSongStarred(song.id),
+    );
+
     return state.copy(
       playerState: state.playerState.copy(
         current: PlayerStates.playing,
-        currentSong: song,
+        currentSong: next,
         duration: song?.duration ?? Duration.zero,
       ),
     );

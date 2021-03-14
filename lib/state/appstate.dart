@@ -225,6 +225,7 @@ class DataState {
       );
 
   bool isStarred(SongResult s) => stars?.songs?.containsKey(s.id) ?? false;
+  bool isSongStarred(String id) => stars?.songs?.containsKey(id) ?? false;
   bool isAlbumStarred(AlbumResult a) =>
       stars?.albums?.containsKey(a.id) ?? false;
   bool isAlbumIdStarred(String albumId) =>
