@@ -117,7 +117,7 @@ class Starred {
   @override
   int get hashCode => songs.hashCode ^ albums.hashCode;
 
-  static of(GetStarred2Result r) {
+  static Starred of(GetStarred2Result r) {
     var songs = r.songs.toMap((s) => MapEntry(s.id, s));
     var albums = r.albums.toMap((a) => MapEntry(a.id, a));
     return Starred(songs, albums);
@@ -167,7 +167,7 @@ class Albums {
     return Albums(next);
   }
 
-  addAll(List<Album> data) {
+  Albums addAll(List<Album> data) {
     final next = Map.of(albums);
     data.forEach((a) {
       next[a.id] = a;
@@ -177,22 +177,26 @@ class Albums {
 }
 
 class Artists {
-  final Map<String, ArtistResult> artists;
+  final Map<String, Artist> artists;
 
   Artists(this.artists);
 
   Artists add(ArtistResult a) {
     final next = Map.of(artists);
-    next[a.id] = a;
+    next[a.id] = Artist(
+      id: a.id,
+      name: a.name,
+      albumCount: a.albumCount,
+      coverArtId: a.coverArtId,
+      coverArtLink: a.coverArtLink,
+    );
     return Artists(next);
   }
 
-  addAll(GetArtistsData data) {
+  Artists addAll(List<Artist> data) {
     final next = Map.of(artists);
-    data.index.forEach((i) {
-      i.artist.forEach((a) {
-        next[a.id] = a;
-      });
+    data.forEach((a) {
+      next[a.id] = a;
     });
 
     return Artists(next);
@@ -211,11 +215,13 @@ class DataState {
     Starred stars,
     Albums albums,
     Songs songs,
+    Artists artists,
   }) =>
       DataState(
         stars: stars ?? this.stars,
         albums: albums ?? this.albums,
         songs: songs ?? this.songs,
+        artists: artists ?? this.artists,
       );
 
   static DataState initialState() => DataState(

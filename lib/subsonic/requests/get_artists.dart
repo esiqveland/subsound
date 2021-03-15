@@ -39,8 +39,13 @@ class Artist {
   final String coverArtLink;
   final int albumCount;
 
-  Artist(
-      this.id, this.name, this.coverArtId, this.coverArtLink, this.albumCount);
+  Artist({
+    this.id,
+    this.name,
+    this.coverArtId,
+    this.coverArtLink,
+    this.albumCount,
+  });
 
   @override
   String toString() {
