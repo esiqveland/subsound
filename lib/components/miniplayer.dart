@@ -117,6 +117,7 @@ class MiniPlayerProgressBarState extends State<MiniPlayerProgressBar>
 
   @override
   void reassemble() {
+    super.reassemble();
     widget.onFinishListen(this);
   }
 
