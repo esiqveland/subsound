@@ -167,12 +167,13 @@ class AlbumsPageState extends State<AlbumsPage> {
     );
   }
 
-  Future<List<Album>> loadMore() {
+  Future<void> loadMore() {
     if (hasMore && !isLoading) {
       setState(() {
         isLoading = true;
       });
-      load(
+
+      return load(
         pageSize: 10,
         offset: _albumList.length,
       ).then((value) {
@@ -186,6 +187,7 @@ class AlbumsPageState extends State<AlbumsPage> {
             })
           });
     }
+    return Future.value(null);
   }
 
   Future<List<Album>> load({

@@ -56,9 +56,9 @@ class MyErrorObserver<St> implements ErrorObserver<St> {
 class StartupAction extends ReduxAction<AppState> {
   @override
   Future<AppState> reduce() async {
-    final restored = await store.dispatchFuture(RestoreServerState());
+    await store.dispatchFuture(RestoreServerState());
     store.dispatchFuture(RefreshAppState());
-    final startedPlayer = await store.dispatchFuture(StartupPlayer());
+    await store.dispatchFuture(StartupPlayer());
     await Future.delayed(Duration(seconds: 1));
     return state.copy(startUpState: StartUpState.done);
   }

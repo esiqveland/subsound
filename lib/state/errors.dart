@@ -7,5 +7,7 @@ class DisplayError extends ReduxAction<AppState> {
   DisplayError(this.errorMessage);
 
   @override
-  Future<AppState> reduce() async {}
+  Future<AppState> reduce() async {
+    return null;
+  }
 }

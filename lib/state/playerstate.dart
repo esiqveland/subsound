@@ -27,7 +27,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   AudioPlayerTask() : super(cacheManager: ArtworkCacheManager());
 
-  bool get _playing => AudioServiceBackground.state.playing;
+  //bool get _playing => AudioServiceBackground.state.playing;
 
   // Implement callbacks here. e.g. onStart, onStop, onPlay, onPause
 
@@ -36,7 +36,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   /// params passed into [AudioService.start] when starting this background
   /// audio task.
   @override
-  Future<Function> onStart(Map<String, dynamic> params) async {
+  Future<void> onStart(Map<String, dynamic> params) async {
     // Broadcast that we're connecting, and what controls are available.
     _broadcastState();
 
@@ -126,6 +126,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return AudioProcessingState.ready;
       case ProcessingState.completed:
         return AudioProcessingState.completed;
+      default:
+        return AudioProcessingState.none;
     }
   }
 
@@ -417,7 +419,7 @@ class PlayerCommandPlaySong extends PlayerActions {
       playerstate: PlayerStates.stopped,
     ));
 
-    final res = await AudioService.playMediaItem(MediaItem(
+    await AudioService.playMediaItem(MediaItem(
       id: songUrl,
       artist: song?.artist,
       album: song?.album,
