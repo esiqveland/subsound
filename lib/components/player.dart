@@ -479,6 +479,7 @@ class UpdatingPlayerSliderState extends State<UpdatingPlayerSlider>
 
   @override
   void reassemble() {
+    super.reassemble();
     widget.playerState.onStopListen(this);
   }
 
