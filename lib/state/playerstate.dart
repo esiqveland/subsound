@@ -142,7 +142,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
     lastMediaItem = mediaItem;
-    final dur = await _player.setUrl(mediaItem.id);
+    await _player.setUrl(mediaItem.id);
     await AudioServiceBackground.setMediaItem(mediaItem);
     await _broadcastState();
   }
@@ -445,7 +445,7 @@ class PlayerCommandPlaySong extends PlayerActions {
 
 extension Formatter on PlaybackState {
   String format() {
-    return "PlaybackState={playing=${playing}, actions=${actions}, processingState=${describeEnum(processingState)}, updateTime=${updateTime},}";
+    return "PlaybackState={playing=$playing, actions=$actions, processingState=${describeEnum(processingState)}, updateTime=$updateTime,}";
   }
 }
 
