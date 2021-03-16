@@ -15,15 +15,17 @@ class PlatformSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     assert(theme.platform != null);
+
     switch (theme.platform) {
+      case TargetPlatform.macOS:
+      case TargetPlatform.iOS:
+        return iosBuilder(context);
       case TargetPlatform.windows:
       case TargetPlatform.linux:
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
+      default:
         return androidBuilder(context);
-      case TargetPlatform.macOS:
-      case TargetPlatform.iOS:
-        return iosBuilder(context);
     }
   }
 }
