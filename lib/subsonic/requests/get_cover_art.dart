@@ -45,7 +45,7 @@ class GetCoverArt extends BaseRequest<Uint8List> {
     );
     return info.map((event) {
       if (event is FileInfo) {
-        return event as FileInfo;
+        return event;
       } else {
         log('error: event is of type DownloadProgress');
         throw new StateError('error: event is of type DownloadProgress');
@@ -62,7 +62,7 @@ class GetCoverArt extends BaseRequest<Uint8List> {
       cacheKey: id,
       height: size,
       width: size,
-    ).single.then((value) => value as FileInfo);
+    ).single.then((value) => value);
 
     final body = await resp.file.readAsBytes();
     return SubsonicResponse(ResponseStatus.ok, ctx.version, body);

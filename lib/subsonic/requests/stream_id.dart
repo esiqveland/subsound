@@ -46,7 +46,7 @@ class StreamItem extends BaseRequest<Uint8List> {
     );
     return info.map((event) {
       if (event is FileInfo) {
-        return event as FileInfo;
+        return event;
       } else {
         log('error: event is of type DownloadProgress');
         throw new StateError('error: event is of type DownloadProgress');
