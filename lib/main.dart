@@ -21,7 +21,7 @@ void main() async {
   NavigateAction.setNavigatorKey(navigatorKey);
 
   final Store<AppState> store = createStore();
-  await store.dispatch(StartupAction());
+  store.dispatchFuture(StartupAction());
 
   runApp(MyApp(
     store: store,
