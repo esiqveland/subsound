@@ -71,7 +71,7 @@ class GetIndexesRequest extends BaseRequest<GetArtistsData> {
       throw StateError('${data['subsonic-response']['error']['code']}');
     }
 
-    final indexes = data['subsonic-response']['indexes'] as Map;
+    //final indexes = data['subsonic-response']['indexes'] as Map;
 
     throw new StateError("Not implemented yet.");
 
