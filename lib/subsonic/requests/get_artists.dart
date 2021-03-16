@@ -102,11 +102,11 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
                 final artistName = artist['name'];
 
                 return Artist(
-                  artist['id'],
-                  artistName,
-                  coverArtId,
-                  coverArtLink,
-                  artist['albumCount'],
+                  id: artist['id'],
+                  name: artistName,
+                  coverArtId: coverArtId,
+                  coverArtLink: coverArtLink,
+                  albumCount: artist['albumCount'],
                 );
               })
               .where((element) => element != null)

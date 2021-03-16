@@ -157,13 +157,20 @@ class Songs {
 }
 
 class Albums {
-  final Map<String, AlbumResult> albums;
+  final Map<String, Album> albums;
 
   Albums(this.albums);
 
   Albums add(AlbumResult a) {
     final next = Map.of(albums);
-    next[a.id] = a;
+    next[a.id] = Album(
+      id: a.id,
+      artist: a.artistName,
+      title: a.name,
+      coverArtId: a.coverArtId,
+      coverArtLink: a.coverArtLink,
+      isDir: false,
+    );
     return Albums(next);
   }
 
