@@ -485,8 +485,6 @@ class UpdatingPlayerSliderState extends State<UpdatingPlayerSlider>
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return StreamBuilder<PositionUpdate>(
       stream: stream.stream,
       builder: (context, snapshot) {
