@@ -100,7 +100,7 @@ class SongResult {
     if (minutes > 75) {
       minutes = minutes - (hours * 60);
       var seconds = duration.inSeconds - (minutes * 60);
-      return '${hours}:${twoDigits(minutes)}:${twoDigits(seconds)}';
+      return '$hours:${twoDigits(minutes)}:${twoDigits(seconds)}';
     } else {
       var seconds = duration.inSeconds - (minutes * 60);
       return '${twoDigits(minutes)}:${twoDigits(seconds)}';
