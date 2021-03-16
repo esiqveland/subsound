@@ -1,4 +1,5 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+// ignore: implementation_imports
 import 'package:flutter_cache_manager/src/storage/file_system/file_system_io.dart'
     as fsio;
 import 'package:http/http.dart';
