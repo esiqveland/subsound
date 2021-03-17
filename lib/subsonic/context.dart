@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
+
 import 'token.dart';
 
 class SubsonicContext {
@@ -108,8 +109,9 @@ class LoggingClient extends BaseClient {
       return res;
     }).catchError((err) {
       final elapsed = DateTime.now().difference(start);
-      log('http:client:${start.millisecondsSinceEpoch}:${req.method}:${req.url.toString()}: ERROR took ${elapsed.inMilliseconds}ms', error: err);
-      return Future.error(err);
+      log('http:client:${start.millisecondsSinceEpoch}:${req.method}:${req.url.toString()}: ERROR took ${elapsed.inMilliseconds}ms',
+          error: err);
+      return Future<StreamedResponse>.error(err);
     });
   }
 }

@@ -308,7 +308,7 @@ class AlbumPageState extends State<AlbumPage> {
         .then((value) => value.data)
         .catchError((err) {
       log('GetArtist:error:$albumId', error: err);
-      return Future.error(err);
+      return Future<AlbumResult>.error(err);
     });
   }
 }

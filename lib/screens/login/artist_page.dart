@@ -239,7 +239,7 @@ class ArtistPageState extends State<ArtistPage> {
         .then((value) => value.data)
         .catchError((err) {
       log('GetArtist:error:$artistId', error: err);
-      return Future.error(err);
+      return Future<ArtistResult>.error(err);
     });
   }
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
@@ -261,7 +260,6 @@ class AppState {
   final StartUpState startUpState;
   final ServerData loginState;
   final UserState userState;
-  final TodoState todoState;
   final PlayerState playerState;
   final DataState dataState;
 
@@ -269,7 +267,6 @@ class AppState {
     this.startUpState,
     this.loginState,
     this.userState,
-    this.todoState,
     this.playerState,
     this.dataState,
   });
@@ -278,7 +275,6 @@ class AppState {
     StartUpState startUpState,
     ServerData loginState,
     UserState userState,
-    TodoState todoState,
     PlayerState playerState,
     DataState dataState,
   }) {
@@ -286,7 +282,6 @@ class AppState {
       startUpState: startUpState ?? this.startUpState,
       loginState: loginState ?? this.loginState,
       userState: userState ?? this.userState,
-      todoState: todoState ?? this.todoState,
       playerState: playerState ?? this.playerState,
       dataState: dataState ?? this.dataState,
     );
@@ -296,7 +291,6 @@ class AppState {
         startUpState: StartUpState.loading,
         loginState: ServerData.initialState(),
         userState: UserState.initialState(),
-        todoState: TodoState.initialState(),
         playerState: PlayerState.initialState(),
         dataState: DataState.initialState(),
       );
@@ -309,7 +303,6 @@ class AppState {
           startUpState == other.startUpState &&
           loginState == other.loginState &&
           userState == other.userState &&
-          todoState == other.todoState &&
           playerState == other.playerState &&
           dataState == other.dataState;
 
@@ -318,39 +311,13 @@ class AppState {
       startUpState.hashCode ^
       loginState.hashCode ^
       userState.hashCode ^
-      todoState.hashCode ^
       playerState.hashCode ^
       dataState.hashCode;
 
   @override
   String toString() {
-    return 'AppState{startUpState: $startUpState, loginState: $loginState, userState: $userState, todoState: $todoState, playerState: $playerState, dataState: $dataState}';
+    return 'AppState{startUpState: $startUpState, loginState: $loginState, userState: $userState, playerState: $playerState, dataState: $dataState}';
   }
-}
-
-class Todo {}
-
-class TodoState {
-  final List<Todo> todos;
-
-  TodoState({this.todos});
-
-  TodoState copy({List<Todo> todos}) {
-    return TodoState(todos: todos ?? this.todos);
-  }
-
-  static TodoState initialState() => TodoState(todos: const []);
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        other is TodoState &&
-            runtimeType == other.runtimeType &&
-            listEquals(todos, other.todos);
-  }
-
-  @override
-  int get hashCode => ListEquality().hash(todos);
 }
 
 class UserState {
