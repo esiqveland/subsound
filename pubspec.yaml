@@ -27,7 +27,7 @@ dependencies:
   shared_preferences: '>=0.5.12+3 <2.0.0'
   path_provider: ^1.6.24
   async_redux: ^7.0.1
-  audio_service: ^0.16.1
+  audio_service: ^0.16.2+1
   just_audio: ^0.6.5
   #audioplayer: ^0.8.1
   #audioplayers: 0.17.2
