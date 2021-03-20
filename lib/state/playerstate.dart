@@ -144,9 +144,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
     lastMediaItem = mediaItem;
+    SongMetadata meta = mediaItem.getSongMetadata();
+
     var uri = Uri.parse(mediaItem.id);
+    var cacheFile = await DownloadCacheManager().getCachedSongFile(meta);
     var source = LockCachingAudioSource(
       uri,
+      cacheFile: cacheFile,
       headers: {
         "X-Request-ID": uuid.v1().toString(),
         "Host": uri.host,
@@ -206,6 +210,28 @@ abstract class PlayerActions extends ReduxAction<AppState> {
     if (!AudioService.running) {
       await dispatchFuture(StartupPlayer());
     }
+  }
+}
+
+extension SongMeta on MediaItem {
+  MediaItem setSongMetadata(SongMetadata s) {
+    extras["id"] = s.songId;
+    extras["extension"] = s.fileExtension;
+    extras["size"] = s.fileSize;
+    extras["type"] = s.contentType;
+    return this;
+  }
+
+  SongMetadata getSongMetadata() {
+    if (extras == null) {
+      return null;
+    }
+    return SongMetadata(
+      songId: extras["id"],
+      fileExtension: extras["extension"],
+      fileSize: extras["size"],
+      contentType: extras["type"],
+    );
   }
 }
 
@@ -425,29 +451,37 @@ class PlayerCommandPlaySong extends PlayerActions {
 
   @override
   Future<AppState> reduce() async {
-    final songUrl = song.songUrl;
+    final next = song.copy(
+      isStarred: state.dataState.isSongStarred(song.id),
+    );
+    final songUrl = next.songUrl;
 
     dispatch(PlayerCommandSetCurrentPlaying(
-      song,
+      next,
       playerstate: PlayerStates.stopped,
     ));
 
     log('PlaySong: songUrl=$songUrl');
-    await AudioService.playMediaItem(MediaItem(
-      id: songUrl,
-      artist: song?.artist,
-      album: song?.album,
-      title: song?.songTitle,
-      displayTitle: song?.songTitle,
-      displaySubtitle: song?.artist,
-      artUri: song?.coverArtLink,
-      duration: song?.duration ?? state.playerState.duration,
-    ));
-    AudioService.play();
-
-    final next = song.copy(
-      isStarred: state.dataState.isSongStarred(song.id),
+    SongMetadata meta = SongMetadata(
+      songId: next.id,
+      fileExtension: next.fileExtension,
+      fileSize: next.fileSize,
+      contentType: next.contentType,
     );
+    final playItem = MediaItem(
+      id: songUrl,
+      artist: next?.artist,
+      album: next?.album,
+      title: next?.songTitle,
+      displayTitle: next?.songTitle,
+      displaySubtitle: next?.artist,
+      artUri: next?.coverArtLink,
+      duration: next?.duration ?? state.playerState.duration,
+      extras: {},
+    ).setSongMetadata(meta);
+
+    await AudioService.playMediaItem(playItem);
+    AudioService.play();
 
     return state.copy(
       playerState: state.playerState.copy(

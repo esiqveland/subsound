@@ -25,6 +25,9 @@ class PlayerSong {
   final String coverArtId;
   final String coverArtLink;
   final String songUrl;
+  final String contentType;
+  final String fileExtension;
+  final int fileSize;
   final Duration duration;
   final bool isStarred;
 
@@ -38,6 +41,9 @@ class PlayerSong {
     this.coverArtId,
     this.coverArtLink,
     this.songUrl,
+    this.contentType,
+    this.fileExtension,
+    this.fileSize,
     this.duration,
     this.isStarred = false,
   });
@@ -52,8 +58,10 @@ class PlayerSong {
         coverArtId: s.coverArtId,
         coverArtLink: s.coverArtLink,
         songUrl: s.playUrl,
+        contentType: s.contentType,
+        fileExtension: s.suffix,
+        fileSize: s.fileSize,
         duration: s.duration,
-        //isStarred: s.starred,
         isStarred: false,
       );
 
@@ -71,6 +79,9 @@ class PlayerSong {
           coverArtId == other.coverArtId &&
           coverArtLink == other.coverArtLink &&
           songUrl == other.songUrl &&
+          contentType == other.contentType &&
+          fileExtension == other.fileExtension &&
+          fileSize == other.fileSize &&
           duration == other.duration &&
           isStarred == other.isStarred;
 
@@ -101,6 +112,9 @@ class PlayerSong {
         coverArtId: coverArtId,
         coverArtLink: coverArtLink,
         songUrl: songUrl,
+        contentType: contentType,
+        fileExtension: fileExtension,
+        fileSize: fileSize,
         duration: duration,
         isStarred: isStarred ?? this.isStarred,
       );
