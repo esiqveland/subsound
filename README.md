@@ -4,6 +4,8 @@ A subsonic music player.
 
 ## Screenshots
 
+![Screenshot](screenshots/screenshot_1616254972.png)
+
 ![Screenshot](screenshots/albumview.png)
 
 ![Screenshot](screenshots/artistview.png)
