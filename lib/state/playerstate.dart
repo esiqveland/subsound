@@ -144,7 +144,24 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
     lastMediaItem = mediaItem;
-    await _player.setUrl(mediaItem.id);
+    // await _player.setUrl(mediaItem.id);
+    var uri = Uri.parse(mediaItem.id);
+    var source = LockCachingAudioSource(
+      uri,
+      headers: {
+        "X-Request-ID": uuid.v1().toString(),
+      },
+    );
+    var source2 = AudioSource.uri(
+      uri,
+      headers: null,
+    );
+
+    await _player.setAudioSource(
+      source,
+      initialPosition: Duration.zero,
+      preload: true,
+    );
     await AudioServiceBackground.setMediaItem(mediaItem);
     await _broadcastState();
   }
