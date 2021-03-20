@@ -150,6 +150,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       uri,
       headers: {
         "X-Request-ID": uuid.v1().toString(),
+        "Host": uri.host,
       },
     );
     var source2 = AudioSource.uri(
