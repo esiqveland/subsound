@@ -419,6 +419,7 @@ class PlayerCommandPlaySong extends PlayerActions {
       playerstate: PlayerStates.stopped,
     ));
 
+    log('PlaySong: songUrl=$songUrl');
     await AudioService.playMediaItem(MediaItem(
       id: songUrl,
       artist: song?.artist,
