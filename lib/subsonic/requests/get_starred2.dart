@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:subsound/subsonic/requests/download.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_cover_art.dart';
+import 'package:subsound/subsonic/requests/stream_id.dart';
 import 'package:subsound/utils/duration.dart';
 
 import '../base_request.dart';
@@ -73,7 +73,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
       final duration = getDuration(songData['duration']);
 
       final id = songData['id'];
-      final playUrl = DownloadItem(id).getDownloadUrl(ctx);
+      final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
       return SongResult(
         id: id,

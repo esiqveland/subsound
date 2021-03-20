@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:subsound/subsonic/requests/download.dart';
+import 'package:subsound/subsonic/requests/stream_id.dart';
 import 'package:subsound/utils/duration.dart';
 
 import '../base_request.dart';
@@ -136,7 +136,7 @@ class GetSongRequest extends BaseRequest<SongResult> {
     final duration = getDuration(songData['duration']);
 
     final id = songData['id'];
-    final playUrl = DownloadItem(id).getDownloadUrl(ctx);
+    final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
     final songResult = SongResult(
       id: id,
@@ -200,7 +200,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
       final duration = getDuration(songData['duration']);
 
       final id = songData['id'];
-      final playUrl = DownloadItem(id).getDownloadUrl(ctx);
+      final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
       return SongResult(
         id: id,
