@@ -144,7 +144,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
     lastMediaItem = mediaItem;
-    // await _player.setUrl(mediaItem.id);
     var uri = Uri.parse(mediaItem.id);
     var source = LockCachingAudioSource(
       uri,
@@ -152,10 +151,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
         "X-Request-ID": uuid.v1().toString(),
         "Host": uri.host,
       },
-    );
-    var source2 = AudioSource.uri(
-      uri,
-      headers: null,
     );
 
     await _player.setAudioSource(
