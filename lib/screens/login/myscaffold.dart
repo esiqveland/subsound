@@ -171,15 +171,18 @@ class _AppScaffold extends StatelessWidget {
                     ),
                   ),
                   ListTile(
-                    leading: Icon(Icons.music_note),
-                    title: Text("Artists"),
+                    leading: Icon(Icons.star),
+                    title: Text("Starred"),
                     onTap: () {
-                      Navigator.of(context).pushNamed(HomeScreen.routeName);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => HomeScreen(
+                                initialTabIndex: 0,
+                              )));
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.album),
-                    title: Text("Albums"),
+                    leading: Icon(Icons.music_note),
+                    title: Text("Artists"),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => HomeScreen(
@@ -188,8 +191,8 @@ class _AppScaffold extends StatelessWidget {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.star),
-                    title: Text("Starred"),
+                    leading: Icon(Icons.album),
+                    title: Text("Albums"),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => HomeScreen(
