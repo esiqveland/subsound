@@ -30,13 +30,13 @@ class HomeScreen extends StatelessWidget {
               onTap: (idx) {},
               tabs: [
                 Tab(
+                  text: "Starred",
+                ),
+                Tab(
                   text: "Artists",
                 ),
                 Tab(
                   text: "Albums",
-                ),
-                Tab(
-                  text: "Starred",
                 ),
                 //Tab(icon: Icon(Icons.add_shopping_cart)),
               ],
@@ -45,9 +45,9 @@ class HomeScreen extends StatelessWidget {
           body: (context) => Center(
             child: TabBarView(
               children: [
+                Center(child: StarredPage(ctx: state.toClient())),
                 Center(child: ArtistsPage(ctx: state.toClient())),
                 Center(child: AlbumsPage(ctx: state.toClient())),
-                Center(child: StarredPage(ctx: state.toClient())),
               ],
             ),
           ),
