@@ -280,7 +280,22 @@ class PlayPauseIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: getOnPressed(this.state),
+      onPressed: () {
+        switch (state.playerState) {
+          case PlayerStates.stopped:
+            state.onPlay();
+            break;
+          case PlayerStates.playing:
+            state.onPause();
+            break;
+          case PlayerStates.paused:
+            state.onPlay();
+            break;
+          case PlayerStates.buffering:
+            state.onPause();
+            break;
+        }
+      },
       splashRadius: 16.0,
       icon: getIcon(state.playerState),
     );
@@ -299,27 +314,5 @@ class PlayPauseIcon extends StatelessWidget {
       default:
         return Icon(Icons.play_circle_fill);
     }
-  }
-
-  getOnPressed(MiniPlayerModel state) {
-    if (state.playerState == PlayerStates.buffering) {
-      return null;
-    }
-    return () => () {
-          switch (state.playerState) {
-            case PlayerStates.stopped:
-              state.onPlay();
-              break;
-            case PlayerStates.playing:
-              state.onPause();
-              break;
-            case PlayerStates.paused:
-              state.onPlay();
-              break;
-            case PlayerStates.buffering:
-              state.onPause();
-              break;
-          }
-        };
   }
 }
