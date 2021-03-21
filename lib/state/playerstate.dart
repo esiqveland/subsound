@@ -247,7 +247,17 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onClick(MediaButton button) async {
-    playPause();
+    switch (button) {
+      case MediaButton.media:
+        playPause();
+        break;
+      case MediaButton.next:
+        _skipRelative(1);
+        break;
+      case MediaButton.previous:
+        _skipRelative(-1);
+        break;
+    }
   }
 
   Future<void> playPause() async {
