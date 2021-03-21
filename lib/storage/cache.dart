@@ -37,12 +37,14 @@ class ArtworkCacheManager extends CacheManager with ImageCacheManager {
 
 class SongMetadata {
   final String songId;
+  final String songUrl;
   final String fileExtension;
   final int fileSize;
   final String contentType;
 
   SongMetadata({
     required this.songId,
+    required this.songUrl,
     required this.fileExtension,
     required this.fileSize,
     required this.contentType,

@@ -146,7 +146,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     lastMediaItem = mediaItem;
     SongMetadata meta = mediaItem.getSongMetadata()!;
 
-    var uri = Uri.parse(mediaItem.id);
+    var uri = Uri.parse(meta.songUrl);
     var cacheFile = await DownloadCacheManager().getCachedSongFile(meta);
     var source = LockCachingAudioSource(
       uri,
@@ -216,6 +216,7 @@ abstract class PlayerActions extends ReduxAction<AppState> {
 extension SongMeta on MediaItem {
   MediaItem setSongMetadata(SongMetadata s) {
     extras!["id"] = s.songId;
+    extras!["songUrl"] = s.songUrl;
     extras!["extension"] = s.fileExtension;
     extras!["size"] = s.fileSize;
     extras!["type"] = s.contentType;
@@ -228,6 +229,7 @@ extension SongMeta on MediaItem {
     }
     return SongMetadata(
       songId: extras!["id"],
+      songUrl: extras!["songUrl"],
       fileExtension: extras!["extension"],
       fileSize: extras!["size"],
       contentType: extras!["type"],
@@ -464,12 +466,13 @@ class PlayerCommandPlaySong extends PlayerActions {
     log('PlaySong: songUrl=$songUrl');
     SongMetadata meta = SongMetadata(
       songId: next.id,
+      songUrl: songUrl,
       fileExtension: next.fileExtension,
       fileSize: next.fileSize,
       contentType: next.contentType,
     );
     final playItem = MediaItem(
-      id: songUrl,
+      id: next.id,
       artist: next.artist,
       album: next.album,
       title: next.songTitle,
