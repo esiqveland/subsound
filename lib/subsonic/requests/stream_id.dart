@@ -10,7 +10,7 @@ import '../subsonic.dart';
 /// but this method returns the original media data without transcoding or downsampling.
 class StreamItem extends BaseRequest<Uint8List> {
   final String id;
-  final int maxBitRate;
+  final int? maxBitRate;
 
   StreamItem(
     this.id, {
@@ -37,7 +37,7 @@ class StreamItem extends BaseRequest<Uint8List> {
 
   static Stream<FileInfo> loadWithCache(
     String url, {
-    String cacheKey,
+    String? cacheKey,
   }) {
     final info = DownloadCacheManager().getFileStream(
       url,

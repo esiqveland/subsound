@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appcommands.dart';
@@ -215,13 +214,17 @@ class DataState {
   final Songs songs;
   final Artists artists;
 
-  DataState({this.stars, this.albums, this.songs, this.artists});
+  DataState(
+      {required this.stars,
+      required this.albums,
+      required this.songs,
+      required this.artists});
 
   DataState copy({
-    Starred stars,
-    Albums albums,
-    Songs songs,
-    Artists artists,
+    Starred? stars,
+    Albums? albums,
+    Songs? songs,
+    Artists? artists,
   }) =>
       DataState(
         stars: stars ?? this.stars,
@@ -234,14 +237,13 @@ class DataState {
         stars: Starred({}, {}),
         albums: Albums({}),
         songs: Songs({}),
+        artists: Artists({}),
       );
 
-  bool isStarred(SongResult s) => stars?.songs?.containsKey(s.id) ?? false;
-  bool isSongStarred(String id) => stars?.songs?.containsKey(id) ?? false;
-  bool isAlbumStarred(AlbumResult a) =>
-      stars?.albums?.containsKey(a.id) ?? false;
-  bool isAlbumIdStarred(String albumId) =>
-      stars?.albums?.containsKey(albumId) ?? false;
+  bool isStarred(SongResult s) => stars.songs.containsKey(s.id);
+  bool isSongStarred(String id) => stars.songs.containsKey(id);
+  bool isAlbumStarred(AlbumResult a) => stars.albums.containsKey(a.id);
+  bool isAlbumIdStarred(String albumId) => stars.albums.containsKey(albumId);
 
   @override
   bool operator ==(Object other) =>
@@ -264,19 +266,19 @@ class AppState {
   final DataState dataState;
 
   AppState({
-    this.startUpState,
-    this.loginState,
-    this.userState,
-    this.playerState,
-    this.dataState,
+    required this.startUpState,
+    required this.loginState,
+    required this.userState,
+    required this.playerState,
+    required this.dataState,
   });
 
   AppState copy({
-    StartUpState startUpState,
-    ServerData loginState,
-    UserState userState,
-    PlayerState playerState,
-    DataState dataState,
+    StartUpState? startUpState,
+    ServerData? loginState,
+    UserState? userState,
+    PlayerState? playerState,
+    DataState? dataState,
   }) {
     return AppState(
       startUpState: startUpState ?? this.startUpState,
@@ -330,13 +332,13 @@ class ServerData {
   final String password;
 
   ServerData({
-    @required this.uri,
-    @required this.username,
-    @required this.password,
+    required this.uri,
+    required this.username,
+    required this.password,
   });
 
   SubsonicContext toClient() {
-    final url = Uri.tryParse(uri);
+    final url = Uri.parse(uri);
     return SubsonicContext(
       serverId: this.uri,
       name: url.host,

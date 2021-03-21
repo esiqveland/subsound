@@ -19,7 +19,7 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
     return AlbumViewModel(
       serverData: state.loginState,
       onPlay: (SongResult r) {
-        dispatch(PlayerCommandPlaySong(PlayerSong.from(r)));
+        dispatch!(PlayerCommandPlaySong(PlayerSong.from(r)));
       },
     );
   }
@@ -30,8 +30,8 @@ class AlbumViewModel extends Vm {
   final Function(SongResult) onPlay;
 
   AlbumViewModel({
-    this.serverData,
-    this.onPlay,
+    required this.serverData,
+    required this.onPlay,
   }) : super(equals: [serverData]);
 }
 
@@ -39,7 +39,7 @@ class AlbumScreen extends StatelessWidget {
   final String albumId;
 
   AlbumScreen({
-    @required this.albumId,
+    required this.albumId,
   });
 
   @override
@@ -67,10 +67,10 @@ class AlbumPage extends StatefulWidget {
   final Function(SongResult) onPlay;
 
   const AlbumPage({
-    Key key,
-    this.ctx,
-    this.albumId,
-    this.onPlay,
+    Key? key,
+    required this.ctx,
+    required this.albumId,
+    required this.onPlay,
   }) : super(key: key);
 
   @override
@@ -88,9 +88,9 @@ class SongRow extends StatelessWidget {
   final Function(SongResult) onPlay;
 
   const SongRow({
-    Key key,
-    @required this.song,
-    @required this.onPlay,
+    Key? key,
+    required this.song,
+    required this.onPlay,
   }) : super(key: key);
 
   @override
@@ -133,9 +133,9 @@ class AlbumView extends StatelessWidget {
   final Function(SongResult) onPlay;
 
   const AlbumView({
-    Key key,
-    @required this.album,
-    @required this.onPlay,
+    Key? key,
+    required this.album,
+    required this.onPlay,
   }) : super(key: key);
 
   @override
@@ -251,7 +251,8 @@ class AlbumList extends StatelessWidget {
   final AlbumResult album;
   final List<SongResult> songs;
 
-  const AlbumList({Key key, this.album, this.songs}) : super(key: key);
+  const AlbumList({Key? key, required this.album, required this.songs})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -272,7 +273,8 @@ class AlbumPageState extends State<AlbumPage> {
   final String albumId;
   final Function(SongResult) onPlay;
 
-  AlbumPageState({this.ctx, this.albumId, this.onPlay});
+  AlbumPageState(
+      {required this.ctx, required this.albumId, required this.onPlay});
 
   @override
   void initState() {
@@ -291,7 +293,7 @@ class AlbumPageState extends State<AlbumPage> {
                 return Center(child: Text("${snapshot.error}"));
               } else {
                 return AlbumView(
-                  album: snapshot.data,
+                  album: snapshot.data!,
                   onPlay: this.onPlay,
                 );
               }

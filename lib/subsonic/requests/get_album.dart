@@ -22,17 +22,17 @@ class AlbumResult {
   final DateTime createdAt;
 
   AlbumResult({
-    this.id,
-    this.name,
-    this.artistName,
-    this.artistId,
-    this.coverArtId,
-    this.coverArtLink,
-    this.year,
-    this.duration,
-    this.songCount,
-    this.createdAt,
-    this.songs,
+    required this.id,
+    required this.name,
+    required this.artistName,
+    required this.artistId,
+    required this.coverArtId,
+    required this.coverArtLink,
+    required this.year,
+    required this.duration,
+    required this.songCount,
+    required this.createdAt,
+    this.songs = const [],
   });
 
   String durationNice() {
@@ -43,13 +43,14 @@ class AlbumResult {
 class SongResult {
   final String id;
   final String playUrl;
-  final String parent;
+  final String? parent;
   final String title;
   final String artistName;
   final String artistId;
   final String albumName;
   final String albumId;
   final String coverArtId;
+  // TODO: convert to Uri?
   final String coverArtLink;
   final int year;
   final Duration duration;
@@ -63,26 +64,26 @@ class SongResult {
   final String suffix;
 
   SongResult({
-    this.id,
-    this.playUrl,
+    required this.id,
+    required this.playUrl,
     this.parent,
-    this.title,
-    this.artistName,
-    this.artistId,
-    this.albumName,
-    this.albumId,
-    this.coverArtId,
-    this.coverArtLink,
-    this.year,
-    this.duration,
-    this.isVideo,
-    this.createdAt,
-    this.type,
-    this.bitRate,
-    this.trackNumber,
-    this.fileSize,
-    this.suffix,
-    this.contentType,
+    required this.title,
+    required this.artistName,
+    required this.artistId,
+    required this.albumName,
+    required this.albumId,
+    required this.coverArtId,
+    required this.coverArtLink,
+    required this.year,
+    required this.duration,
+    this.isVideo = false,
+    required this.createdAt,
+    required this.type,
+    required this.bitRate,
+    required this.trackNumber,
+    required this.fileSize,
+    required this.suffix,
+    required this.contentType,
   });
 
   String durationNice() {
@@ -189,13 +190,15 @@ class GetAlbum extends BaseRequest<AlbumResult> {
     }
 
     final albumDataNew = data['subsonic-response']['album'];
-    final coverArtId = albumDataNew['coverArt'];
+    final String? coverArtId = albumDataNew['coverArt'];
 
     final songs = (albumDataNew['song'] as List).map((songData) {
-      final songArtId = songData['coverArt'] ?? coverArtId;
+      final String? songArtId = songData['coverArt'] ?? coverArtId;
       final coverArtLink = (songArtId != null && coverArtId != songArtId)
           ? GetCoverArt(songArtId).getImageUrl(ctx)
-          : GetCoverArt(coverArtId).getImageUrl(ctx) ?? FallbackImageUrl;
+          : coverArtId != null
+              ? GetCoverArt(coverArtId).getImageUrl(ctx)
+              : FallbackImageUrl;
 
       final duration = getDuration(songData['duration']);
 
@@ -211,7 +214,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
         artistId: songData['artistId'],
         albumName: songData['album'],
         albumId: songData['albumId'],
-        coverArtId: songArtId,
+        coverArtId: songArtId ?? id,
         coverArtLink: coverArtLink,
         year: songData['year'] ?? 0,
         duration: duration,
@@ -234,12 +237,14 @@ class GetAlbum extends BaseRequest<AlbumResult> {
 
     final duration = getDuration(albumDataNew['duration']);
 
+    final albumId = albumDataNew['id'];
+
     final albumResult = AlbumResult(
-      id: albumDataNew['id'],
+      id: albumId,
       name: albumDataNew['name'],
       artistName: albumDataNew['artist'],
       artistId: albumDataNew['artistId'],
-      coverArtId: coverArtId,
+      coverArtId: coverArtId ?? albumId,
       coverArtLink: coverArtLink,
       year: albumDataNew['year'] ?? 0,
       duration: duration,

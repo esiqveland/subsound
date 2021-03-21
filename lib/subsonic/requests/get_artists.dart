@@ -40,11 +40,11 @@ class Artist {
   final int albumCount;
 
   Artist({
-    this.id,
-    this.name,
-    this.coverArtId,
-    this.coverArtLink,
-    this.albumCount,
+    required this.id,
+    required this.name,
+    required this.coverArtId,
+    required this.coverArtLink,
+    required this.albumCount,
   });
 
   @override
@@ -54,7 +54,7 @@ class Artist {
 }
 
 class GetArtistsRequest extends BaseRequest<GetArtistsData> {
-  final String musicFolderId;
+  final String? musicFolderId;
 
   GetArtistsRequest({this.musicFolderId});
 
@@ -110,6 +110,7 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
                 );
               })
               .where((element) => element != null)
+              .map((element) => element!)
               .toList(),
         );
       }).toList(),

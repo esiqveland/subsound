@@ -4,13 +4,13 @@ import '../subsonic.dart';
 
 class GetRandomSongs extends BaseRequest<List<Song>> {
   final int size;
-  final String genre;
-  final String fromYear;
-  final String toYear;
-  final String musicFolderId;
+  final String? genre;
+  final String? fromYear;
+  final String? toYear;
+  final String? musicFolderId;
 
   GetRandomSongs({
-    this.size,
+    required this.size,
     this.genre,
     this.fromYear,
     this.toYear,
@@ -39,7 +39,7 @@ class GetRandomSongs extends BaseRequest<List<Song>> {
       ctx.version,
       (data['randomSongs']['song'] as List)
           .map(
-            (song) => Song.parse(song, serverId: ctx.serverId),
+            (song) => Song.parse(song),
           )
           .toList(),
     );

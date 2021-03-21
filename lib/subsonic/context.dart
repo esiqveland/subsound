@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:http/http.dart';
-import 'package:meta/meta.dart';
 
 import 'token.dart';
 
@@ -15,12 +14,12 @@ class SubsonicContext {
   final String _pass;
 
   SubsonicContext({
-    @required this.serverId,
-    @required this.name,
-    @required this.endpoint,
-    @required this.user,
-    @required String pass,
-  })  : _pass = pass,
+    required this.serverId,
+    required this.name,
+    required this.endpoint,
+    required this.user,
+    required String pass,
+  })   : _pass = pass,
         token = AuthToken(pass),
         client = defaultClient();
 
@@ -49,7 +48,7 @@ class SubsonicContext {
   // AuthToken get token => AuthToken(_pass);
   final AuthToken token;
 
-  Uri buildRequestUri(String name, {Map<String, String> params}) {
+  Uri buildRequestUri(String name, {Map<String, String>? params}) {
     var uri = endpoint.resolve("rest/$name");
     uri = uri.replace(
         queryParameters: Map.from(uri.queryParameters)..addAll(params ?? {}));

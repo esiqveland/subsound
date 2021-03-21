@@ -23,7 +23,7 @@ class PlayerSong {
   final String artistId;
   final String albumId;
   final String coverArtId;
-  final String coverArtLink;
+  final String? coverArtLink;
   final String songUrl;
   final String contentType;
   final String fileExtension;
@@ -32,19 +32,19 @@ class PlayerSong {
   final bool isStarred;
 
   PlayerSong({
-    this.id,
-    this.songTitle,
-    this.artist,
-    this.album,
-    this.artistId,
-    this.albumId,
-    this.coverArtId,
+    required this.id,
+    required this.songTitle,
+    required this.artist,
+    required this.album,
+    required this.artistId,
+    required this.albumId,
+    required this.coverArtId,
     this.coverArtLink,
-    this.songUrl,
-    this.contentType,
-    this.fileExtension,
-    this.fileSize,
-    this.duration,
+    required this.songUrl,
+    required this.contentType,
+    required this.fileExtension,
+    required this.fileSize,
+    required this.duration,
     this.isStarred = false,
   });
 
@@ -100,7 +100,7 @@ class PlayerSong {
       isStarred.hashCode;
 
   PlayerSong copy({
-    bool isStarred,
+    bool? isStarred,
   }) =>
       PlayerSong(
         id: id,
@@ -129,17 +129,17 @@ enum PlayerStates { stopped, playing, paused, buffering }
 
 class PlayerState {
   final PlayerStates current;
-  final PlayerSong currentSong;
+  final PlayerSong? currentSong;
   final List<PlayerSong> queue;
   final Duration duration;
   final Duration position;
 
   PlayerState({
-    this.current,
+    required this.current,
     this.currentSong,
-    this.queue,
-    this.duration,
-    this.position,
+    required this.queue,
+    required this.duration,
+    required this.position,
   });
 
   get isPlaying => current == PlayerStates.playing;
@@ -152,11 +152,11 @@ class PlayerState {
   void pause() {}
 
   PlayerState copy({
-    PlayerStates current,
-    PlayerSong currentSong,
-    List<PlayerSong> queue,
-    Duration duration,
-    Duration position,
+    PlayerStates? current,
+    PlayerSong? currentSong,
+    List<PlayerSong>? queue,
+    Duration? duration,
+    Duration? position,
   }) =>
       PlayerState(
         current: current ?? this.current,
@@ -205,26 +205,26 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
   @override
   PlayerViewModel fromStore() {
     return PlayerViewModel(
-      songId: state.playerState.currentSong?.id,
-      songTitle: state.playerState.currentSong?.songTitle,
-      artistTitle: state.playerState.currentSong?.artist,
-      albumTitle: state.playerState.currentSong?.album,
-      albumId: state.playerState.currentSong?.albumId,
-      coverArtLink: state.playerState.currentSong?.coverArtLink,
-      coverArtId: state.playerState.currentSong?.coverArtId,
+      songId: state.playerState.currentSong?.id ?? '',
+      songTitle: state.playerState.currentSong?.songTitle ?? '',
+      artistTitle: state.playerState.currentSong?.artist ?? '',
+      albumTitle: state.playerState.currentSong?.album ?? '',
+      albumId: state.playerState.currentSong?.albumId ?? '',
+      coverArtLink: state.playerState.currentSong?.coverArtLink ?? '',
+      coverArtId: state.playerState.currentSong?.coverArtId ?? '',
       isStarred: state.playerState.currentSong?.isStarred ?? false,
       duration: state.playerState.duration,
       position: state.playerState.position,
       playerState: state.playerState.current,
-      onStar: (String id) => dispatch(StarIdCommand(SongId(songId: id))),
-      onUnstar: (String id) => dispatch(UnstarIdCommand(SongId(songId: id))),
-      onPlay: () => dispatch(PlayerCommandPlay()),
-      onPause: () => dispatch(PlayerCommandPause()),
+      onStar: (String id) => dispatch!(StarIdCommand(SongId(songId: id))),
+      onUnstar: (String id) => dispatch!(UnstarIdCommand(SongId(songId: id))),
+      onPlay: () => dispatch!(PlayerCommandPlay()),
+      onPause: () => dispatch!(PlayerCommandPause()),
       onStartListen: (listener) =>
-          dispatch(PlayerStartListenPlayerPosition(listener)),
+          dispatch!(PlayerStartListenPlayerPosition(listener)),
       onStopListen: (listener) =>
-          dispatch(PlayerStopListenPlayerPosition(listener)),
-      onSeek: (val) => dispatch(PlayerCommandSeekTo(val)),
+          dispatch!(PlayerStopListenPlayerPosition(listener)),
+      onSeek: (val) => dispatch!(PlayerCommandSeekTo(val)),
     );
   }
 }
@@ -250,24 +250,24 @@ class PlayerViewModel extends Vm {
   final Function(int) onSeek;
 
   PlayerViewModel({
-    @required this.songId,
-    @required this.songTitle,
-    @required this.artistTitle,
-    @required this.albumTitle,
-    @required this.albumId,
-    @required this.coverArtLink,
-    @required this.coverArtId,
-    @required this.isStarred,
-    @required this.duration,
-    @required this.position,
-    @required this.playerState,
-    @required this.onStar,
-    @required this.onUnstar,
-    @required this.onPlay,
-    @required this.onPause,
-    @required this.onStartListen,
-    @required this.onStopListen,
-    @required this.onSeek,
+    required this.songId,
+    required this.songTitle,
+    required this.artistTitle,
+    required this.albumTitle,
+    required this.albumId,
+    required this.coverArtLink,
+    required this.coverArtId,
+    required this.isStarred,
+    required this.duration,
+    required this.position,
+    required this.playerState,
+    required this.onStar,
+    required this.onUnstar,
+    required this.onPlay,
+    required this.onPause,
+    required this.onStartListen,
+    required this.onStopListen,
+    required this.onSeek,
   }) : super(equals: [
           songId,
           songTitle,
@@ -284,11 +284,8 @@ class PlayerViewModel extends Vm {
 }
 
 class PlayerView extends StatelessWidget {
-  final PlayerState playerState;
-
   const PlayerView({
-    Key key,
-    this.playerState,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -410,9 +407,9 @@ class PlayerView extends StatelessWidget {
 }
 
 class SongTitle extends StatelessWidget {
-  final String songTitle;
+  final String? songTitle;
 
-  const SongTitle({Key key, this.songTitle}) : super(key: key);
+  const SongTitle({Key? key, this.songTitle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -425,9 +422,9 @@ class SongTitle extends StatelessWidget {
 }
 
 class ArtistTitle extends StatelessWidget {
-  final String artistName;
+  final String? artistName;
 
-  const ArtistTitle({Key key, this.artistName}) : super(key: key);
+  const ArtistTitle({Key? key, this.artistName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -435,7 +432,7 @@ class ArtistTitle extends StatelessWidget {
 
     return Text(
       artistName ?? "",
-      style: theme.textTheme.subtitle1.copyWith(
+      style: theme.textTheme.subtitle1!.copyWith(
         fontSize: 12.0,
         color: Colors.white70,
       ),
@@ -447,7 +444,7 @@ class ArtistTitle extends StatelessWidget {
 class PlayerScreen extends StatelessWidget {
   static final String routeName = "/player";
 
-  const PlayerScreen({Key key}) : super(key: key);
+  const PlayerScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -471,9 +468,9 @@ class UpdatingPlayerSlider extends StatefulWidget {
   final double size;
 
   const UpdatingPlayerSlider({
-    Key key,
-    this.playerState,
-    this.size,
+    Key? key,
+    required this.playerState,
+    required this.size,
   }) : super(key: key);
 
   @override
@@ -484,7 +481,7 @@ class UpdatingPlayerSlider extends StatefulWidget {
 
 class UpdatingPlayerSliderState extends State<UpdatingPlayerSlider>
     implements PositionListener {
-  StreamController<PositionUpdate> stream;
+  late StreamController<PositionUpdate> stream;
 
   @override
   void next(PositionUpdate pos) {
@@ -505,7 +502,7 @@ class UpdatingPlayerSliderState extends State<UpdatingPlayerSlider>
         if (snapshot.hasData) {
           return PlayerSlider(
             playerState: widget.playerState,
-            pos: snapshot.data,
+            pos: snapshot.data!,
             size: widget.size,
           );
         } else {
@@ -551,10 +548,10 @@ class PlayerSlider extends StatelessWidget {
   final double size;
 
   PlayerSlider({
-    Key key,
-    this.playerState,
-    this.pos,
-    this.size,
+    Key? key,
+    required this.playerState,
+    required this.pos,
+    required this.size,
   }) : super(key: key);
 
   @override
@@ -571,14 +568,14 @@ class PlayerSlider extends StatelessWidget {
   }
 
   static Duration _getDuration(PositionUpdate nextPos) {
-    if (nextPos?.duration == null) {
+    if (nextPos.duration.inMilliseconds == 0) {
       return Duration(seconds: 1);
     }
     return nextPos.duration;
   }
 
   static Duration _getPosition(PositionUpdate nextPos) {
-    if (nextPos?.position == null) {
+    if (nextPos.position == null) {
       return Duration(seconds: 0);
     }
     if (nextPos.position > nextPos.duration) {
@@ -590,8 +587,8 @@ class PlayerSlider extends StatelessWidget {
 }
 
 class CachedSliderState extends State<CachedSlider> {
-  double valueOverride;
-  String labelOverride;
+  double? valueOverride;
+  String? labelOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -631,13 +628,13 @@ class CachedSliderState extends State<CachedSlider> {
 
 class CustomTrackShape extends RoundedRectSliderTrackShape {
   Rect getPreferredRect({
-    @required RenderBox parentBox,
+    required RenderBox parentBox,
     Offset offset = Offset.zero,
-    @required SliderThemeData sliderTheme,
+    required SliderThemeData sliderTheme,
     bool isEnabled = false,
     bool isDiscrete = false,
   }) {
-    final double trackHeight = sliderTheme.trackHeight;
+    final double trackHeight = sliderTheme.trackHeight ?? 0;
     final double trackLeft = offset.dx;
     final double trackTop =
         offset.dy + (parentBox.size.height - trackHeight) / 2;
@@ -655,13 +652,13 @@ class CachedSlider extends StatefulWidget {
   final Function(int) onChanged;
 
   const CachedSlider({
-    Key key,
-    this.label,
-    this.value,
-    this.max,
-    this.divisions,
-    this.width,
-    this.onChanged,
+    Key? key,
+    required this.label,
+    required this.value,
+    required this.max,
+    required this.divisions,
+    required this.width,
+    required this.onChanged,
   }) : super(key: key);
 
   @override
@@ -677,11 +674,11 @@ class ProgressBar extends StatelessWidget {
   final Function(int) onChanged;
 
   ProgressBar({
-    Key key,
-    @required this.onChanged,
-    this.total,
-    this.position,
-    this.size,
+    Key? key,
+    required this.onChanged,
+    required this.total,
+    required this.position,
+    required this.size,
   }) : super(key: key);
 
   @override
@@ -692,7 +689,7 @@ class ProgressBar extends StatelessWidget {
     var remainingText = "-" + formatDuration(remaining);
 
     final divisions = total.inSeconds < 1 ? 1 : total.inSeconds;
-    final value = position?.inSeconds ?? 1;
+    final value = position.inSeconds;
 
     return SizedBox(
       width: size,
@@ -724,9 +721,9 @@ class PlayButton extends StatelessWidget {
   final double size;
 
   const PlayButton({
-    Key key,
-    this.state,
-    this.size,
+    Key? key,
+    required this.state,
+    required this.size,
   }) : super(key: key);
 
   @override

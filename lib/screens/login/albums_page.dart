@@ -9,7 +9,7 @@ import 'package:subsound/subsonic/requests/get_album_list2.dart';
 class AlbumsPage extends StatefulWidget {
   final SubsonicContext ctx;
 
-  const AlbumsPage({Key key, this.ctx}) : super(key: key);
+  const AlbumsPage({Key? key, required this.ctx}) : super(key: key);
 
   @override
   State<AlbumsPage> createState() {
@@ -22,9 +22,9 @@ class AlbumRow extends StatelessWidget {
   final Function(Album) onTap;
 
   const AlbumRow({
-    Key key,
-    @required this.album,
-    @required this.onTap,
+    Key? key,
+    required this.album,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -55,11 +55,11 @@ class AlbumsListView extends StatelessWidget {
   final bool isLoading;
 
   const AlbumsListView({
-    Key key,
-    this.ctx,
-    this.albums,
-    this.controller,
-    this.isLoading,
+    Key? key,
+    required this.ctx,
+    required this.albums,
+    required this.controller,
+    required this.isLoading,
   }) : super(key: key);
 
   @override
@@ -95,9 +95,9 @@ class AlbumsPageState extends State<AlbumsPage> {
   List<Album> _albumList = [];
   bool hasMore = true;
   bool isLoading = false;
-  ScrollController _controller;
+  late ScrollController _controller;
 
-  Future<List<Album>> initialLoad;
+  late Future<List<Album>> initialLoad;
 
   AlbumsPageState(this.ctx);
 
@@ -154,7 +154,7 @@ class AlbumsPageState extends State<AlbumsPage> {
                   if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   } else {
-                    _albumList = snapshot.data;
+                    _albumList = snapshot.data!;
                     return AlbumsListView(
                       ctx: ctx,
                       controller: _controller,

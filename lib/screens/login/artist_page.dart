@@ -3,26 +3,23 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
-import 'package:subsound/state/appstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/requests.dart';
 
 import 'myscaffold.dart';
 
 class ArtistScreen extends StatelessWidget {
-  final ServerData serverData;
   final SubsonicContext client;
   final String artistId;
 
   ArtistScreen({
-    @required this.artistId,
-    @required this.serverData,
-  }) : client = serverData.toClient();
+    required this.artistId,
+    required this.client,
+  });
 
   ArtistScreen.of(
     this.artistId, {
-    @required this.client,
-    this.serverData,
+    required this.client,
   });
 
   @override
@@ -42,7 +39,8 @@ class ArtistPage extends StatefulWidget {
   final SubsonicContext ctx;
   final String artistId;
 
-  const ArtistPage({Key key, this.ctx, this.artistId}) : super(key: key);
+  const ArtistPage({Key? key, required this.ctx, required this.artistId})
+      : super(key: key);
 
   @override
   State<ArtistPage> createState() {
@@ -55,9 +53,9 @@ class AlbumRow extends StatelessWidget {
   final Function(AlbumResultSimple) onSelectedAlbum;
 
   const AlbumRow({
-    Key key,
-    @required this.album,
-    @required this.onSelectedAlbum,
+    Key? key,
+    required this.album,
+    required this.onSelectedAlbum,
   }) : super(key: key);
 
   @override
@@ -111,7 +109,8 @@ class ArtistView extends StatelessWidget {
   final ArtistResult artist;
   final Function(AlbumResultSimple) onSelectedAlbum;
 
-  const ArtistView({Key key, this.artist, this.onSelectedAlbum})
+  const ArtistView(
+      {Key? key, required this.artist, required this.onSelectedAlbum})
       : super(key: key);
 
   @override
@@ -174,10 +173,10 @@ class AlbumList extends StatelessWidget {
   final Function(AlbumResultSimple) onSelectedAlbum;
 
   const AlbumList({
-    Key key,
-    this.artist,
-    this.albums,
-    this.onSelectedAlbum,
+    Key? key,
+    required this.artist,
+    required this.albums,
+    required this.onSelectedAlbum,
   }) : super(key: key);
 
   @override
@@ -220,7 +219,7 @@ class ArtistPageState extends State<ArtistPage> {
                   return Text("${snapshot.error}");
                 } else {
                   return ArtistView(
-                    artist: snapshot.data,
+                    artist: snapshot.data!,
                     onSelectedAlbum: (album) {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => AlbumScreen(

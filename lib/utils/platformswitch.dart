@@ -6,15 +6,14 @@ class PlatformSwitch extends StatelessWidget {
   final WidgetBuilder androidBuilder;
 
   const PlatformSwitch({
-    Key key,
-    this.iosBuilder,
-    this.androidBuilder,
+    Key? key,
+    required this.iosBuilder,
+    required this.androidBuilder,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    assert(theme.platform != null);
 
     switch (theme.platform) {
       case TargetPlatform.macOS:

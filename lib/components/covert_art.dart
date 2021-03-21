@@ -11,19 +11,19 @@ const FallbackImageUrl =
 
 class CoverArtImage extends StatelessWidget {
   final String id;
-  final String url;
+  final String? url;
   final double height;
   final double width;
-  final BoxFit fit;
+  final BoxFit? fit;
 
   const CoverArtImage(
     this.url, {
-    Key key,
-    String id,
+    Key? key,
+    String? id,
     this.height = 48.0,
     this.width = 48.0,
     this.fit,
-  })  : this.id = id ?? url,
+  })  : this.id = id ?? url ?? FallbackImageUrl,
         super(key: key);
 
   @override
@@ -52,8 +52,8 @@ class CoverArtImage2 extends StatelessWidget {
 
   const CoverArtImage2(
     this.url, {
-    Key key,
-    String id,
+    Key? key,
+    String? id,
     this.height = 48.0,
     this.width = 48.0,
   })  : this.id = id ?? url,
@@ -64,8 +64,8 @@ class CoverArtImage2 extends StatelessWidget {
     return StreamBuilder<FileInfo>(
       stream: GetCoverArt.loadWithCache(
         url,
-        height: height?.toInt(),
-        width: width?.toInt(),
+        height: height.toInt(),
+        width: width.toInt(),
       ),
       builder: (context, snapshot) {
         var loading = !snapshot.hasData || snapshot.data is DownloadProgress;
@@ -85,7 +85,7 @@ class CoverArtImage2 extends StatelessWidget {
           );
         } else {
           return Image.file(
-            snapshot.data.file,
+            snapshot.data!.file,
             width: width,
             height: height,
           );

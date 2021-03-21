@@ -18,12 +18,12 @@ void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
 class AudioPlayerTask extends BackgroundAudioTask {
   // e.g. just_audio
   final _player = AudioPlayer();
-  StreamSubscription<PlaybackEvent> _eventSubscription;
-  StreamSubscription<ProcessingState> _streamSubscription;
-  StreamSubscription<PlayerState> _stateSubscription;
+  StreamSubscription<PlaybackEvent>? _eventSubscription;
+  StreamSubscription<ProcessingState>? _streamSubscription;
+  StreamSubscription<PlayerState>? _stateSubscription;
 
-  MediaItem get currentMediaItem => AudioServiceBackground.mediaItem;
-  MediaItem lastMediaItem;
+  MediaItem? get currentMediaItem => AudioServiceBackground.mediaItem;
+  MediaItem? lastMediaItem;
 
   AudioPlayerTask() : super(cacheManager: ArtworkCacheManager());
 
@@ -36,7 +36,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   /// params passed into [AudioService.start] when starting this background
   /// audio task.
   @override
-  Future<void> onStart(Map<String, dynamic> params) async {
+  Future<void> onStart(Map<String, dynamic>? params) async {
     // Broadcast that we're connecting, and what controls are available.
     _broadcastState();
 
@@ -144,13 +144,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
     lastMediaItem = mediaItem;
-    SongMetadata meta = mediaItem.getSongMetadata();
+    SongMetadata meta = mediaItem.getSongMetadata()!;
 
     var uri = Uri.parse(mediaItem.id);
     var cacheFile = await DownloadCacheManager().getCachedSongFile(meta);
     var source = LockCachingAudioSource(
       uri,
-      cacheFile: cacheFile,
+      //cacheFile: cacheFile,
       headers: {
         "X-Request-ID": uuid.v1().toString(),
         "Host": uri.host,
@@ -190,9 +190,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
   onStop() async {
     log('Task: onStop called');
     // Stop and dispose of the player.
-    _eventSubscription.cancel();
-    _streamSubscription.cancel();
-    _stateSubscription.cancel();
+    _eventSubscription?.cancel();
+    _streamSubscription?.cancel();
+    _stateSubscription?.cancel();
     await _player.dispose();
     // Shut down the background task.
     await super.onStop();
@@ -215,22 +215,22 @@ abstract class PlayerActions extends ReduxAction<AppState> {
 
 extension SongMeta on MediaItem {
   MediaItem setSongMetadata(SongMetadata s) {
-    extras["id"] = s.songId;
-    extras["extension"] = s.fileExtension;
-    extras["size"] = s.fileSize;
-    extras["type"] = s.contentType;
+    extras!["id"] = s.songId;
+    extras!["extension"] = s.fileExtension;
+    extras!["size"] = s.fileSize;
+    extras!["type"] = s.contentType;
     return this;
   }
 
-  SongMetadata getSongMetadata() {
+  SongMetadata? getSongMetadata() {
     if (extras == null) {
       return null;
     }
     return SongMetadata(
-      songId: extras["id"],
-      fileExtension: extras["extension"],
-      fileSize: extras["size"],
-      contentType: extras["type"],
+      songId: extras!["id"],
+      fileExtension: extras!["extension"],
+      fileSize: extras!["size"],
+      contentType: extras!["type"],
     );
   }
 }
@@ -262,7 +262,7 @@ class PlayerPositionChanged extends PlayerActions {
 
 class PlayerCommandPlay extends PlayerActions {
   @override
-  Future<AppState> reduce() async {
+  Future<AppState?> reduce() async {
     AudioService.play();
     final current = AudioService.currentMediaItem;
     if (current == null) {
@@ -312,7 +312,7 @@ class PlayerDurationChanged extends PlayerActions {
 
   @override
   AppState reduce() {
-    if (state.playerState.duration?.inMilliseconds !=
+    if (state.playerState.duration.inMilliseconds !=
         nextDuration.inMilliseconds) {
       if (nextDuration < state.playerState.position) {
         return state.copy(
@@ -338,7 +338,7 @@ class PlayerStateChanged extends PlayerActions {
   PlayerStateChanged(this.nextState);
 
   @override
-  AppState reduce() {
+  AppState? reduce() {
     if (state.playerState.current == nextState) {
       return null;
     }
@@ -382,7 +382,7 @@ class PlayerCommandSetCurrentPlaying extends PlayerActions {
       playerState: state.playerState.copy(
         current: playerstate,
         currentSong: next,
-        duration: next?.duration ?? Duration.zero,
+        duration: next.duration,
       ),
     );
   }
@@ -392,7 +392,7 @@ class PositionUpdate {
   final Duration position;
   final Duration duration;
 
-  PositionUpdate({this.position, this.duration});
+  PositionUpdate({required this.position, required this.duration});
 }
 
 //typedef PositionListener = Function(PositionUpdate);
@@ -470,13 +470,15 @@ class PlayerCommandPlaySong extends PlayerActions {
     );
     final playItem = MediaItem(
       id: songUrl,
-      artist: next?.artist,
-      album: next?.album,
-      title: next?.songTitle,
-      displayTitle: next?.songTitle,
-      displaySubtitle: next?.artist,
-      artUri: next?.coverArtLink,
-      duration: next?.duration ?? state.playerState.duration,
+      artist: next.artist,
+      album: next.album,
+      title: next.songTitle,
+      displayTitle: next.songTitle,
+      displaySubtitle: next.artist,
+      artUri: next.coverArtLink != null ? Uri.parse(next.coverArtLink!) : null,
+      duration: next.duration.inSeconds < 1
+          ? state.playerState.duration
+          : next.duration,
       extras: {},
     ).setSongMetadata(meta);
 
@@ -487,7 +489,7 @@ class PlayerCommandPlaySong extends PlayerActions {
       playerState: state.playerState.copy(
         current: PlayerStates.playing,
         currentSong: next,
-        duration: song?.duration ?? Duration.zero,
+        duration: song.duration,
       ),
     );
   }
@@ -536,14 +538,11 @@ class StartupPlayer extends ReduxAction<AppState> {
       //: Duration(milliseconds: 1000),
     ).listen((pos) {
       //log("createPositionStream $pos");
-      if (pos == null) {
-        return;
-      }
       PlayerStartListenPlayerPosition.updateListeners(PositionUpdate(
         duration: state.playerState.duration,
         position: pos,
       ));
-      if (state.playerState.position?.inSeconds != pos.inSeconds) {
+      if (state.playerState.position.inSeconds != pos.inSeconds) {
         //dispatch(PlayerPositionChanged(pos));
       }
     });
@@ -553,10 +552,7 @@ class StartupPlayer extends ReduxAction<AppState> {
     });
 
     AudioService.playbackStateStream.listen((event) {
-      log("playbackStateStream event=${event?.format()}");
-      if (event == null) {
-        return;
-      }
+      log("playbackStateStream event=${event.format()}");
 
       switch (event.processingState) {
         case AudioProcessingState.none:
@@ -600,14 +596,14 @@ class StartupPlayer extends ReduxAction<AppState> {
           break;
       }
     });
-    AudioService.currentMediaItemStream.listen((MediaItem item) {
+    AudioService.currentMediaItemStream.listen((MediaItem? item) {
       log("currentMediaItemStream ${item?.toString()}");
       if (item == null) {
         return;
       }
 
-      if (item?.duration != null) {
-        dispatch(PlayerDurationChanged(item.duration));
+      if (item.duration != null) {
+        dispatch(PlayerDurationChanged(item.duration!));
       }
     });
     // PlayerActions._player.onPlayerError.listen((msg) {

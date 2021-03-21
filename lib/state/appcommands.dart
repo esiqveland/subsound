@@ -18,12 +18,12 @@ class StarIdCommand extends RunRequest {
   StarIdCommand(this.id);
 
   @override
-  Future<AppState> reduce() async {
+  Future<AppState?> reduce() async {
     final res = await StarItem(id: id).run(state.loginState.toClient());
     if (res.status == ResponseStatus.ok) {
       final next = state.playerState.currentSong?.id == id.getId
           ? state.playerState.copy(
-              currentSong: state.playerState.currentSong.copy(isStarred: true),
+              currentSong: state.playerState.currentSong?.copy(isStarred: true),
             )
           : state.playerState;
 
@@ -45,12 +45,13 @@ class UnstarIdCommand extends RunRequest {
   UnstarIdCommand(this.id);
 
   @override
-  Future<AppState> reduce() async {
+  Future<AppState?> reduce() async {
     final res = await UnstarItem(id: id).run(state.loginState.toClient());
     if (res.status == ResponseStatus.ok) {
       final next = state.playerState.currentSong?.id == id.getId
           ? state.playerState.copy(
-              currentSong: state.playerState.currentSong.copy(isStarred: false),
+              currentSong:
+                  state.playerState.currentSong?.copy(isStarred: false),
             )
           : state.playerState;
 
@@ -83,7 +84,7 @@ class RefreshStarredCommand extends RunRequest {
     );
 
     final song = state.playerState.currentSong?.copy(
-      isStarred: dataState.isSongStarred(state.playerState.currentSong.id),
+      isStarred: dataState.isSongStarred(state.playerState.currentSong!.id),
     );
 
     final playerState = state.playerState.copy(
@@ -100,7 +101,7 @@ class RefreshStarredCommand extends RunRequest {
 class GetAlbumCommand extends RunRequest {
   final String albumId;
 
-  GetAlbumCommand({this.albumId});
+  GetAlbumCommand({required this.albumId});
 
   @override
   Future<AppState> reduce() async {
@@ -120,7 +121,7 @@ class GetAlbumCommand extends RunRequest {
 class GetSongCommand extends RunRequest {
   final String songId;
 
-  GetSongCommand({this.songId});
+  GetSongCommand({required this.songId});
 
   @override
   Future<AppState> reduce() async {
@@ -188,7 +189,7 @@ class GetArtistsCommand extends RunRequest {
 
 class RefreshAppState extends ReduxAction<AppState> {
   @override
-  Future<AppState> reduce() async {
+  Future<AppState?> reduce() async {
     if (!state.loginState.isValid) {
       return null;
     }
@@ -213,8 +214,8 @@ abstract class RunRequest extends ReduxAction<AppState> {
   final String requestId;
 
   RunRequest({
-    String requestId,
+    String? requestId,
   }) : this.requestId = requestId ?? uuid.v1();
 
-  Future<AppState> reduce();
+  Future<AppState?> reduce();
 }

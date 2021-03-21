@@ -9,13 +9,13 @@ import 'get_cover_art.dart';
 
 class AlbumResultSimple {
   final String id;
-  final String parent;
+  final String? parent;
   final String title;
   final String name;
   final String artistName;
   final String artistId;
-  final String coverArtId;
-  final String coverArtLink;
+  final String? coverArtId;
+  final String? coverArtLink;
   final int year;
   final Duration duration;
   final int songCount;
@@ -24,22 +24,6 @@ class AlbumResultSimple {
   final DateTime createdAt;
 
   AlbumResultSimple(
-      this.id,
-      this.parent,
-      this.title,
-      this.name,
-      this.artistName,
-      this.artistId,
-      this.coverArtId,
-      this.coverArtLink,
-      this.year,
-      this.duration,
-      this.songCount,
-      this.playCount,
-      this.isVideo,
-      this.createdAt);
-
-  AlbumResultSimple.named({
     this.id,
     this.parent,
     this.title,
@@ -54,6 +38,23 @@ class AlbumResultSimple {
     this.playCount,
     this.isVideo,
     this.createdAt,
+  );
+
+  AlbumResultSimple.named({
+    required this.id,
+    this.parent,
+    required this.title,
+    required this.name,
+    required this.artistName,
+    required this.artistId,
+    required this.coverArtId,
+    required this.coverArtLink,
+    required this.year,
+    required this.duration,
+    required this.songCount,
+    this.playCount = 0,
+    this.isVideo = false,
+    required this.createdAt,
   });
 
   String durationNice() {

@@ -1,16 +1,13 @@
-import 'package:meta/meta.dart';
-
 class Song {
   final String id;
-  final String serverId;
-  final String parent;
+  final String? parent;
   final bool isDir;
   final String title;
   final String album;
   final String artist;
   final int track;
   final int year;
-  final String coverArt;
+  final String? coverArt;
   final int size;
   final String contentType;
   final String suffix;
@@ -25,36 +22,35 @@ class Song {
   final String type;
 
   Song({
-    @required this.id,
-    @required this.serverId,
+    required this.id,
     this.parent,
-    this.isDir,
-    @required this.title,
-    this.album,
-    this.artist,
-    this.track,
-    this.year,
+    this.isDir = false,
+    required this.title,
+    this.album = '',
+    this.artist = '',
+    this.track = 0,
+    this.year = 0,
     this.coverArt,
-    this.size,
-    this.contentType,
-    this.suffix,
-    this.duration,
-    this.bitRate,
-    this.path,
-    this.isVideo,
-    this.playCount,
-    this.created,
-    this.albumId,
-    this.artistId,
-    this.type,
+    required this.size,
+    required this.contentType,
+    required this.suffix,
+    required this.duration,
+    this.bitRate = 0,
+    this.path = '',
+    this.isVideo = false,
+    this.playCount = 0,
+    required this.created,
+    this.albumId = '',
+    this.artistId = '',
+    this.type = '',
   });
 
-  factory Song.parse(Map<String, dynamic> data, {@required String serverId}) {
+  factory Song.parse(Map<String, dynamic> data) {
     return Song(
       id: data['id'].toString(),
-      serverId: serverId,
       parent: data['parent'].toString(),
-      isDir: data['isDir'] == true || data['isDir'].toString().toLowerCase() == 'true',
+      isDir: data['isDir'] == true ||
+          data['isDir'].toString().toLowerCase() == 'true',
       title: data['title'],
       album: data['album'],
       artist: data['artist'],

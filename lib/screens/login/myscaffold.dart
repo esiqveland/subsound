@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
@@ -56,7 +57,8 @@ final navBarItemsList = navBarItems.map((e) => e.item).toList();
 class BottomNavigationBarWidget extends StatefulWidget {
   final List<NavItems> navItems;
 
-  const BottomNavigationBarWidget({Key key, this.navItems}) : super(key: key);
+  const BottomNavigationBarWidget({Key? key, required this.navItems})
+      : super(key: key);
 
   @override
   _BottomNavigationBarWidgetState createState() =>
@@ -88,15 +90,15 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
 const PlayerBottomBarSize = 50.0;
 
 class MyScaffold extends StatelessWidget {
-  final Widget appBar;
+  final AppBar? appBar;
   final WidgetBuilder body;
-  final Widget title;
+  final Widget? title;
   final bool disableAppBar;
   final bool disableBottomBar;
 
   MyScaffold({
-    Key key,
-    this.body,
+    Key? key,
+    required this.body,
     this.appBar,
     this.title,
     this.disableAppBar = false,
@@ -121,15 +123,15 @@ class MyScaffold extends StatelessWidget {
 }
 
 class _AppScaffold extends StatelessWidget {
-  final Widget appBar;
+  final AppBar? appBar;
   final WidgetBuilder body;
-  final Widget title;
+  final Widget? title;
   final bool disableAppBar;
   final bool disableBottomBar;
 
   _AppScaffold({
-    Key key,
-    this.body,
+    Key? key,
+    required this.body,
     this.appBar,
     this.title,
     this.disableAppBar = false,

@@ -1,6 +1,6 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 // ignore: implementation_imports
 import 'package:flutter_cache_manager/src/storage/file_system/file_system_io.dart'
@@ -13,11 +13,11 @@ import 'package:subsound/subsonic/context.dart';
 class ArtworkCacheManager extends CacheManager with ImageCacheManager {
   static const key = 'artworkCacheKey';
 
-  static ArtworkCacheManager _instance;
+  static ArtworkCacheManager? _instance;
 
   factory ArtworkCacheManager() {
     _instance ??= ArtworkCacheManager._();
-    return _instance;
+    return _instance!;
   }
 
   ArtworkCacheManager._()
@@ -42,21 +42,28 @@ class SongMetadata {
   final String contentType;
 
   SongMetadata({
-    @required this.songId,
-    @required this.fileExtension,
-    @required this.fileSize,
-    @required this.contentType,
+    required this.songId,
+    required this.fileExtension,
+    required this.fileSize,
+    required this.contentType,
   });
+}
+
+class PathInfo {
+  final FileSystemEntity entity;
+  final FileStat stat;
+
+  PathInfo(this.entity, this.stat);
 }
 
 class DownloadCacheManager extends CacheManager {
   static const key = 'downloadCacheKey';
 
-  static DownloadCacheManager _instance;
+  static DownloadCacheManager? _instance;
 
   factory DownloadCacheManager() {
     _instance ??= DownloadCacheManager._();
-    return _instance;
+    return _instance!;
   }
 
   Future<Directory> _getCacheDir() async {
@@ -75,6 +82,30 @@ class DownloadCacheManager extends CacheManager {
     ]));
   }
 
+  Future<CacheStats> getStats() async {
+    final dir = await _getCacheDir();
+
+    int items = 0;
+    int size = 0;
+
+    await dir
+        .list(recursive: true)
+        .where((event) => event is File)
+        .where((event) => !event.path.endsWith(".part"))
+        .asyncMap((event) => event.stat().then((stat) => PathInfo(event, stat)))
+        .where((info) => info.stat.type == FileSystemEntityType.file)
+        .forEach((PathInfo i) {
+      log('PathInfo=$i');
+      items = items + 1;
+      size = size + i.stat.size;
+    });
+
+    return CacheStats(
+      itemCount: items,
+      totalSize: size,
+    );
+  }
+
   DownloadCacheManager._()
       : super(
           Config(
@@ -88,6 +119,13 @@ class DownloadCacheManager extends CacheManager {
             fileSystem: fsio.IOFileSystem(key),
           ),
         );
+}
+
+class CacheStats {
+  final int itemCount;
+  final int totalSize;
+
+  CacheStats({required this.itemCount, required this.totalSize});
 }
 
 // class IOFileSystem implements fs.FileSystem {

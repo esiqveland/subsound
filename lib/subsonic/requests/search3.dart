@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:subsound/subsonic/subsonic.dart';
 
 class Search3Result {
@@ -13,7 +12,7 @@ class CountOffset {
   final int count, offset;
 
   const CountOffset({
-    @required this.count,
+    required this.count,
     this.offset = 0,
   });
 }
@@ -24,8 +23,8 @@ class Search3 extends BaseRequest<Search3Result> {
 
   final String query;
 
-  final CountOffset artist, album, song;
-  final String musicFolderId;
+  final CountOffset? artist, album, song;
+  final String? musicFolderId;
 
   Search3(
     this.query, {
@@ -43,22 +42,22 @@ class Search3 extends BaseRequest<Search3Result> {
         ..addAll(
           artist != null
               ? {
-                  'artistCount': '${artist.count}',
-                  'artistOffset': '${artist.offset}'
+                  'artistCount': '${artist!.count}',
+                  'artistOffset': '${artist!.offset}'
                 }
               : {},
         )
         ..addAll(
           album != null
               ? {
-                  'albumCount': '${album.count}',
-                  'albumOffset': '${album.offset}'
+                  'albumCount': '${album!.count}',
+                  'albumOffset': '${album!.offset}'
                 }
               : {},
         )
         ..addAll(
           song != null
-              ? {'songCount': '${song.count}', 'songOffset': '${song.offset}'}
+              ? {'songCount': '${song!.count}', 'songOffset': '${song!.offset}'}
               : {},
         ),
     ));
@@ -72,8 +71,8 @@ class Search3 extends BaseRequest<Search3Result> {
       ResponseStatus.ok,
       ctx.version,
       Search3Result(
-        (data['searchResult3']['song'] as List ?? const [])
-            .map((song) => Song.parse(song, serverId: ctx.serverId))
+        (data['searchResult3']['song'] as List)
+            .map((song) => Song.parse(song))
             .toList(),
       ),
     );

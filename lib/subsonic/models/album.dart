@@ -1,10 +1,9 @@
-import 'package:meta/meta.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/get_cover_art.dart';
 
 class Album {
   final String id;
-  final String parent;
+  final String? parent;
   final String title;
   final String artist;
   final bool isDir;
@@ -12,19 +11,18 @@ class Album {
   final String coverArtLink;
 
   Album({
-    @required this.id,
+    required this.id,
     this.parent,
-    @required this.title,
-    @required this.artist,
-    this.isDir,
-    this.coverArtId,
-    this.coverArtLink,
+    required this.title,
+    required this.artist,
+    this.isDir = false,
+    required this.coverArtId,
+    required this.coverArtLink,
   });
 
   factory Album.parse(SubsonicContext ctx, Map<String, dynamic> data) {
     final coverArtId = data['coverArt'];
-    final coverArtLink =
-        coverArtId != null ? GetCoverArt(coverArtId).getImageUrl(ctx) : null;
+    final coverArtLink = GetCoverArt(coverArtId).getImageUrl(ctx);
 
     return Album(
       id: data['id'],

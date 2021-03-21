@@ -13,8 +13,8 @@ class HomeScreen extends StatelessWidget {
   final int initialTabIndex;
 
   const HomeScreen({
-    Key key,
-    this.initialTabIndex,
+    Key? key,
+    this.initialTabIndex = 0,
   }) : super(key: key);
 
   @override
@@ -23,7 +23,7 @@ class HomeScreen extends StatelessWidget {
       converter: (st) => st.state.loginState,
       builder: (context, state) => DefaultTabController(
         length: 3,
-        initialIndex: initialTabIndex ?? 0,
+        initialIndex: initialTabIndex,
         child: MyScaffold(
           appBar: AppBar(
             bottom: TabBar(

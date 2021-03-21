@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:subsound/screens/login/homescreen.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
+import 'package:subsound/screens/login/settings_page.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/ping.dart';
@@ -13,7 +14,7 @@ import 'package:subsound/subsonic/response.dart';
 class LoginScreen extends StatelessWidget {
   static final routeName = "/settings";
 
-  LoginScreen({Key key}) : super(key: key);
+  LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +29,15 @@ class LoginScreen extends StatelessWidget {
       builder: (context, model) => MyScaffold(
         title: const Text("Settings"),
         body: (context) => Center(
-          child: ServerSetupForm(
-            initialData: model.inititalData,
-            onSave: model.onSave,
-            //onSave: ,
+          child: Column(
+            children: [
+              ServerSetupForm(
+                initialData: model.inititalData,
+                onSave: model.onSave,
+                //onSave: ,
+              ),
+              SettingsPage(),
+            ],
           ),
         ),
       ),
@@ -40,23 +46,23 @@ class LoginScreen extends StatelessWidget {
 }
 
 class ServerSetupModel {
-  final ServerData inititalData;
+  final ServerData? inititalData;
   final Future<void> Function(ServerData) onSave;
 
   ServerSetupModel({
     this.inititalData,
-    this.onSave,
+    required this.onSave,
   });
 }
 
 class ServerSetupForm extends StatefulWidget {
-  final ServerData initialData;
+  final ServerData? initialData;
   final Function(ServerData) onSave;
 
   const ServerSetupForm({
-    Key key,
+    Key? key,
     this.initialData,
-    this.onSave,
+    required this.onSave,
   }) : super(key: key);
 
   @override
@@ -76,13 +82,14 @@ class _ServerSetupFormState extends State<ServerSetupForm> {
   bool _isTesting = false;
 
   _ServerSetupFormState({
-    ServerData initialData,
-    this.onSave,
-  })  : this.initialData = initialData,
+    ServerData? initialData,
+    required this.onSave,
+  })   : this.initialData =
+            initialData ?? ServerData(uri: '', username: '', password: ''),
         this._dataHolder = ServerData(
-          uri: initialData.uri,
-          username: initialData.username,
-          password: initialData.password,
+          uri: initialData?.uri ?? '',
+          username: initialData?.username ?? '',
+          password: initialData?.password ?? '',
         );
 
   @override
@@ -98,10 +105,10 @@ class _ServerSetupFormState extends State<ServerSetupForm> {
               decoration: const InputDecoration(hintText: "Enter uri"),
               validator: (value) {
                 log('validator: uri: $value');
-                if (value.isEmpty) {
+                if (value?.isEmpty ?? true) {
                   return "Uri can not be blank";
                 }
-                var test = Uri.tryParse(value);
+                var test = Uri.tryParse(value!);
                 if (test == null) {
                   return "Uri must be valid";
                 } else {
@@ -125,7 +132,7 @@ class _ServerSetupFormState extends State<ServerSetupForm> {
               initialValue: _dataHolder.username,
               decoration: const InputDecoration(hintText: "Enter username"),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value?.isEmpty ?? true) {
                   return "Username can not be blank";
                 } else {
                   return null;
@@ -149,7 +156,7 @@ class _ServerSetupFormState extends State<ServerSetupForm> {
               obscureText: true,
               decoration: const InputDecoration(hintText: "Enter password"),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value?.isEmpty ?? true) {
                   return "Password can not be blank";
                 } else {
                   return null;
@@ -177,7 +184,7 @@ class _ServerSetupFormState extends State<ServerSetupForm> {
                     onPressed: _isTesting
                         ? null
                         : () async {
-                            if (!_formKey.currentState.validate()) {
+                            if (!_formKey.currentState!.validate()) {
                               return;
                             }
                             setState(() {
@@ -193,8 +200,11 @@ class _ServerSetupFormState extends State<ServerSetupForm> {
                                 pass: data.password);
                             var pong = await Ping().run(ctx).catchError((err) {
                               log('error: network issue?', error: err);
-                              return SubsonicResponse(
-                                  ResponseStatus.failed, "Network issue", null);
+                              return Future.value(SubsonicResponse(
+                                ResponseStatus.failed,
+                                "Network issue",
+                                '',
+                              ));
                             });
                             if (pong.status == ResponseStatus.ok) {
                               setState(() {

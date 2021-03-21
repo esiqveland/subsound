@@ -8,7 +8,7 @@ class StarResponse {}
 
 class SongId extends ItemId {
   final String songId;
-  SongId({this.songId});
+  SongId({required this.songId});
 
   @override
   String get getFieldName => "id";
@@ -19,7 +19,7 @@ class SongId extends ItemId {
 
 class ArtistId extends ItemId {
   final String artistId;
-  ArtistId({this.artistId});
+  ArtistId({required this.artistId});
 
   @override
   String get getFieldName => "artistId";
@@ -30,7 +30,7 @@ class ArtistId extends ItemId {
 
 class AlbumId extends ItemId {
   final String albumId;
-  AlbumId({this.albumId});
+  AlbumId({required this.albumId});
 
   @override
   String get getFieldName => "albumId";
@@ -46,7 +46,7 @@ abstract class ItemId {
 
 class StarItem extends BaseRequest<StarResponse> {
   final ItemId id;
-  StarItem({this.id});
+  StarItem({required this.id});
 
   @override
   Future<SubsonicResponse<StarResponse>> run(SubsonicContext ctx) async {
@@ -77,7 +77,7 @@ class UnstarResponse {}
 
 class UnstarItem extends BaseRequest<UnstarResponse> {
   final ItemId id;
-  UnstarItem({this.id});
+  UnstarItem({required this.id});
 
   @override
   Future<SubsonicResponse<UnstarResponse>> run(SubsonicContext ctx) async {

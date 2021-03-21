@@ -13,7 +13,10 @@ import 'package:subsound/state/playerstate.dart';
 class PlayerBottomBar extends StatelessWidget {
   final double height;
 
-  PlayerBottomBar({Key key, this.height}) : super(key: key);
+  PlayerBottomBar({
+    Key? key,
+    required this.height,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,35 +29,35 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
 
   @override
   MiniPlayerModel fromStore() {
-    final pos = state.playerState.position?.inMilliseconds ?? 0;
-    final durSafe = state.playerState.duration?.inMilliseconds ?? 1;
+    final pos = state.playerState.position.inMilliseconds;
+    final durSafe = state.playerState.duration.inMilliseconds;
     final dur = durSafe == 0 ? 1 : durSafe;
     final playbackProgress = pos / dur;
 
     return MiniPlayerModel(
-      songTitle: state.playerState.currentSong?.songTitle,
-      artistTitle: state.playerState.currentSong?.artist,
-      albumTitle: state.playerState.currentSong?.album,
-      coverArtLink: state.playerState.currentSong?.coverArtLink,
-      coverArtId: state.playerState.currentSong?.coverArtId,
+      songTitle: state.playerState.currentSong?.songTitle ?? '',
+      artistTitle: state.playerState.currentSong?.artist ?? '',
+      albumTitle: state.playerState.currentSong?.album ?? '',
+      coverArtLink: state.playerState.currentSong?.coverArtLink ?? '',
+      coverArtId: state.playerState.currentSong?.coverArtId ?? '',
       duration: state.playerState.duration,
       playbackProgress: playbackProgress,
       playerState: state.playerState.current,
-      onPlay: () => dispatch(PlayerCommandPlay()),
-      onPause: () => dispatch(PlayerCommandPause()),
+      onPlay: () => dispatch!(PlayerCommandPlay()),
+      onPause: () => dispatch!(PlayerCommandPause()),
       onStartListen: (listener) =>
-          dispatch(PlayerStartListenPlayerPosition(listener)),
+          dispatch!(PlayerStartListenPlayerPosition(listener)),
       onStopListen: (listener) =>
-          dispatch(PlayerStopListenPlayerPosition(listener)),
+          dispatch!(PlayerStopListenPlayerPosition(listener)),
     );
   }
 }
 
 class MiniPlayerModel extends Vm {
-  final String songTitle;
-  final String artistTitle;
-  final String albumTitle;
-  final String coverArtLink;
+  final String? songTitle;
+  final String? artistTitle;
+  final String? albumTitle;
+  final String? coverArtLink;
   final String coverArtId;
   final Duration duration;
   final double playbackProgress;
@@ -65,23 +68,23 @@ class MiniPlayerModel extends Vm {
   final Function(PositionListener) onStopListen;
 
   MiniPlayerModel({
-    @required this.songTitle,
-    @required this.artistTitle,
-    @required this.albumTitle,
-    @required this.coverArtLink,
-    @required this.coverArtId,
-    @required this.duration,
-    @required this.playbackProgress,
-    @required this.playerState,
-    @required this.onPlay,
-    @required this.onPause,
-    @required this.onStartListen,
-    @required this.onStopListen,
+    required this.songTitle,
+    required this.artistTitle,
+    required this.albumTitle,
+    required this.coverArtLink,
+    required this.coverArtId,
+    required this.duration,
+    required this.playbackProgress,
+    required this.playerState,
+    required this.onPlay,
+    required this.onPause,
+    required this.onStartListen,
+    required this.onStopListen,
   }) : super(equals: [
-          artistTitle,
-          songTitle,
-          albumTitle,
-          coverArtLink,
+          artistTitle ?? '',
+          songTitle ?? '',
+          albumTitle ?? '',
+          coverArtLink ?? '',
           coverArtId,
           duration,
           playerState,
@@ -94,10 +97,10 @@ class MiniPlayerProgressBar extends StatefulWidget {
   final Function(PositionListener) onFinishListen;
 
   MiniPlayerProgressBar({
-    Key key,
-    this.height,
-    this.onInitListen,
-    this.onFinishListen,
+    Key? key,
+    required this.height,
+    required this.onInitListen,
+    required this.onFinishListen,
   }) : super(key: key);
 
   @override
@@ -108,7 +111,7 @@ class MiniPlayerProgressBar extends StatefulWidget {
 
 class MiniPlayerProgressBarState extends State<MiniPlayerProgressBar>
     implements PositionListener {
-  StreamController<PositionUpdate> stream;
+  late StreamController<PositionUpdate> stream;
 
   @override
   void next(PositionUpdate pos) {
@@ -130,8 +133,8 @@ class MiniPlayerProgressBarState extends State<MiniPlayerProgressBar>
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final next = snapshot.data;
-          final pos = next.position?.inMilliseconds ?? 0;
-          final durSafe = next.duration?.inMilliseconds ?? 1;
+          final pos = next?.position.inMilliseconds ?? 0;
+          final durSafe = next?.duration.inMilliseconds ?? 1;
           final dur = durSafe == 0 ? 1 : durSafe;
           final playbackProgress = pos / dur;
 
@@ -196,7 +199,10 @@ const miniProgressBarHeight = 2.0;
 class MiniPlayer extends StatelessWidget {
   final double height;
 
-  MiniPlayer({Key key, this.height}) : super(key: key);
+  MiniPlayer({
+    Key? key,
+    required this.height,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -275,7 +281,7 @@ class MiniPlayer extends StatelessWidget {
 class PlayPauseIcon extends StatelessWidget {
   final MiniPlayerModel state;
 
-  PlayPauseIcon({Key key, this.state}) : super(key: key);
+  PlayPauseIcon({Key? key, required this.state}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

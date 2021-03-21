@@ -13,7 +13,7 @@ class GetStarred2Result {
   final List<AlbumResultSimple> albums;
   final List<SongResult> songs;
 
-  GetStarred2Result({this.albums, this.songs});
+  GetStarred2Result({required this.albums, required this.songs});
 }
 
 class GetStarred2 extends BaseRequest<GetStarred2Result> {

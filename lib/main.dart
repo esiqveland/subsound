@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
   final Store<AppState> store;
 
   const MyApp({
-    Key key,
-    @required this.store,
+    Key? key,
+    required this.store,
   }) : super(key: key);
 
   // This widget is the root of your application.

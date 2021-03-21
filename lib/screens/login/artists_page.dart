@@ -9,8 +9,8 @@ class ArtistsPage extends StatefulWidget {
   final SubsonicContext ctx;
 
   const ArtistsPage({
-    Key key,
-    this.ctx,
+    Key? key,
+    required this.ctx,
   }) : super(key: key);
 
   @override
@@ -21,8 +21,8 @@ class ArtistsPage extends StatefulWidget {
 
 class Header extends StatelessWidget {
   const Header({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.color = Colors.lightBlue,
   }) : super(key: key);
 
@@ -49,9 +49,9 @@ class ArtistIndexEntryWidget extends StatelessWidget {
   final Function(Artist) onSelected;
 
   const ArtistIndexEntryWidget({
-    Key key,
-    this.entry,
-    this.onSelected,
+    Key? key,
+    required this.entry,
+    required this.onSelected,
   }) : super(key: key);
 
   @override
@@ -109,7 +109,7 @@ class ArtistsPageState extends State<ArtistsPage> {
                 } else {
                   return DefaultStickyHeaderController(
                     child: CustomScrollView(
-                      slivers: snapshot.data
+                      slivers: snapshot.data!
                           .map((a) => ArtistIndexEntryWidget(
                                 entry: a,
                                 onSelected: (entry) {

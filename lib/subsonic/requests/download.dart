@@ -32,7 +32,7 @@ class DownloadItem extends BaseRequest<Uint8List> {
 
   static Stream<FileInfo> loadWithCache(
     String url, {
-    String cacheKey,
+    String? cacheKey,
   }) {
     final info = DownloadCacheManager().getFileStream(
       url,

@@ -45,7 +45,7 @@ class Artist {
 }
 
 class GetIndexesRequest extends BaseRequest<GetArtistsData> {
-  final String musicFolderId;
+  final String? musicFolderId;
 
   GetIndexesRequest({this.musicFolderId});
 

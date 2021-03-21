@@ -13,7 +13,7 @@ import 'package:subsound/subsonic/requests/get_starred2.dart';
 class StarredPage extends StatefulWidget {
   final SubsonicContext ctx;
 
-  const StarredPage({Key key, this.ctx}) : super(key: key);
+  const StarredPage({Key? key, required this.ctx}) : super(key: key);
 
   @override
   State<StarredPage> createState() {
@@ -27,10 +27,10 @@ class StarredSongRow extends StatelessWidget {
   final Function(SongResult) onTapCover;
 
   const StarredSongRow({
-    Key key,
-    @required this.song,
-    @required this.onTapRow,
-    @required this.onTapCover,
+    Key? key,
+    required this.song,
+    required this.onTapRow,
+    required this.onTapCover,
   }) : super(key: key);
 
   @override
@@ -63,10 +63,10 @@ class StarredAlbumRow extends StatelessWidget {
   final Function(AlbumResultSimple) onTapCover;
 
   const StarredAlbumRow({
-    Key key,
-    @required this.album,
-    @required this.onTap,
-    @required this.onTapCover,
+    Key? key,
+    required this.album,
+    required this.onTap,
+    required this.onTapCover,
   }) : super(key: key);
 
   @override
@@ -92,16 +92,16 @@ class StarredAlbumRow extends StatelessWidget {
 }
 
 class StarredItem {
-  final SongResult song;
-  final AlbumResultSimple album;
+  final SongResult? song;
+  final AlbumResultSimple? album;
 
   StarredItem({this.song, this.album});
 
-  SongResult getSong() {
+  SongResult? getSong() {
     return song;
   }
 
-  AlbumResultSimple getAlbum() {
+  AlbumResultSimple? getAlbum() {
     return album;
   }
 }
@@ -110,7 +110,7 @@ class StarredViewModel {
   final Function(SongResult) onPlaySong;
   final Function(AlbumResultSimple) onPlayAlbum;
 
-  StarredViewModel({this.onPlaySong, this.onPlayAlbum});
+  StarredViewModel({required this.onPlaySong, required this.onPlayAlbum});
 }
 
 class StarredListView extends StatelessWidget {
@@ -118,9 +118,9 @@ class StarredListView extends StatelessWidget {
   final List<StarredItem> data;
 
   const StarredListView({
-    Key key,
-    this.ctx,
-    this.data,
+    Key? key,
+    required this.ctx,
+    required this.data,
   }) : super(key: key);
 
   @override
@@ -141,9 +141,9 @@ class StarredListView extends StatelessWidget {
         itemBuilder: (context, idx) => StarredRow(
           onPlay: (item) {
             if (item.getSong() != null) {
-              model.onPlaySong(item.getSong());
+              model.onPlaySong(item.getSong()!);
             } else if (item.getAlbum() != null) {
-              model.onPlayAlbum(item.getAlbum());
+              model.onPlayAlbum(item.getAlbum()!);
             } else {}
           },
           item: data[idx],
@@ -158,16 +158,16 @@ class StarredRow extends StatelessWidget {
   final Function(StarredItem) onPlay;
 
   const StarredRow({
-    Key key,
-    this.item,
-    this.onPlay,
+    Key? key,
+    required this.item,
+    required this.onPlay,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (item.getAlbum() != null) {
       return StarredAlbumRow(
-        album: item.getAlbum(),
+        album: item.getAlbum()!,
         onTap: (AlbumResultSimple album) {
           this.onPlay(item);
         },
@@ -182,7 +182,7 @@ class StarredRow extends StatelessWidget {
     }
     if (item.getSong() != null) {
       return StarredSongRow(
-        song: item.getSong(),
+        song: item.getSong()!,
         onTapCover: (SongResult song) {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => AlbumScreen(
@@ -201,8 +201,7 @@ class StarredRow extends StatelessWidget {
 
 class StarredPageState extends State<StarredPage> {
   final SubsonicContext ctx;
-  GetStarred2Result _data;
-  Future<GetStarred2Result> initialLoad;
+  late Future<GetStarred2Result> initialLoad;
 
   StarredPageState(this.ctx);
 
@@ -210,9 +209,6 @@ class StarredPageState extends State<StarredPage> {
   void initState() {
     super.initState();
     initialLoad = load().then((value) {
-      setState(() {
-        _data = value;
-      });
       return value;
     });
   }
@@ -234,41 +230,43 @@ class StarredPageState extends State<StarredPage> {
                 if (snapshot.hasError) {
                   return Text("${snapshot.error}");
                 } else {
-                  _data = snapshot.data;
+                  final loadedData = snapshot.data!;
                   return StarredListView(
                     ctx: ctx,
                     data: [
-                      ..._data.albums
+                      ...loadedData.albums
                           .map((album) => StarredItem(album: album))
                           .toList(),
-                      ..._data.songs.map((e) => StarredItem(song: e)).toList(),
+                      ...loadedData.songs
+                          .map((e) => StarredItem(song: e))
+                          .toList(),
                     ]..sort((a, b) {
                         if (a.getAlbum() != null) {
                           if (b.getAlbum() != null) {
                             return a
-                                    .getAlbum()
+                                    .getAlbum()!
                                     .createdAt
-                                    .compareTo(b.getAlbum().createdAt) *
+                                    .compareTo(b.getAlbum()!.createdAt) *
                                 -1;
                           } else {
                             return a
-                                    .getAlbum()
+                                    .getAlbum()!
                                     .createdAt
-                                    .compareTo(b.getSong().createdAt) *
+                                    .compareTo(b.getSong()!.createdAt) *
                                 -1;
                           }
                         } else {
                           if (b.getAlbum() != null) {
                             return a
-                                    .getSong()
+                                    .getSong()!
                                     .createdAt
-                                    .compareTo(b.getAlbum().createdAt) *
+                                    .compareTo(b.getAlbum()!.createdAt) *
                                 -1;
                           } else {
                             return a
-                                    .getSong()
+                                    .getSong()!
                                     .createdAt
-                                    .compareTo(b.getSong().createdAt) *
+                                    .compareTo(b.getSong()!.createdAt) *
                                 -1;
                           }
                         }

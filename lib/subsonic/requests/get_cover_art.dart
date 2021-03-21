@@ -8,7 +8,7 @@ import '../subsonic.dart';
 
 class GetCoverArt extends BaseRequest<Uint8List> {
   final String id;
-  final int size;
+  final int? size;
 
   GetCoverArt(this.id, {this.size});
 
@@ -32,9 +32,9 @@ class GetCoverArt extends BaseRequest<Uint8List> {
 
   static Stream<FileInfo> loadWithCache(
     String url, {
-    String cacheKey,
-    int height,
-    int width,
+    String? cacheKey,
+    int? height,
+    int? width,
   }) {
     final info = ArtworkCacheManager().getImageFile(
       url,

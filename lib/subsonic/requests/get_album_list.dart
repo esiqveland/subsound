@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 import 'package:subsound/subsonic/subsonic.dart';
 
 enum GetAlbumListType {
@@ -19,12 +18,12 @@ enum GetAlbumListType {
 
 class GetAlbumList extends BaseRequest<List<Album>> {
   final GetAlbumListType type;
-  final int size;
-  final int offset;
-  final String musicFolderId;
+  final int? size;
+  final int? offset;
+  final String? musicFolderId;
 
   GetAlbumList({
-    @required this.type,
+    required this.type,
     this.size,
     this.offset,
     this.musicFolderId,
@@ -39,10 +38,10 @@ class GetAlbumList extends BaseRequest<List<Album>> {
       'getAlbumList',
       params: {
         'type': describeEnum(type),
-        'size': size.toString(),
-        'offset': offset.toString(),
-        'musicFolderId': musicFolderId
-      }..removeWhere((key, value) => value == null),
+        if (size != null) 'size': size!.toString(),
+        if (offset != null) 'offset': offset!.toString(),
+        if (musicFolderId != null) 'musicFolderId': musicFolderId!,
+      },
     ));
 
     final data = jsonDecode(response.body)['subsonic-response'];
