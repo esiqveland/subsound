@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -11,6 +12,7 @@ import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
+import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/star.dart';
 import 'package:subsound/utils/duration.dart';
@@ -123,6 +125,47 @@ class PlayerSong {
   String toString() {
     return 'PlayerSong{id: $id, songTitle: $songTitle, album: $album, artist: $artist, artistId: $artistId, albumId: $albumId, coverArtId: $coverArtId, coverArtLink: $coverArtLink, songUrl: $songUrl, isStarred: $isStarred}';
   }
+
+  static MediaItem toMediaItem(PlayerSong song) {
+    SongMetadata meta = SongMetadata(
+      songId: song.id,
+      songUrl: song.songUrl,
+      fileExtension: song.fileExtension,
+      fileSize: song.fileSize,
+      contentType: song.contentType,
+    );
+    final playItem = MediaItem(
+      id: song.id,
+      artist: song.artist,
+      album: song.album,
+      title: song.songTitle,
+      displayTitle: song.songTitle,
+      displaySubtitle: song.artist,
+      artUri: song.coverArtLink != null ? Uri.parse(song.coverArtLink!) : null,
+      duration: song.duration.inSeconds > 0 ? song.duration : Duration.zero,
+      extras: {},
+    ).setSongMetadata(meta);
+
+    return playItem;
+  }
+
+  // static PlayerSong fromMediaItem(MediaItem item) {
+  //   var meta = item.getSongMetadata();
+  //   return PlayerSong(
+  //     id: item.id,
+  //     songTitle: item.id,
+  //     artist: item.artist ?? '',
+  //     album: item.album ?? '',
+  //     artistId: item.artist,
+  //     albumId: albumId,
+  //     coverArtId: coverArtId,
+  //     songUrl: songUrl,
+  //     contentType: contentType,
+  //     fileExtension: fileExtension,
+  //     fileSize: fileSize,
+  //     duration: duration,
+  //   );
+  // }
 }
 
 enum PlayerStates { stopped, playing, paused, buffering }

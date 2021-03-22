@@ -152,6 +152,10 @@ class Songs {
     next[s.id] = s;
     return Songs(next);
   }
+
+  SongResult? getSongId(String id) {
+    return _songs[id];
+  }
 }
 
 class Albums {
