@@ -45,6 +45,8 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
       playerState: state.playerState.current,
       onPlay: () => dispatch!(PlayerCommandPlay()),
       onPause: () => dispatch!(PlayerCommandPause()),
+      onPlayNext: () => dispatch!(PlayerCommandSkipNext()),
+      onPlayPrev: () => dispatch!(PlayerCommandSkipPrev()),
       onStartListen: (listener) =>
           dispatch!(PlayerStartListenPlayerPosition(listener)),
       onStopListen: (listener) =>
@@ -64,6 +66,8 @@ class MiniPlayerModel extends Vm {
   final PlayerStates playerState;
   final Function onPlay;
   final Function onPause;
+  final Function onPlayNext;
+  final Function onPlayPrev;
   final Function(PositionListener) onStartListen;
   final Function(PositionListener) onStopListen;
 
@@ -78,6 +82,8 @@ class MiniPlayerModel extends Vm {
     required this.playerState,
     required this.onPlay,
     required this.onPause,
+    required this.onPlayNext,
+    required this.onPlayPrev,
     required this.onStartListen,
     required this.onStopListen,
   }) : super(equals: [

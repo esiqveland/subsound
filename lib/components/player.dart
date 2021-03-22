@@ -220,6 +220,8 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
       onUnstar: (String id) => dispatch!(UnstarIdCommand(SongId(songId: id))),
       onPlay: () => dispatch!(PlayerCommandPlay()),
       onPause: () => dispatch!(PlayerCommandPause()),
+      onPlayNext: () => dispatch!(PlayerCommandSkipNext()),
+      onPlayPrev: () => dispatch!(PlayerCommandSkipPrev()),
       onStartListen: (listener) =>
           dispatch!(PlayerStartListenPlayerPosition(listener)),
       onStopListen: (listener) =>
@@ -245,6 +247,8 @@ class PlayerViewModel extends Vm {
   final Function(String) onUnstar;
   final Function onPlay;
   final Function onPause;
+  final Function onPlayNext;
+  final Function onPlayPrev;
   final Function(PositionListener) onStartListen;
   final Function(PositionListener) onStopListen;
   final Function(int) onSeek;
@@ -265,6 +269,8 @@ class PlayerViewModel extends Vm {
     required this.onUnstar,
     required this.onPlay,
     required this.onPause,
+    required this.onPlayNext,
+    required this.onPlayPrev,
     required this.onStartListen,
     required this.onStopListen,
     required this.onSeek,
@@ -386,14 +392,20 @@ class PlayerView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: () {},
-                      child: Icon(Icons.skip_previous, size: 42.0),
+                    IconButton(
+                      icon: Icon(Icons.skip_previous),
+                      iconSize: 42.0,
+                      onPressed: () {
+                        vm.onPlayPrev();
+                      },
                     ),
                     PlayButton(state: vm, size: 72.0),
-                    InkWell(
-                      onTap: () {},
-                      child: Icon(Icons.skip_next, size: 42.0),
+                    IconButton(
+                      icon: Icon(Icons.skip_next),
+                      iconSize: 42.0,
+                      onPressed: () {
+                        vm.onPlayNext();
+                      },
                     ),
                   ],
                 ),

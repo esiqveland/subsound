@@ -379,6 +379,22 @@ class PlayerCommandPlay extends PlayerActions {
   }
 }
 
+class PlayerCommandSkipNext extends PlayerActions {
+  @override
+  Future<AppState?> reduce() async {
+    await AudioService.skipToNext();
+    return null;
+  }
+}
+
+class PlayerCommandSkipPrev extends PlayerActions {
+  @override
+  Future<AppState?> reduce() async {
+    await AudioService.skipToPrevious();
+    return null;
+  }
+}
+
 class PlayerCommandPause extends PlayerActions {
   @override
   Future<AppState> reduce() async {
