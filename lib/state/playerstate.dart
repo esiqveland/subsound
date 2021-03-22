@@ -16,6 +16,19 @@ import 'package:subsound/subsonic/requests/get_artist.dart';
 // Must be a top-level function
 void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
 
+class PlayQueue {
+  final List<MediaItem> _queue = [];
+  final int _currentIndex = -1;
+  final ConcatenatingAudioSource audioSource;
+
+  PlayQueue({required this.audioSource});
+
+  bool get hasNext => _currentIndex + 1 < _queue.length;
+  bool get hasPrev => _currentIndex > 0;
+  MediaItem? get currentMediaItem =>
+      _currentIndex == -1 ? null : _queue[_currentIndex];
+}
+
 class AudioPlayerTask extends BackgroundAudioTask {
   // e.g. just_audio
   final _player = AudioPlayer();
