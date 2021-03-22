@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
