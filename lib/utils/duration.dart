@@ -27,6 +27,6 @@ String formatDuration(Duration duration) {
     return '$hours:${twoDigits(minutes)}:${twoDigits(seconds)}';
   } else {
     var seconds = duration.inSeconds - (minutes * 60);
-    return '${twoDigits(minutes)}:${twoDigits(seconds)}';
+    return '$minutes:${twoDigits(seconds)}';
   }
 }
