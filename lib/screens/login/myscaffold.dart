@@ -55,9 +55,13 @@ final navBarItemsList = navBarItems.map((e) => e.item).toList();
 
 class BottomNavigationBarWidget extends StatefulWidget {
   final List<NavItems> navItems;
+  final Color backgroundColor;
 
-  const BottomNavigationBarWidget({Key? key, required this.navItems})
-      : super(key: key);
+  const BottomNavigationBarWidget({
+    Key? key,
+    required this.navItems,
+    required this.backgroundColor,
+  }) : super(key: key);
 
   @override
   _BottomNavigationBarWidgetState createState() =>
@@ -74,6 +78,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor: widget.backgroundColor,
       currentIndex: currentIndex,
       onTap: (idx) {
         setState(() {
@@ -120,6 +125,8 @@ class MyScaffold extends StatelessWidget {
     );
   }
 }
+
+const Color bottomColor = Colors.black45;
 
 class _AppScaffold extends StatelessWidget {
   final AppBar? appBar;
@@ -214,8 +221,14 @@ class _AppScaffold extends StatelessWidget {
             ),
       bottomSheet: disableBottomBar
           ? null
-          : PlayerBottomBar(height: PlayerBottomBarSize),
-      bottomNavigationBar: BottomNavigationBarWidget(navItems: navBarItems),
+          : PlayerBottomBar(
+              height: PlayerBottomBarSize,
+              backgroundColor: bottomColor,
+            ),
+      bottomNavigationBar: BottomNavigationBarWidget(
+        navItems: navBarItems,
+        backgroundColor: bottomColor,
+      ),
     );
   }
 }

@@ -12,15 +12,20 @@ import 'package:subsound/state/playerstate.dart';
 // or BottomSheet ?
 class PlayerBottomBar extends StatelessWidget {
   final double height;
+  final Color backgroundColor;
 
   PlayerBottomBar({
     Key? key,
     required this.height,
+    required this.backgroundColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MiniPlayer(height: height);
+    return MiniPlayer(
+      height: height,
+      backgroundColor: backgroundColor,
+    );
   }
 }
 
@@ -201,24 +206,34 @@ class MiniPlayerProgressBarState extends State<MiniPlayerProgressBar>
 }
 
 const miniProgressBarHeight = 2.0;
+const bottomBorderSize = 1.0;
 
 class MiniPlayer extends StatelessWidget {
   final double height;
+  final Color backgroundColor;
 
   MiniPlayer({
     Key? key,
     required this.height,
+    required this.backgroundColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     //final screenWidth = MediaQuery.of(context).size.width;
-    final playerHeight = height - miniProgressBarHeight;
+    final playerHeight = height - miniProgressBarHeight - bottomBorderSize;
 
     return SizedBox(
       height: height,
       child: Container(
-        // color: Colors.pinkAccent,
+        decoration: BoxDecoration(
+            color: Colors.black12,
+            // color: Colors.pinkAccent,
+            border: Border(
+                bottom: BorderSide(
+              color: Colors.black,
+              width: bottomBorderSize,
+            ))),
         child: StoreConnector<AppState, MiniPlayerModel>(
           vm: () => _MiniPlayerModelFactory(this),
           builder: (context, state) => Column(
