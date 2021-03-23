@@ -258,12 +258,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   Future<void> _skipRelative(int offset) async {
     final nextPos = _queuePosition + offset;
-    if (nextPos < 0 && _queue.length > 0 && offset == -1) {
+    if (nextPos < 0 && _queue.length > 0 && offset < 0) {
       await onSeekTo(Duration.zero);
       return;
     }
     final playbackPosition = _player.position;
-    if (offset == -1 && playbackPosition.inMilliseconds < 5000) {
+    if (offset == -1 && playbackPosition.inMilliseconds > 4000) {
       await onSeekTo(Duration.zero);
       return;
     }
