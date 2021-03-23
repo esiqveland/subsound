@@ -128,7 +128,8 @@ class GetSongCommand extends RunRequest {
     final subsonicResponse =
         await GetSongRequest(songId).run(state.loginState.toClient());
 
-    final songs = state.dataState.songs.add(subsonicResponse.data);
+    final song = subsonicResponse.data;
+    final songs = state.dataState.songs.add(song);
 
     return state.copy(
       dataState: state.dataState.copy(
