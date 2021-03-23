@@ -75,7 +75,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
       _broadcastState();
     });
     _player.currentIndexStream.listen((event) {
-      _queuePosition = event ?? -1;
+      final nextPos = event ?? -1;
+      if (nextPos != _queuePosition) {
+        _queuePosition = nextPos;
+        if (nextPos >= 0 && nextPos <= _queue.length) {
+          var item = _queue[nextPos];
+          AudioServiceBackground.setMediaItem(item);
+          _broadcastState();
+        }
+      }
     });
 
     // Special processing for state transitions.
