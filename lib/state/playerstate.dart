@@ -225,8 +225,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       await onSkipToQueueItem(mediaItem.id);
       return;
     } else {
-      await AudioServiceBackground.setMediaItem(mediaItem);
       await _player.stop();
+      await AudioServiceBackground.setMediaItem(mediaItem);
       final insertIndex = 0;
       var source = await _toAudioSource(mediaItem);
       _queue.clear();
@@ -349,7 +349,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onStop() async {
     log('Task: onStop called');
     // Stop and dispose of the player.
-    await _player.stop();
     _eventSubscription?.cancel();
     _streamSubscription?.cancel();
     _stateSubscription?.cancel();
@@ -564,7 +563,10 @@ class PlayerCommandPlayAlbum extends PlayerActions {
     final albumData = await GetAlbum(album.id).run(state.loginState.toClient());
     final song = albumData.data.songs.first;
 
-    dispatch(PlayerCommandPlaySong(PlayerSong.from(song)));
+    dispatch(PlayerCommandPlaySongInAlbum(
+      songId: song.id,
+      album: albumData.data,
+    ));
 
     return state;
   }
@@ -749,7 +751,7 @@ class PlayerCommandPlaySong extends PlayerActions {
 
     log('PlaySong: songUrl=$songUrl');
 
-    var mediaItem = PlayerSong.asMediaItem(next);
+    var mediaItem = next.toMediaItem();
     await AudioService.playMediaItem(mediaItem);
     AudioService.play();
 
