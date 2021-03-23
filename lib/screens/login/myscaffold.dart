@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
+import 'package:subsound/screens/login/drawer.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/state/appstate.dart';
 
@@ -161,64 +162,7 @@ class _AppScaffold extends StatelessWidget {
           builder: body,
         ),
       ),
-      drawer: Navigator.of(context).canPop()
-          ? null
-          : Drawer(
-              child: Column(
-                children: <Widget>[
-                  DrawerHeader(
-                    decoration: BoxDecoration(
-                        //color: Colors.blue,
-                        ),
-                    child: Text(
-                      'Subsound',
-                      style: TextStyle(
-                        //color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.star),
-                    title: Text("Starred"),
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => HomeScreen(
-                                initialTabIndex: 0,
-                              )));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.music_note),
-                    title: Text("Artists"),
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => HomeScreen(
-                                initialTabIndex: 1,
-                              )));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.album),
-                    title: Text("Albums"),
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => HomeScreen(
-                                initialTabIndex: 2,
-                              )));
-                    },
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: Icon(Icons.settings),
-                    title: Text("Settings"),
-                    onTap: () {
-                      Navigator.of(context).pushNamed(LoginScreen.routeName);
-                    },
-                  ),
-                ],
-              ),
-            ),
+      drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
       bottomSheet: disableBottomBar
           ? null
           : PlayerBottomBar(
