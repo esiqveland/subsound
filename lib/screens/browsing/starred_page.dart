@@ -23,18 +23,25 @@ class StarredPage extends StatefulWidget {
 
 class StarredSongRow extends StatelessWidget {
   final SongResult song;
+  final bool isPlaying;
   final Function(SongResult) onTapRow;
   final Function(SongResult) onTapCover;
 
   const StarredSongRow({
     Key? key,
     required this.song,
+    required this.isPlaying,
     required this.onTapRow,
     required this.onTapCover,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var subtitle = song.artistName;
+    if (song.albumName.isNotEmpty) {
+      subtitle = subtitle + "  -  ${song.albumName}";
+    }
     return ListTile(
       dense: true,
       onTap: () {
@@ -51,8 +58,15 @@ class StarredSongRow extends StatelessWidget {
           height: 48.0,
         ),
       ),
-      title: Text(song.title),
-      subtitle: Text(song.artistName),
+      title: Text(
+        song.title,
+        overflow: TextOverflow.ellipsis,
+        style: isPlaying ? TextStyle(color: theme.accentColor) : null,
+      ),
+      subtitle: Text(
+        subtitle,
+        style: isPlaying ? TextStyle(color: theme.selectedRowColor) : null,
+      ),
     );
   }
 }
@@ -104,13 +118,22 @@ class StarredItem {
   AlbumResultSimple? getAlbum() {
     return album;
   }
+
+  bool isPlaying(String currentSongId) {
+    return song?.id == currentSongId;
+  }
 }
 
-class StarredViewModel {
+class StarredViewModel extends Vm {
+  final String currentSongId;
   final Function(SongResult) onPlaySong;
   final Function(AlbumResultSimple) onPlayAlbum;
 
-  StarredViewModel({required this.onPlaySong, required this.onPlayAlbum});
+  StarredViewModel({
+    required this.currentSongId,
+    required this.onPlaySong,
+    required this.onPlayAlbum,
+  }) : super(equals: [currentSongId]);
 }
 
 class StarredListView extends StatelessWidget {
@@ -130,6 +153,7 @@ class StarredListView extends StatelessWidget {
     final itemCount = data.length;
     return StoreConnector<AppState, StarredViewModel>(
       converter: (st) => StarredViewModel(
+        currentSongId: st.state.playerState.currentSong?.id ?? '',
         onPlayAlbum: (album) => st.dispatch(PlayerCommandPlayAlbum(album)),
         onPlaySong: (song) => st.dispatch(PlayerCommandPlaySong(
           PlayerSong.from(song),
@@ -139,6 +163,8 @@ class StarredListView extends StatelessWidget {
         physics: BouncingScrollPhysics(),
         itemCount: itemCount,
         itemBuilder: (context, idx) => StarredRow(
+          item: data[idx],
+          isPlaying: data[idx].isPlaying(model.currentSongId),
           onPlay: (item) {
             if (item.getSong() != null) {
               model.onPlaySong(item.getSong()!);
@@ -146,7 +172,6 @@ class StarredListView extends StatelessWidget {
               model.onPlayAlbum(item.getAlbum()!);
             } else {}
           },
-          item: data[idx],
         ),
       ),
     );
@@ -155,11 +180,13 @@ class StarredListView extends StatelessWidget {
 
 class StarredRow extends StatelessWidget {
   final StarredItem item;
+  final bool isPlaying;
   final Function(StarredItem) onPlay;
 
   const StarredRow({
     Key? key,
     required this.item,
+    required this.isPlaying,
     required this.onPlay,
   }) : super(key: key);
 
@@ -183,6 +210,7 @@ class StarredRow extends StatelessWidget {
     if (item.getSong() != null) {
       return StarredSongRow(
         song: item.getSong()!,
+        isPlaying: isPlaying,
         onTapCover: (SongResult song) {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => AlbumScreen(
