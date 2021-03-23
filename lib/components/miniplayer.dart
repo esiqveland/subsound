@@ -38,13 +38,15 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
     final durSafe = state.playerState.duration.inMilliseconds;
     final dur = durSafe == 0 ? 1 : durSafe;
     final playbackProgress = pos / dur;
+    final currentSong = state.playerState.currentSong;
 
     return MiniPlayerModel(
-      songTitle: state.playerState.currentSong?.songTitle ?? '',
-      artistTitle: state.playerState.currentSong?.artist ?? '',
-      albumTitle: state.playerState.currentSong?.album ?? '',
-      coverArtLink: state.playerState.currentSong?.coverArtLink ?? '',
-      coverArtId: state.playerState.currentSong?.coverArtId ?? '',
+      hasCurrentSong: currentSong != null,
+      songTitle: currentSong?.songTitle ?? '',
+      artistTitle: currentSong?.artist ?? '',
+      albumTitle: currentSong?.album ?? '',
+      coverArtLink: currentSong?.coverArtLink ?? '',
+      coverArtId: currentSong?.coverArtId ?? '',
       duration: state.playerState.duration,
       playbackProgress: playbackProgress,
       playerState: state.playerState.current,
@@ -61,6 +63,7 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
 }
 
 class MiniPlayerModel extends Vm {
+  final bool hasCurrentSong;
   final String? songTitle;
   final String? artistTitle;
   final String? albumTitle;
@@ -77,6 +80,7 @@ class MiniPlayerModel extends Vm {
   final Function(PositionListener) onStopListen;
 
   MiniPlayerModel({
+    required this.hasCurrentSong,
     required this.songTitle,
     required this.artistTitle,
     required this.albumTitle,
@@ -92,6 +96,7 @@ class MiniPlayerModel extends Vm {
     required this.onStartListen,
     required this.onStopListen,
   }) : super(equals: [
+          hasCurrentSong,
           artistTitle ?? '',
           songTitle ?? '',
           albumTitle ?? '',
@@ -223,20 +228,20 @@ class MiniPlayer extends StatelessWidget {
     //final screenWidth = MediaQuery.of(context).size.width;
     final playerHeight = height - miniProgressBarHeight - bottomBorderSize;
 
-    return SizedBox(
-      height: height,
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.black12,
-            // color: Colors.pinkAccent,
-            border: Border(
-                bottom: BorderSide(
-              color: Colors.black,
-              width: bottomBorderSize,
-            ))),
-        child: StoreConnector<AppState, MiniPlayerModel>(
-          vm: () => _MiniPlayerModelFactory(this),
-          builder: (context, state) => Column(
+    return StoreConnector<AppState, MiniPlayerModel>(
+      vm: () => _MiniPlayerModelFactory(this),
+      builder: (context, state) => SizedBox(
+        height: height,
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.black12,
+              // color: Colors.pinkAccent,
+              border: Border(
+                  bottom: BorderSide(
+                color: Colors.black,
+                width: bottomBorderSize,
+              ))),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               MiniPlayerProgressBar(
