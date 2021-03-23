@@ -50,7 +50,7 @@ class PlayerSong {
     this.isStarred = false,
   });
 
-  static from(SongResult s, [bool? isStarred]) => PlayerSong(
+  static PlayerSong from(SongResult s, [bool? isStarred]) => PlayerSong(
         id: s.id,
         songTitle: s.title,
         album: s.albumName,

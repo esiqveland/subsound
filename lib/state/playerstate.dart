@@ -574,11 +574,13 @@ class PlayerCommandPlayAlbum extends PlayerActions {
 
 class PlayerCommandSetCurrentPlaying extends PlayerActions {
   final PlayerSong song;
-  final PlayerStates playerstate;
+  final PlayerStates? playerstate;
+  final List<PlayerSong>? queue;
 
   PlayerCommandSetCurrentPlaying(
     this.song, {
-    this.playerstate = PlayerStates.stopped,
+    this.playerstate,
+    this.queue,
   });
 
   @override
@@ -588,9 +590,10 @@ class PlayerCommandSetCurrentPlaying extends PlayerActions {
     );
     return state.copy(
       playerState: state.playerState.copy(
-        current: playerstate,
+        current: playerstate ?? state.playerState.current,
         currentSong: next,
         duration: next.duration,
+        queue: queue ?? state.playerState.queue,
       ),
     );
   }
@@ -712,20 +715,25 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
 
   @override
   Future<AppState?> reduce() async {
-    SongResult selected =
-        album.songs.singleWhere((element) => element.id == songId);
-    PlayerSong s =
-        PlayerSong.from(selected, state.dataState.isSongStarred(songId));
+    List<PlayerSong> queue = album.songs
+        .map((SongResult e) => PlayerSong.from(
+              e,
+              state.dataState.isSongStarred(e.id),
+            ))
+        .toList();
+
+    var selected = queue.singleWhere((element) => element.id == songId);
 
     dispatch(PlayerCommandSetCurrentPlaying(
-      s,
+      selected,
       playerstate: PlayerStates.paused,
+      queue: queue,
     ));
 
-    final queue = album.songs.map((s) => s.toMediaItem()).toList();
+    final mediaQueue = album.songs.map((s) => s.toMediaItem()).toList();
 
     await AudioService.pause();
-    await AudioService.updateQueue(queue);
+    await AudioService.updateQueue(mediaQueue);
     await AudioService.playFromMediaId(songId);
 
     return null;
@@ -744,6 +752,8 @@ class PlayerCommandPlaySong extends PlayerActions {
     );
     final songUrl = next.songUrl;
 
+    final queue = state.playerState.queue;
+    final idx = queue.indexWhere((element) => element.id == song.id);
     dispatch(PlayerCommandSetCurrentPlaying(
       next,
       playerstate: PlayerStates.stopped,
@@ -752,7 +762,11 @@ class PlayerCommandPlaySong extends PlayerActions {
     log('PlaySong: songUrl=$songUrl');
 
     var mediaItem = next.toMediaItem();
-    await AudioService.playMediaItem(mediaItem);
+    if (idx == -1) {
+      await AudioService.playMediaItem(mediaItem);
+    } else {
+      await AudioService.playFromMediaId(mediaItem.id);
+    }
     AudioService.play();
 
     return state.copy(
