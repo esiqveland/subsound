@@ -92,6 +92,21 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   }
 }
 
+class AppScaffoldModel extends Vm {
+  final StartUpState startUpState;
+  final bool hasSong;
+
+  AppScaffoldModel({
+    required this.startUpState,
+    required this.hasSong,
+  }) : super(equals: [startUpState, hasSong]);
+
+  static AppScaffoldModel fromStore(Store<AppState> store) => AppScaffoldModel(
+        startUpState: store.state.startUpState,
+        hasSong: store.state.playerState.currentSong != null,
+      );
+}
+
 const PlayerBottomBarSize = 50.0;
 
 class MyScaffold extends StatelessWidget {
@@ -112,16 +127,16 @@ class MyScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, StartUpState>(
-      converter: (state) => state.state.startUpState,
-      builder: (context, state) => state == StartUpState.loading
+    return StoreConnector<AppState, AppScaffoldModel>(
+      converter: (store) => AppScaffoldModel.fromStore(store),
+      builder: (context, state) => state.startUpState == StartUpState.loading
           ? SplashScreen()
           : _AppScaffold(
               title: title,
               body: body,
               appBar: appBar,
               disableAppBar: disableAppBar,
-              disableBottomBar: disableBottomBar,
+              disableBottomBar: disableBottomBar || !state.hasSong,
             ),
     );
   }
