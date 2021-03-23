@@ -226,6 +226,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       return;
     } else {
       await AudioServiceBackground.setMediaItem(mediaItem);
+      await _player.stop();
       final insertIndex = 0;
       var source = await _toAudioSource(mediaItem);
       _queue.clear();
@@ -262,6 +263,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       await onSeekTo(Duration.zero);
       return;
     }
+    final wasPlaying = _player.playing;
     final playbackPosition = _player.position;
     if (offset == -1 && playbackPosition.inMilliseconds > 4000) {
       await onSeekTo(Duration.zero);
@@ -289,11 +291,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
     _skipState = null;
 
-    // if (_playing) {
-    await onPlay();
-    // } else {
-    //   _setState(processingState: AudioProcessingState.ready);
-    // }
+    if (wasPlaying) {
+      await onPlay();
+    } else {
+      _broadcastState();
+    }
   }
 
   @override
