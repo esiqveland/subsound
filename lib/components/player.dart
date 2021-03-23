@@ -50,7 +50,7 @@ class PlayerSong {
     this.isStarred = false,
   });
 
-  static from(SongResult s) => PlayerSong(
+  static from(SongResult s, [bool? isStarred]) => PlayerSong(
         id: s.id,
         songTitle: s.title,
         album: s.albumName,
@@ -64,7 +64,7 @@ class PlayerSong {
         fileExtension: s.suffix,
         fileSize: s.fileSize,
         duration: s.duration,
-        isStarred: false,
+        isStarred: isStarred ?? false,
       );
 
   @override
@@ -126,7 +126,11 @@ class PlayerSong {
     return 'PlayerSong{id: $id, songTitle: $songTitle, album: $album, artist: $artist, artistId: $artistId, albumId: $albumId, coverArtId: $coverArtId, coverArtLink: $coverArtLink, songUrl: $songUrl, isStarred: $isStarred}';
   }
 
-  static MediaItem toMediaItem(PlayerSong song) {
+  MediaItem toMediaItem() {
+    return asMediaItem(this);
+  }
+
+  static MediaItem asMediaItem(PlayerSong song) {
     SongMetadata meta = SongMetadata(
       songId: song.id,
       songUrl: song.songUrl,

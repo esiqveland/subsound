@@ -175,15 +175,40 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // Future<Function> onPrepare() {}
   // Future<Function> onPrepareFromMediaId(String mediaId) {}
-  // Future<Function> onPlayFromMediaId(String mediaId) {}
+
+  Future<void> onPlayFromMediaId(String mediaId) async {
+    final idx = _queue.indexWhere((element) => element.id == mediaId);
+    if (idx == -1) {
+      log('Tried to play mediaId=$mediaId that was not present in the queue=${_queue.length}');
+      return;
+    } else {
+      var mediaItem = _queue[idx];
+      _queuePosition = idx;
+      await AudioServiceBackground.setMediaItem(mediaItem);
+      _broadcastState();
+      await _player.seek(Duration.zero, index: idx);
+      _broadcastState();
+      onPlay();
+    }
+  }
 
   @override
   Future<void> onUpdateQueue(List<MediaItem> replaceQueue) async {
+    _queuePosition = -1;
+    if (replaceQueue.length > 0) {
+      _queuePosition = 0;
+    }
     _queue.clear();
     _queue.addAll(replaceQueue);
     await _audioSource.clear();
 
-    //_audioSource.addAll(replaceQueue.map((mediaItem) => _toAudioSource(mediaItem)).toList());
+    List<AudioSource> sources =
+        await Future.wait(replaceQueue.map((MediaItem mediaItem) async {
+      final src = await _toAudioSource(mediaItem);
+      return src;
+    }));
+
+    await _audioSource.addAll(sources);
   }
 
   @override
@@ -629,9 +654,76 @@ class PlayerCommandEnqueueSong extends PlayerActions {
 
   @override
   Future<AppState?> reduce() async {
-    var mediaItem = PlayerSong.toMediaItem(song);
+    var mediaItem = PlayerSong.asMediaItem(song);
     await AudioService.addQueueItem(mediaItem);
     return state;
+  }
+}
+
+extension ToMediaItem on SongResult {
+  MediaItem toMediaItem() {
+    final song = this;
+    SongMetadata meta = SongMetadata(
+      songId: song.id,
+      songUrl: song.playUrl,
+      fileExtension: song.suffix,
+      fileSize: song.fileSize,
+      contentType: song.contentType,
+    );
+    final playItem = MediaItem(
+      id: song.id,
+      artist: song.artistName,
+      album: song.albumName,
+      title: song.title,
+      displayTitle: song.title,
+      displaySubtitle: song.artistName,
+      artUri: song.coverArtLink != null ? Uri.parse(song.coverArtLink) : null,
+      duration: song.duration.inSeconds > 0 ? song.duration : Duration.zero,
+      extras: {},
+    ).setSongMetadata(meta);
+
+    return playItem;
+  }
+}
+
+class PlayerCommandContextualPlay extends PlayerActions {
+  final String songId;
+  final List<SongResult> playQueue;
+
+  PlayerCommandContextualPlay({required this.songId, required this.playQueue});
+
+  @override
+  FutureOr<AppState?> reduce() {
+    // TODO: implement reduce
+    throw UnimplementedError();
+  }
+}
+
+class PlayerCommandPlaySongInAlbum extends PlayerActions {
+  final String songId;
+  final AlbumResult album;
+
+  PlayerCommandPlaySongInAlbum({required this.songId, required this.album});
+
+  @override
+  Future<AppState?> reduce() async {
+    SongResult selected =
+        album.songs.singleWhere((element) => element.id == songId);
+    PlayerSong s =
+        PlayerSong.from(selected, state.dataState.isSongStarred(songId));
+
+    dispatch(PlayerCommandSetCurrentPlaying(
+      s,
+      playerstate: PlayerStates.paused,
+    ));
+
+    final queue = album.songs.map((s) => s.toMediaItem()).toList();
+
+    await AudioService.pause();
+    await AudioService.updateQueue(queue);
+    await AudioService.playFromMediaId(songId);
+
+    return null;
   }
 }
 
@@ -654,7 +746,7 @@ class PlayerCommandPlaySong extends PlayerActions {
 
     log('PlaySong: songUrl=$songUrl');
 
-    var mediaItem = PlayerSong.toMediaItem(next);
+    var mediaItem = PlayerSong.asMediaItem(next);
     await AudioService.playMediaItem(mediaItem);
     AudioService.play();
 
