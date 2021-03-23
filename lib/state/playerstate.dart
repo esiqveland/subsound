@@ -200,12 +200,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
       await onSkipToQueueItem(mediaItem.id);
       return;
     } else {
+      await AudioServiceBackground.setMediaItem(mediaItem);
       final insertIndex = 0;
       var source = await _toAudioSource(mediaItem);
-      _queue.insert(insertIndex, mediaItem);
-      await _audioSource.insert(insertIndex, source);
-      await AudioServiceBackground.setMediaItem(mediaItem);
-      _broadcastState();
+      _queue.clear();
+      _queue.add(mediaItem);
+      _queuePosition = insertIndex;
+      await _audioSource.clear();
+      await _audioSource.add(source);
       await _player.seek(Duration.zero, index: insertIndex);
       await _broadcastState();
       if (insertIndex == 0 && !_playing) {
