@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
-import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
@@ -18,8 +17,8 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
   AlbumViewModel fromStore() {
     return AlbumViewModel(
       serverData: state.loginState,
-      onPlay: (SongResult r) {
-        dispatch!(PlayerCommandPlaySong(PlayerSong.from(r)));
+      onPlay: (String songId, AlbumResult album) {
+        dispatch!(PlayerCommandPlaySongInAlbum(songId: songId, album: album));
       },
     );
   }
@@ -27,7 +26,7 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
 
 class AlbumViewModel extends Vm {
   final ServerData serverData;
-  final Function(SongResult) onPlay;
+  final Function(String songId, AlbumResult album) onPlay;
 
   AlbumViewModel({
     required this.serverData,
@@ -64,7 +63,7 @@ class AlbumScreen extends StatelessWidget {
 class AlbumPage extends StatefulWidget {
   final SubsonicContext ctx;
   final String albumId;
-  final Function(SongResult) onPlay;
+  final Function(String songId, AlbumResult album) onPlay;
 
   const AlbumPage({
     Key? key,
@@ -75,11 +74,7 @@ class AlbumPage extends StatefulWidget {
 
   @override
   State<AlbumPage> createState() {
-    return AlbumPageState(
-      ctx: ctx,
-      albumId: albumId,
-      onPlay: onPlay,
-    );
+    return AlbumPageState();
   }
 }
 
@@ -130,7 +125,7 @@ class SongRow extends StatelessWidget {
 
 class AlbumView extends StatelessWidget {
   final AlbumResult album;
-  final Function(SongResult) onPlay;
+  final Function(String songId, AlbumResult album) onPlay;
 
   const AlbumView({
     Key? key,
@@ -229,7 +224,9 @@ class AlbumView extends StatelessWidget {
               (BuildContext context, int index) {
                 return SongRow(
                   song: album.songs[index],
-                  onPlay: this.onPlay,
+                  onPlay: (song) {
+                    this.onPlay(song.id, this.album);
+                  },
                 );
               },
               childCount: album.songs.length,
@@ -269,12 +266,7 @@ class AlbumList extends StatelessWidget {
 }
 
 class AlbumPageState extends State<AlbumPage> {
-  final SubsonicContext ctx;
-  final String albumId;
-  final Function(SongResult) onPlay;
-
-  AlbumPageState(
-      {required this.ctx, required this.albumId, required this.onPlay});
+  AlbumPageState();
 
   @override
   void initState() {
@@ -286,7 +278,7 @@ class AlbumPageState extends State<AlbumPage> {
     return Container(
       color: Colors.black54,
       child: FutureBuilder<AlbumResult>(
-          future: load(this.albumId),
+          future: load(widget.albumId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasError) {
@@ -294,7 +286,7 @@ class AlbumPageState extends State<AlbumPage> {
               } else {
                 return AlbumView(
                   album: snapshot.data!,
-                  onPlay: this.onPlay,
+                  onPlay: widget.onPlay,
                 );
               }
             } else {
@@ -306,7 +298,7 @@ class AlbumPageState extends State<AlbumPage> {
 
   Future<AlbumResult> load(String albumId) {
     return GetAlbum(albumId)
-        .run(ctx)
+        .run(widget.ctx)
         .then((value) => value.data)
         .catchError((err) {
       log('GetArtist:error:$albumId', error: err);
