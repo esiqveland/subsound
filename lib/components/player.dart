@@ -11,6 +11,7 @@ import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/player_task.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
