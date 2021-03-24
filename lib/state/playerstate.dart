@@ -760,8 +760,6 @@ class PlayerCommandPlaySong extends PlayerActions {
     );
     final songUrl = next.songUrl;
 
-    final queue = state.playerState.queue;
-    final idx = queue.indexWhere((element) => element.id == song.id);
     dispatch(PlayerCommandSetCurrentPlaying(
       next,
       playerstate: PlayerStates.stopped,
@@ -769,7 +767,9 @@ class PlayerCommandPlaySong extends PlayerActions {
 
     log('PlaySong: songUrl=$songUrl');
 
-    var mediaItem = next.toMediaItem();
+    final mediaItem = next.toMediaItem();
+    final queue = state.playerState.queue;
+    final idx = queue.indexWhere((element) => element.id == song.id);
     if (idx == -1) {
       await AudioService.playMediaItem(mediaItem);
     } else {
