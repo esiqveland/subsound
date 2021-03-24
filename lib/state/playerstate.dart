@@ -409,7 +409,7 @@ class StartupPlayer extends ReduxAction<AppState> {
     final success = await AudioService.start(
       backgroundTaskEntrypoint: _entrypoint,
       //androidNotificationChannelName: 'Subsound',
-      androidEnableQueue: false,
+      androidEnableQueue: true,
 
       // Enable this if you want the Android service to exit the foreground state on pause.
       androidStopForegroundOnPause: false,
