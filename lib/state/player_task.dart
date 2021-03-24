@@ -6,10 +6,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/storage/cache.dart';
 
-//final task = AudioPlayerTask();
-// Must be a top-level function
-void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
-
 class PlayQueue {
   final List<MediaItem> _queue = [];
   final int _currentIndex = -1;
