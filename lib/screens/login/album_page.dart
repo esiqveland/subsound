@@ -17,6 +17,7 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
   AlbumViewModel fromStore() {
     return AlbumViewModel(
       serverData: state.loginState,
+      currentSongId: state.playerState.currentSong?.id,
       onPlay: (String songId, AlbumResult album) {
         dispatch!(PlayerCommandPlaySongInAlbum(songId: songId, album: album));
       },
@@ -26,10 +27,12 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
 
 class AlbumViewModel extends Vm {
   final ServerData serverData;
+  final String? currentSongId;
   final Function(String songId, AlbumResult album) onPlay;
 
   AlbumViewModel({
     required this.serverData,
+    required this.currentSongId,
     required this.onPlay,
   }) : super(equals: [serverData]);
 }
@@ -51,6 +54,7 @@ class AlbumScreen extends StatelessWidget {
         body: (context) => Center(
           child: AlbumPage(
             ctx: state.serverData.toClient(),
+            currentSongId: state.currentSongId,
             albumId: albumId,
             onPlay: state.onPlay,
           ),
@@ -63,12 +67,14 @@ class AlbumScreen extends StatelessWidget {
 class AlbumPage extends StatefulWidget {
   final SubsonicContext ctx;
   final String albumId;
+  final String? currentSongId;
   final Function(String songId, AlbumResult album) onPlay;
 
   const AlbumPage({
     Key? key,
     required this.ctx,
     required this.albumId,
+    required this.currentSongId,
     required this.onPlay,
   }) : super(key: key);
 
@@ -80,11 +86,13 @@ class AlbumPage extends StatefulWidget {
 
 class SongRow extends StatelessWidget {
   final SongResult song;
+  final bool isPlaying;
   final Function(SongResult) onPlay;
 
   const SongRow({
     Key? key,
     required this.song,
+    required this.isPlaying,
     required this.onPlay,
   }) : super(key: key);
 
@@ -125,11 +133,13 @@ class SongRow extends StatelessWidget {
 
 class AlbumView extends StatelessWidget {
   final AlbumResult album;
+  final String? currentSongId;
   final Function(String songId, AlbumResult album) onPlay;
 
   const AlbumView({
     Key? key,
     required this.album,
+    required this.currentSongId,
     required this.onPlay,
   }) : super(key: key);
 
@@ -222,8 +232,12 @@ class AlbumView extends StatelessWidget {
             child: SliverList(
                 delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
+                final song = album.songs[index];
+                final isPlaying =
+                    currentSongId != null && currentSongId == song.id;
                 return SongRow(
-                  song: album.songs[index],
+                  isPlaying: isPlaying,
+                  song: song,
                   onPlay: (song) {
                     this.onPlay(song.id, this.album);
                   },
@@ -246,10 +260,15 @@ class AlbumView extends StatelessWidget {
 
 class AlbumList extends StatelessWidget {
   final AlbumResult album;
+  final String? currentSongId;
   final List<SongResult> songs;
 
-  const AlbumList({Key? key, required this.album, required this.songs})
-      : super(key: key);
+  const AlbumList({
+    Key? key,
+    required this.album,
+    required this.currentSongId,
+    required this.songs,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +276,7 @@ class AlbumList extends StatelessWidget {
       children: this
           .songs
           .map((s) => SongRow(
+                isPlaying: currentSongId != null && s.id == currentSongId,
                 song: s,
                 onPlay: (SongResult s) {},
               ))
@@ -285,6 +305,7 @@ class AlbumPageState extends State<AlbumPage> {
                 return Center(child: Text("${snapshot.error}"));
               } else {
                 return AlbumView(
+                  currentSongId: widget.currentSongId,
                   album: snapshot.data!,
                   onPlay: widget.onPlay,
                 );
