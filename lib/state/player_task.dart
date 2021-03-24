@@ -19,6 +19,7 @@ class PlayQueue {
       _queue.indexWhere((element) => element.id == mediaId) != -1;
   bool get hasNext => _currentIndex + 1 < _queue.length;
   bool get hasPrev => _currentIndex > 0;
+  AudioProcessingState? get skipState => _skipState;
 
   MediaItem? get currentMediaItem =>
       _currentIndex == -1 ? null : _queue[_currentIndex];
@@ -145,17 +146,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   StreamSubscription<int?>? _idxSubscription;
 
   // used to track state when we are in a skip transition
-  AudioProcessingState? _skipState;
-
-  // final List<MediaItem> _queue = [];
-  // int _queuePosition = -1;
-
-  // bool get hasNext => _queuePosition + 1 < _queue.length;
-  // bool get hasPrev => _queuePosition > 0;
-  // MediaItem? get currentMediaItem =>
-  //     _queuePosition == -1 ? null : _queue[_queuePosition];
-
-  bool get _playing => _player.playing;
+  AudioProcessingState? get _skipState => _playQueue._skipState;
+  set _skipState(AudioProcessingState? next) => _playQueue._skipState = next;
 
   /// Called once when this audio task is first started and ready to play
   /// audio, in response to [AudioService.start]. [params] will contain any
