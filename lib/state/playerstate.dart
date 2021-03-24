@@ -12,7 +12,6 @@ import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 
-//final task = AudioPlayerTask();
 // Must be a top-level function
 void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
 
