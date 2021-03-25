@@ -31,8 +31,8 @@ class PlayQueue {
       return;
     } else {
       var item = _queue[idx];
-      await player.seek(Duration.zero, index: idx);
       await AudioServiceBackground.setMediaItem(item);
+      await player.seek(Duration.zero, index: idx);
     }
   }
 
@@ -58,19 +58,21 @@ class PlayQueue {
       var item = _queue[idx];
       _currentIndex = idx;
       await player.seek(Duration.zero, index: idx);
-      await AudioServiceBackground.setMediaItem(item);
+      await AudioServiceBackground.setMediaItem(mediaItem);
     }
+    await player.seek(Duration.zero, index: _currentIndex);
+    await player.play();
   }
 
   Future<void> replaceWith(List<MediaItem> queue) async {
     await player.pause();
     _queue.clear();
-    _queue.addAll(_queue);
+    _queue.addAll(queue);
     _currentIndex = -1;
 
     await audioSource.clear();
     List<AudioSource> sources =
-        await Future.wait(queue.map((MediaItem mediaItem) async {
+        await Future.wait(_queue.map((MediaItem mediaItem) async {
       final src = await _toAudioSource(mediaItem);
       return src;
     }));
@@ -79,6 +81,9 @@ class PlayQueue {
   }
 
   Future<void> setCurrentIndex(int nextIdx) async {
+    if (nextIdx == _currentIndex) {
+      return;
+    }
     if (nextIdx >= _queue.length) {
       return;
     }
@@ -131,12 +136,9 @@ class PlayQueue {
 
 class AudioPlayerTask extends BackgroundAudioTask {
   // e.g. just_audio
-  static final _player = AudioPlayer();
-  static final _audioSource = ConcatenatingAudioSource(children: []);
-  static final _playQueue = PlayQueue(
-    player: _player,
-    audioSource: _audioSource,
-  );
+  final _player = AudioPlayer();
+  final _audioSource = ConcatenatingAudioSource(children: []);
+  late final PlayQueue _playQueue;
 
   AudioPlayerTask() : super(cacheManager: ArtworkCacheManager());
 
@@ -155,6 +157,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   /// audio task.
   @override
   Future<void> onStart(Map<String, dynamic>? params) async {
+    _playQueue = PlayQueue(
+      player: _player,
+      audioSource: _audioSource,
+    );
+
     // Broadcast that we're connecting, and what controls are available.
     _broadcastState();
 
