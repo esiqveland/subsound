@@ -443,50 +443,10 @@ class StartupPlayer extends ReduxAction<AppState> {
     AudioService.playbackStateStream.listen((event) {
       log("playbackStateStream event=${event.format()}");
 
-      switch (event.processingState) {
-        case AudioProcessingState.none:
-          dispatch(PlayerStateChanged(PlayerStates.stopped));
-          break;
-        case AudioProcessingState.connecting:
-          if (event.playing) {
-            dispatch(PlayerStateChanged(PlayerStates.playing));
-          } else {
-            dispatch(PlayerStateChanged(PlayerStates.stopped));
-          }
-          break;
-        case AudioProcessingState.ready:
-          if (event.playing) {
-            dispatch(PlayerStateChanged(PlayerStates.playing));
-          } else {
-            dispatch(PlayerStateChanged(PlayerStates.paused));
-          }
-          break;
-        case AudioProcessingState.buffering:
-          if (event.playing) {
-            dispatch(PlayerStateChanged(PlayerStates.playing));
-          } else {
-            dispatch(PlayerStateChanged(PlayerStates.buffering));
-          }
-          break;
-        case AudioProcessingState.fastForwarding:
-          break;
-        case AudioProcessingState.rewinding:
-          break;
-        case AudioProcessingState.skippingToPrevious:
-          break;
-        case AudioProcessingState.skippingToNext:
-          break;
-        case AudioProcessingState.skippingToQueueItem:
-          break;
-        case AudioProcessingState.completed:
-          dispatch(PlayerStateChanged(PlayerStates.stopped));
-          break;
-        case AudioProcessingState.stopped:
-          dispatch(PlayerStateChanged(PlayerStates.stopped));
-          break;
-        case AudioProcessingState.error:
-          dispatch(PlayerStateChanged(PlayerStates.stopped));
-          break;
+      PlayerStates nextState =
+          getNextPlayerState(event.processingState, event.playing);
+      if (state.playerState.current != nextState) {
+        dispatch(PlayerStateChanged(nextState));
       }
       final currentPosition = event.currentPosition;
       if (state.playerState.position != currentPosition) {
@@ -501,10 +461,14 @@ class StartupPlayer extends ReduxAction<AppState> {
       if (item == null) {
         return;
       }
-
-      if (item.duration != null) {
+      if (item.duration != null &&
+          item.duration != state.playerState.duration) {
         dispatch(PlayerDurationChanged(item.duration!));
       }
+      if (item.id == state.playerState.currentSong?.id) {
+        return;
+      }
+
       var id = item.id;
       var song = state.dataState.songs.getSongId(id);
       //final song = PlayerSong.fromMediaItem(item);
@@ -533,5 +497,47 @@ class StartupPlayer extends ReduxAction<AppState> {
     // });
 
     return state.copy();
+  }
+}
+
+PlayerStates getNextPlayerState(
+    AudioProcessingState processingState, bool playing) {
+  switch (processingState) {
+    case AudioProcessingState.none:
+      return PlayerStates.stopped;
+    case AudioProcessingState.connecting:
+      if (playing) {
+        return PlayerStates.playing;
+      } else {
+        return PlayerStates.stopped;
+      }
+    case AudioProcessingState.ready:
+      if (playing) {
+        return PlayerStates.playing;
+      } else {
+        return PlayerStates.paused;
+      }
+    case AudioProcessingState.buffering:
+      if (playing) {
+        return PlayerStates.playing;
+      } else {
+        return PlayerStates.buffering;
+      }
+    case AudioProcessingState.fastForwarding:
+      return PlayerStates.playing;
+    case AudioProcessingState.rewinding:
+      return PlayerStates.playing;
+    case AudioProcessingState.skippingToPrevious:
+      return PlayerStates.playing;
+    case AudioProcessingState.skippingToNext:
+      return PlayerStates.playing;
+    case AudioProcessingState.skippingToQueueItem:
+      return PlayerStates.playing;
+    case AudioProcessingState.completed:
+      return PlayerStates.stopped;
+    case AudioProcessingState.stopped:
+      return PlayerStates.stopped;
+    case AudioProcessingState.error:
+      return PlayerStates.stopped;
   }
 }
