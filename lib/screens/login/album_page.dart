@@ -105,7 +105,12 @@ class SongRow extends StatelessWidget {
         },
         child: Row(
           children: [
-            Text("${song.trackNumber}"),
+            Text(
+              "${song.trackNumber}",
+              style: TextStyle(
+                color: isPlaying ? Theme.of(context).accentColor : null,
+              ),
+            ),
             Flexible(
               child: Container(
                 child: Column(
@@ -113,7 +118,10 @@ class SongRow extends StatelessWidget {
                     Text(
                       song.title,
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                        color: isPlaying ? Theme.of(context).accentColor : null,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
                       textAlign: TextAlign.left,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
