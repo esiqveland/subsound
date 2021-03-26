@@ -87,6 +87,9 @@ class GetArtist extends BaseRequest<ArtistResult> {
     final response = await ctx.client
         .get(ctx.buildRequestUri('getArtist', params: {'id': id}));
 
+    // navidrome needs this call to load extra artistinfo for next call
+    ctx.client.get(ctx.buildRequestUri('getArtistInfo2', params: {'id': id}));
+
     final data = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (data['subsonic-response']['status'] != 'ok') {
