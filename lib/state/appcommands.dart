@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/errors.dart';
+import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_album_list2.dart';
@@ -19,21 +20,39 @@ class StarIdCommand extends RunRequest {
 
   @override
   Future<AppState?> reduce() async {
-    final res = await StarItem(id: id).run(state.loginState.toClient());
-    if (res.status == ResponseStatus.ok) {
-      final next = state.playerState.currentSong?.id == id.getId
-          ? state.playerState.copy(
-              currentSong: state.playerState.currentSong?.copy(isStarred: true),
-            )
-          : state.playerState;
+    final stateBefore = state.playerState.currentSong;
+    if (state.playerState.currentSong?.id == id.getId) {
+      final starred = state.playerState.currentSong?.copy(isStarred: true);
+      if (starred != null) {
+        dispatch(PlayerCommandSetCurrentPlaying(starred));
+      }
+    }
+    try {
+      final res = await StarItem(id: id).run(state.loginState.toClient());
+      if (res.status == ResponseStatus.ok) {
+        final next = state.playerState.currentSong?.id == id.getId
+            ? state.playerState.copy(
+                currentSong:
+                    state.playerState.currentSong?.copy(isStarred: true),
+              )
+            : state.playerState;
 
-      store.dispatchFuture(RefreshStarredCommand());
+        store.dispatchFuture(RefreshStarredCommand());
 
-      return state.copy(
-        playerState: next,
-      );
-    } else {
-      dispatch(DisplayError("something went wrong"));
+        return state.copy(
+          playerState: next,
+        );
+      } else {
+        if (stateBefore != null) {
+          dispatch(PlayerCommandSetCurrentPlaying(stateBefore));
+        }
+        dispatch(DisplayError("something went wrong"));
+      }
+    } catch (e) {
+      if (stateBefore != null) {
+        dispatch(PlayerCommandSetCurrentPlaying(stateBefore));
+      }
+      throw e;
     }
     return null;
   }
