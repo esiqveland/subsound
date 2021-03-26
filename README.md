@@ -15,10 +15,13 @@ A subsonic music player.
 - [X] Browsing content
 - [X] Audio playback
 - [X] Starred songs
-- [ ] Media players support (lock screens)
+- [X] Media players support (lock screens)
   - [X] Android
-  - [ ] ios
+  - [X] ios
 - [ ] A nice, smooth interface
+- [ ] Make play queue actually work in all contexts
+  - [X] Play a song in album with queue
+  - [ ] Play a song from starred with queue
 - [ ] Offline support
   - [ ] Sync content for local access in database
   - [ ] Selective caching
@@ -37,11 +40,12 @@ Non-goals:
 ## TODO:
  - [X] Playback support
  - [X] Media players support (lock screens) for Android
- - [ ] Media players support (lock screens) for ios
+ - [X] Media players support (lock screens) for ios
  - [ ] Queue support
  - [X] cache artwork
  - [X] download files
- - [ ] cache files
+ - [\] cache files
+   - [X] partial, should cache files now, but the user has no control over this
  - [ ] Album page: Star button in song list
  - [ ] Album page: summary in bottom of song list
  - [ ] Album page: play button
@@ -51,6 +55,7 @@ Non-goals:
  - [ ] Setup sqlite database + migrations
     - [ ] Store artist index in sqlite db for offline use
  - [ ] Make it work offline
+    - [ ] Download starred
     - [ ] store artwork persistent locally
     - [ ] store files persistent locally
     - [ ] store metadata persistent locally in database (as part of a full metadata sync?)
