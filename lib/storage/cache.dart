@@ -26,11 +26,11 @@ class ArtworkCacheManager extends CacheManager with ImageCacheManager {
             key,
             stalePeriod: const Duration(days: 700),
             maxNrOfCacheObjects: 1000,
-            repo: JsonCacheInfoRepository(databaseName: key),
+            //repo: JsonCacheInfoRepository(databaseName: key),
             fileService: HttpFileService(
               httpClient: LoggingClient(Client()),
             ),
-            fileSystem: fsio.IOFileSystem(key),
+            //fileSystem: fsio.IOFileSystem(key),
           ),
         );
 }
