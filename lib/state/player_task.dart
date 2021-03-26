@@ -30,9 +30,11 @@ class PlayQueue {
       log('Tried to play mediaId=$mediaId that was not present in the queue=${_queue.length}');
       return;
     } else {
-      var item = _queue[idx];
+      _currentIndex = idx;
+      var item = _queue[_currentIndex];
       await AudioServiceBackground.setMediaItem(item);
       await player.seek(Duration.zero, index: idx);
+      await player.play();
     }
   }
 
