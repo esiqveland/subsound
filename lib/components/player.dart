@@ -124,7 +124,7 @@ class PlayerSong {
 
   @override
   String toString() {
-    return 'PlayerSong{id: $id, songTitle: $songTitle, album: $album, artist: $artist, artistId: $artistId, albumId: $albumId, coverArtId: $coverArtId, coverArtLink: $coverArtLink, songUrl: $songUrl, isStarred: $isStarred}';
+    return 'PlayerSong{id: $id, songTitle: $songTitle}';
   }
 
   MediaItem toMediaItem() {
@@ -243,7 +243,7 @@ class PlayerState {
 
   @override
   String toString() {
-    return 'PlayerState{current: $current, currentSong: $currentSong, queue: $queue, duration: $duration, position: $position}';
+    return 'PlayerState{current: $current, currentSong: $currentSong, queue: ${queue.length}, duration: $duration, position: $position}';
   }
 }
 
