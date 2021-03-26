@@ -54,16 +54,13 @@ class PlayQueue {
       _currentIndex = 0;
       await audioSource.clear();
       await audioSource.add(await _toAudioSource(mediaItem));
-      await AudioServiceBackground.setMediaItem(mediaItem);
       AudioServiceBackground.setQueue(_queue);
     } else {
       var item = _queue[idx];
-      _currentIndex = idx;
-      await player.seek(Duration.zero, index: idx);
-      await AudioServiceBackground.setMediaItem(mediaItem);
     }
     await player.seek(Duration.zero, index: _currentIndex);
     await player.play();
+    await AudioServiceBackground.setMediaItem(mediaItem);
   }
 
   Future<void> replaceWith(List<MediaItem> queue) async {
@@ -175,9 +172,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // Propagate all events from the audio player to AudioService clients.
     _eventSubscription = _player.playbackEventStream.listen((event) {
       if (event.currentIndex != null) {
-        _playQueue.setCurrentIndex(event.currentIndex!);
+        // there is a bug in playbackEventStream that sends the previous
+        // index when seeking to a new index...
+        //
+        // _playQueue.setCurrentIndex(event.currentIndex!).then((value) {
+        //   _broadcastState();
+        // });
       }
-      _broadcastState();
     });
     _idxSubscription = _player.currentIndexStream.listen((event) {
       final nextPos = event ?? -1;
@@ -292,18 +293,21 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onUpdateQueue(List<MediaItem> replaceQueue) async {
+    log('onUpdateQueue q=${replaceQueue.map((e) => e.title).join(", ")}');
     await _playQueue.replaceWith(replaceQueue);
     _broadcastState();
   }
 
   @override
   Future<void> onAddQueueItem(MediaItem mediaItem) async {
+    log('onAddQueueItem item=$mediaItem');
     await _playQueue.addItem(mediaItem);
     _broadcastState();
   }
 
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
+    log('onPlayMediaItem item=$mediaItem');
     if (_playQueue.hasItem(mediaItem.id)) {
       await _playQueue.playItemInQueue(mediaItem.id);
     } else {
