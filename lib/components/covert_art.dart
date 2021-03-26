@@ -35,7 +35,6 @@ class CoverArtImage extends StatelessWidget {
       //placeholderFadeInDuration: ,
       cacheManager: ArtworkCacheManager(),
       fit: fit,
-      // if (this.id != null ) cacheKey: this.id,
       cacheKey: this.id,
       // progressIndicatorBuilder: (context, url, downloadProgress) =>
       //     CircularProgressIndicator(value: downloadProgress.progress),
