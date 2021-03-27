@@ -9,7 +9,7 @@ import 'package:subsound/storage/cache.dart';
 class PlayQueue {
   final AudioPlayer player;
   final List<MediaItem> _queue = [];
-  final ConcatenatingAudioSource audioSource;
+  ConcatenatingAudioSource audioSource;
   int _currentIndex = -1;
   AudioProcessingState? _skipState;
 
@@ -40,7 +40,7 @@ class PlayQueue {
 
   Future<void> addItem(MediaItem mediaItem) async {
     _queue.add(mediaItem);
-    final src = await _toAudioSource(mediaItem);
+    final src = await _toSource(mediaItem);
     await audioSource.add(src);
     await AudioServiceBackground.setQueue(_queue);
   }
@@ -52,7 +52,7 @@ class PlayQueue {
       _queue.clear();
       _queue.add(mediaItem);
       await audioSource.clear();
-      await audioSource.add(await _toAudioSource(mediaItem));
+      await audioSource.add(await _toSource(mediaItem));
       AudioServiceBackground.setQueue(_queue);
       _currentIndex = 0;
     } else {
@@ -64,19 +64,27 @@ class PlayQueue {
     await AudioServiceBackground.setMediaItem(mediaItem);
   }
 
-  Future<void> replaceWith(List<MediaItem> queue) async {
+  Future<void> replaceWith(List<MediaItem> replaceQueue) async {
     await player.pause();
     _queue.clear();
-    _queue.addAll(queue);
-    _currentIndex = -1;
+    _queue.addAll(replaceQueue);
+
+    final items =
+        replaceQueue.map((e) => MediaItemMeta(e, e.getSongMetadata())).toList();
+    final playNowIdx = items.indexWhere((element) => element.meta.playNow);
+    _currentIndex = playNowIdx;
 
     List<AudioSource> sources =
-        await Future.wait(_queue.map((MediaItem mediaItem) async {
-      final src = await _toAudioSource(mediaItem);
+        await Future.wait(items.map((MediaItemMeta mediaItem) async {
+      final src = await _toAudioSource(mediaItem.mediaItem, mediaItem.meta);
       return src;
     }));
-    await audioSource.clear();
-    await audioSource.addAll(sources);
+    final nextSource = new ConcatenatingAudioSource(children: sources);
+    audioSource = nextSource;
+    await player.setAudioSource(nextSource, initialIndex: _currentIndex);
+    if (playNowIdx != -1) {
+      await player.play();
+    }
     AudioServiceBackground.setQueue(_queue);
   }
 
@@ -422,8 +430,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 }
 
-Future<AudioSource> _toAudioSource(MediaItem mediaItem) async {
-  SongMetadata meta = mediaItem.getSongMetadata()!;
+Future<AudioSource> _toSource(MediaItem mediaItem) async {
+  return _toAudioSource(mediaItem, mediaItem.getSongMetadata());
+}
+
+Future<AudioSource> _toAudioSource(
+    MediaItem mediaItem, SongMetadata meta) async {
   var uri = Uri.parse(meta.songUrl);
   var cacheFile = await DownloadCacheManager().getCachedSongFile(meta);
 
@@ -445,12 +457,13 @@ extension SongMeta on MediaItem {
     extras!["extension"] = s.fileExtension;
     extras!["size"] = s.fileSize;
     extras!["type"] = s.contentType;
+    extras!["playNow"] = s.playNow;
     return this;
   }
 
-  SongMetadata? getSongMetadata() {
+  SongMetadata getSongMetadata() {
     if (extras == null) {
-      return null;
+      throw new StateError('invalid mediaItem: $this');
     }
     return SongMetadata(
       songId: extras!["id"],
@@ -458,6 +471,7 @@ extension SongMeta on MediaItem {
       fileExtension: extras!["extension"],
       fileSize: extras!["size"],
       contentType: extras!["type"],
+      playNow: extras!["playNow"] ?? false,
     );
   }
 }

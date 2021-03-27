@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 // ignore: implementation_imports
 import 'package:flutter_cache_manager/src/storage/file_system/file_system_io.dart'
@@ -35,12 +36,20 @@ class ArtworkCacheManager extends CacheManager with ImageCacheManager {
         );
 }
 
+class MediaItemMeta {
+  final MediaItem mediaItem;
+  final SongMetadata meta;
+
+  MediaItemMeta(this.mediaItem, this.meta);
+}
+
 class SongMetadata {
   final String songId;
   final String songUrl;
   final String fileExtension;
   final int fileSize;
   final String contentType;
+  final bool playNow;
 
   SongMetadata({
     required this.songId,
@@ -48,6 +57,7 @@ class SongMetadata {
     required this.fileExtension,
     required this.fileSize,
     required this.contentType,
+    this.playNow = false,
   });
 }
 

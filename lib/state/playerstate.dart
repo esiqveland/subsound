@@ -274,7 +274,7 @@ class PlayerCommandEnqueueSong extends PlayerActions {
 }
 
 extension ToMediaItem on SongResult {
-  MediaItem toMediaItem() {
+  MediaItem toMediaItem({bool playNow = false}) {
     final song = this;
     SongMetadata meta = SongMetadata(
       songId: song.id,
@@ -282,6 +282,7 @@ extension ToMediaItem on SongResult {
       fileExtension: song.suffix,
       fileSize: song.fileSize,
       contentType: song.contentType,
+      playNow: playNow,
     );
     final playItem = MediaItem(
       id: song.id,
@@ -335,7 +336,11 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
       queue: queue,
     ));
 
-    final mediaQueue = album.songs.map((s) => s.toMediaItem()).toList();
+    final mediaQueue = album.songs
+        .map((s) => s.toMediaItem(
+              playNow: s.id == songId,
+            ))
+        .toList();
 
     await AudioService.pause();
     await AudioService.updateQueue(mediaQueue);
