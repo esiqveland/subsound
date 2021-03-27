@@ -21,7 +21,7 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
       currentSongId: state.playerState.currentSong?.id,
       loadAlbum: (String albumId) {
         return dispatchFuture!(GetAlbumCommand(albumId: albumId))
-            .then((value) => state.dataState.albums.get(albumId));
+            .then((value) => this.currentState().dataState.albums.get(albumId));
       },
       onPlay: (String songId, AlbumResult album) {
         dispatch!(PlayerCommandPlaySongInAlbum(songId: songId, album: album));

@@ -125,7 +125,7 @@ class GetAlbumCommand extends RunRequest {
 
   @override
   Future<AppState?> reduce() async {
-    var album = state.dataState.albums.get(albumId);
+    AlbumResult? album = state.dataState.albums.get(albumId);
     if (album != null) {
       return null;
     }

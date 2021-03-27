@@ -174,7 +174,7 @@ class Albums {
 
   Albums add(AlbumResult a) {
     final next2 = Map.of(albumResults);
-    albumResults[a.id] = a;
+    next2[a.id] = a;
 
     final next = Map.of(albums);
     next[a.id] = Album(
