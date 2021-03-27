@@ -285,7 +285,7 @@ class PlayerViewModel extends Vm {
   final String artistTitle;
   final String albumTitle;
   final String albumId;
-  final String coverArtLink;
+  final String? coverArtLink;
   final String coverArtId;
   final bool isStarred;
   final Duration duration;
@@ -307,7 +307,7 @@ class PlayerViewModel extends Vm {
     required this.artistTitle,
     required this.albumTitle,
     required this.albumId,
-    required this.coverArtLink,
+    this.coverArtLink,
     required this.coverArtId,
     required this.isStarred,
     required this.duration,
@@ -328,7 +328,7 @@ class PlayerViewModel extends Vm {
           artistTitle,
           albumTitle,
           albumId,
-          coverArtLink,
+          coverArtLink ?? '',
           coverArtId,
           isStarred,
           duration,
@@ -380,6 +380,7 @@ class PlayerView extends StatelessWidget {
                                 vm.coverArtLink,
                                 // height: 250,
                                 // width: 250,
+                                id: vm.coverArtId,
                                 fit: BoxFit.cover,
                               )
                             : Icon(Icons.album),

@@ -262,6 +262,7 @@ class MiniPlayer extends StatelessWidget {
                         state.coverArtLink != null
                             ? CoverArtImage(
                                 state.coverArtLink,
+                                id: state.coverArtId,
                                 height: playerHeight,
                                 fit: BoxFit.fitHeight,
                               )

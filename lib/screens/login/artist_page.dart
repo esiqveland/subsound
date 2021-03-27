@@ -70,6 +70,7 @@ class AlbumRow extends StatelessWidget {
           children: [
             CoverArtImage(
               album.coverArtLink,
+              id: album.coverArtId,
               width: 72.0,
               height: 72.0,
             ),
@@ -134,6 +135,7 @@ class ArtistView extends StatelessWidget {
               margin: EdgeInsets.only(bottom: 10.0),
               child: CoverArtImage(
                 artist.coverArtLink,
+                id: artist.coverArtId,
                 height: 250.0,
                 width: 250.0,
               ),
