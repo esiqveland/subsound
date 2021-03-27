@@ -168,10 +168,14 @@ class Songs {
 
 class Albums {
   final Map<String, Album> albums;
+  final Map<String, AlbumResult> albumResults;
 
-  Albums(this.albums);
+  Albums(this.albums, this.albumResults);
 
   Albums add(AlbumResult a) {
+    final next2 = Map.of(albumResults);
+    albumResults[a.id] = a;
+
     final next = Map.of(albums);
     next[a.id] = Album(
       id: a.id,
@@ -181,7 +185,7 @@ class Albums {
       coverArtLink: a.coverArtLink,
       isDir: false,
     );
-    return Albums(next);
+    return Albums(next, next2);
   }
 
   Albums addAll(List<Album> data) {
@@ -189,7 +193,11 @@ class Albums {
     data.forEach((a) {
       next[a.id] = a;
     });
-    return Albums(next);
+    return Albums(next, albumResults);
+  }
+
+  AlbumResult? get(String albumId) {
+    return this.albumResults[albumId];
   }
 }
 
@@ -247,7 +255,7 @@ class DataState {
 
   static DataState initialState() => DataState(
         stars: Starred({}, {}),
-        albums: Albums({}),
+        albums: Albums({}, {}),
         songs: Songs({}),
         artists: Artists({}),
       );
