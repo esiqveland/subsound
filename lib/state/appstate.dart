@@ -153,6 +153,14 @@ class Songs {
     return Songs(next);
   }
 
+  Songs addAll(List<SongResult> songs) {
+    final next = Map.of(_songs);
+    songs.forEach((s) {
+      next[s.id] = s;
+    });
+    return Songs(next);
+  }
+
   SongResult? getSongId(String id) {
     return _songs[id];
   }

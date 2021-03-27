@@ -127,11 +127,15 @@ class GetAlbumCommand extends RunRequest {
     final subsonicResponse =
         await GetAlbum(albumId).run(state.loginState.toClient());
 
-    final albums = state.dataState.albums.add(subsonicResponse.data);
+    final album = subsonicResponse.data;
+
+    final songs = state.dataState.songs.addAll(album.songs);
+    final albums = state.dataState.albums.add(album);
 
     return state.copy(
       dataState: state.dataState.copy(
         albums: albums,
+        songs: songs,
       ),
     );
   }
