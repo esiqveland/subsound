@@ -46,6 +46,7 @@ Non-goals:
  - [X] download files
  - [\] cache files
    - [X] partial, should cache files now, but the user has no control over this
+ - [ ] link from album back to artist
  - [ ] Album page: Star button in song list
  - [ ] Album page: summary in bottom of song list
  - [ ] Album page: play button
