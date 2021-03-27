@@ -34,7 +34,10 @@ class AlbumViewModel extends Vm {
     required this.serverData,
     required this.currentSongId,
     required this.onPlay,
-  }) : super(equals: [serverData]);
+  }) : super(equals: [
+          serverData,
+          currentSongId ?? '',
+        ]);
 }
 
 class AlbumScreen extends StatelessWidget {
