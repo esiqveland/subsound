@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
@@ -123,11 +124,15 @@ class GetAlbumCommand extends RunRequest {
   GetAlbumCommand({required this.albumId});
 
   @override
-  Future<AppState> reduce() async {
+  Future<AppState?> reduce() async {
+    var album = state.dataState.albums.get(albumId);
+    if (album != null) {
+      return null;
+    }
     final subsonicResponse =
         await GetAlbum(albumId).run(state.loginState.toClient());
 
-    final album = subsonicResponse.data;
+    album = subsonicResponse.data;
 
     final songs = state.dataState.songs.addAll(album.songs);
     final albums = state.dataState.albums.add(album);
