@@ -33,7 +33,7 @@ class PlayQueue {
       _currentIndex = idx;
       var item = _queue[_currentIndex];
       await AudioServiceBackground.setMediaItem(item);
-      await player.seek(Duration.zero, index: idx);
+      await player.seek(Duration.zero, index: _currentIndex);
       await player.play();
     }
   }
@@ -51,12 +51,13 @@ class PlayQueue {
       await player.pause();
       _queue.clear();
       _queue.add(mediaItem);
-      _currentIndex = 0;
       await audioSource.clear();
       await audioSource.add(await _toAudioSource(mediaItem));
       AudioServiceBackground.setQueue(_queue);
+      _currentIndex = 0;
     } else {
       var item = _queue[idx];
+      _currentIndex = idx;
     }
     await player.seek(Duration.zero, index: _currentIndex);
     await player.play();
@@ -69,12 +70,12 @@ class PlayQueue {
     _queue.addAll(queue);
     _currentIndex = -1;
 
-    await audioSource.clear();
     List<AudioSource> sources =
         await Future.wait(_queue.map((MediaItem mediaItem) async {
       final src = await _toAudioSource(mediaItem);
       return src;
     }));
+    await audioSource.clear();
     await audioSource.addAll(sources);
     AudioServiceBackground.setQueue(_queue);
   }
