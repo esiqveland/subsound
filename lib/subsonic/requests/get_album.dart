@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/stream_id.dart';
 import 'package:subsound/utils/duration.dart';
 
@@ -160,7 +161,7 @@ class GetSongRequest extends BaseRequest<SongResult> {
       bitRate: songData['bitRate'] ?? 0,
       trackNumber: songData['track'] ?? 0,
       fileSize: songData['size'] ?? 0,
-      starred: songData['starred'] ?? false,
+      starred: parseStarred(songData['starred']),
       contentType: songData['contentType'] ?? '',
       suffix: songData['suffix'] ?? '',
     );
@@ -227,7 +228,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
         bitRate: songData['bitRate'] ?? 0,
         trackNumber: songData['track'] ?? 0,
         fileSize: songData['size'] ?? 0,
-        starred: songData['starred'] ?? false,
+        starred: parseStarred(songData['starred']),
         contentType: songData['contentType'] ?? '',
         suffix: songData['suffix'] ?? '',
       );

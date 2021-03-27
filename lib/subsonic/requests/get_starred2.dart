@@ -16,6 +16,14 @@ class GetStarred2Result {
   GetStarred2Result({required this.albums, required this.songs});
 }
 
+bool parseStarred(dynamic value) {
+  if (value != null) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 class GetStarred2 extends BaseRequest<GetStarred2Result> {
   GetStarred2();
 
@@ -94,7 +102,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
         bitRate: songData['bitRate'] ?? 0,
         trackNumber: songData['track'] ?? 0,
         fileSize: songData['size'] ?? 0,
-        starred: songData['starred'] ?? false,
+        starred: parseStarred(songData['starred']),
         contentType: songData['contentType'] ?? '',
         suffix: songData['suffix'] ?? '',
       );
