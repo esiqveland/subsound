@@ -116,7 +116,6 @@ class PlayQueue {
       await player.seek(Duration.zero);
       return;
     }
-    // TODO: wrap around to the start?
     if (nextPos < 0) {
       return;
     }
@@ -331,7 +330,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (_playQueue.hasNext) {
       _skipRelative(1);
     } else {
-      onStop();
+      onPause();
       _broadcastState();
     }
   }
