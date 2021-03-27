@@ -94,6 +94,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
         bitRate: songData['bitRate'] ?? 0,
         trackNumber: songData['track'] ?? 0,
         fileSize: songData['size'] ?? 0,
+        starred: songData['starred'] ?? false,
         contentType: songData['contentType'] ?? '',
         suffix: songData['suffix'] ?? '',
       );

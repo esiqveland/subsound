@@ -60,6 +60,7 @@ class SongResult {
   final int bitRate;
   final int trackNumber;
   final int fileSize;
+  final bool starred;
   final String contentType;
   final String suffix;
 
@@ -82,6 +83,7 @@ class SongResult {
     required this.bitRate,
     required this.trackNumber,
     required this.fileSize,
+    required this.starred,
     required this.suffix,
     required this.contentType,
   });
@@ -158,6 +160,7 @@ class GetSongRequest extends BaseRequest<SongResult> {
       bitRate: songData['bitRate'] ?? 0,
       trackNumber: songData['track'] ?? 0,
       fileSize: songData['size'] ?? 0,
+      starred: songData['starred'] ?? false,
       contentType: songData['contentType'] ?? '',
       suffix: songData['suffix'] ?? '',
     );
@@ -224,6 +227,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
         bitRate: songData['bitRate'] ?? 0,
         trackNumber: songData['track'] ?? 0,
         fileSize: songData['size'] ?? 0,
+        starred: songData['starred'] ?? false,
         contentType: songData['contentType'] ?? '',
         suffix: songData['suffix'] ?? '',
       );
