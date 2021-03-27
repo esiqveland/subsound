@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:subsound/utils/duration.dart';
 
@@ -137,8 +136,8 @@ class GetArtist extends BaseRequest<ArtistResult> {
         ? GetCoverArt(coverArtId).getImageUrl(ctx)
         : firstAlbumCoverLink ?? artistData['artistImageUrl'];
 
-    log('firstAlbumCoverLink=$firstAlbumCoverLink');
-    log('coverArtLink=$coverArtLink');
+    // log('firstAlbumCoverLink=$firstAlbumCoverLink');
+    // log('coverArtLink=$coverArtLink');
 
     final artistResult = ArtistResult(
       artistData['id'],
