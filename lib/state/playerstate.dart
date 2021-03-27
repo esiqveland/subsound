@@ -179,6 +179,7 @@ class PlayerCommandPlayAlbum extends PlayerActions {
 
 class PlayerCommandSetCurrentPlaying extends PlayerActions {
   final PlayerSong song;
+  final Duration? duration;
   final PlayerStates? playerstate;
   final List<PlayerSong>? queue;
 
@@ -186,6 +187,7 @@ class PlayerCommandSetCurrentPlaying extends PlayerActions {
     this.song, {
     this.playerstate,
     this.queue,
+    this.duration,
   });
 
   @override
@@ -197,7 +199,7 @@ class PlayerCommandSetCurrentPlaying extends PlayerActions {
       playerState: state.playerState.copy(
         current: playerstate ?? state.playerState.current,
         currentSong: next,
-        duration: next.duration,
+        duration: duration ?? next.duration,
         queue: queue ?? state.playerState.queue,
       ),
     );
@@ -343,8 +345,8 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
         .toList();
 
     await AudioService.pause();
-    await AudioService.updateQueue(mediaQueue);
-    await AudioService.playFromMediaId(songId);
+    AudioService.updateQueue(mediaQueue);
+    AudioService.playFromMediaId(songId);
 
     return null;
   }
