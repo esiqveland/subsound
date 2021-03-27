@@ -34,7 +34,7 @@ class PlayQueue {
       var item = _queue[_currentIndex];
       await AudioServiceBackground.setMediaItem(item);
       await player.seek(Duration.zero, index: _currentIndex);
-      await player.play();
+      player.play();
     }
   }
 
@@ -48,7 +48,7 @@ class PlayQueue {
   Future<void> playItem(MediaItem mediaItem) async {
     final idx = _queue.indexWhere((element) => element.id == mediaItem.id);
     if (idx == -1) {
-      await player.pause();
+      player.pause();
       _queue.clear();
       _queue.add(mediaItem);
       await audioSource.clear();
@@ -60,12 +60,12 @@ class PlayQueue {
       _currentIndex = idx;
     }
     await player.seek(Duration.zero, index: _currentIndex);
-    await player.play();
-    await AudioServiceBackground.setMediaItem(mediaItem);
+    player.play();
+    AudioServiceBackground.setMediaItem(mediaItem);
   }
 
   Future<void> replaceWith(List<MediaItem> replaceQueue) async {
-    await player.pause();
+    player.pause();
     _queue.clear();
     _queue.addAll(replaceQueue);
 
@@ -83,7 +83,7 @@ class PlayQueue {
     audioSource = nextSource;
     await player.setAudioSource(nextSource, initialIndex: _currentIndex);
     if (playNowIdx != -1) {
-      await player.play();
+      player.play();
     }
     AudioServiceBackground.setQueue(_queue);
   }
@@ -97,7 +97,7 @@ class PlayQueue {
     }
     _currentIndex = nextIdx;
     if (nextIdx == -1) {
-      await player.pause();
+      player.pause();
     } else {
       final item = _queue[nextIdx];
       await AudioServiceBackground.setMediaItem(item);
@@ -121,8 +121,8 @@ class PlayQueue {
       return;
     }
     if (nextPos >= _queue.length) {
-      await player.pause();
-      await player.seek(Duration.zero);
+      player.pause();
+      player.seek(Duration.zero);
       return;
     }
 
@@ -137,7 +137,7 @@ class PlayQueue {
     _skipState = null;
 
     if (wasPlaying) {
-      await player.play();
+      player.play();
     }
   }
 }
@@ -365,13 +365,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onPlay() async {
-    await _player.play();
+    _player.play();
     _broadcastState();
   }
 
   @override
   Future<void> onPause() async {
-    await _player.pause();
+    _player.pause();
     _broadcastState();
   }
 
