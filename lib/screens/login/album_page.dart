@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
+import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
@@ -18,6 +19,10 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
     return AlbumViewModel(
       serverData: state.loginState,
       currentSongId: state.playerState.currentSong?.id,
+      loadAlbum: (String albumId) {
+        return dispatchFuture!(GetAlbumCommand(albumId: albumId))
+            .then((value) => state.dataState.albums.get(albumId));
+      },
       onPlay: (String songId, AlbumResult album) {
         dispatch!(PlayerCommandPlaySongInAlbum(songId: songId, album: album));
       },
@@ -28,11 +33,13 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
 class AlbumViewModel extends Vm {
   final ServerData serverData;
   final String? currentSongId;
+  final Future<AlbumResult?> Function(String albumId) loadAlbum;
   final Function(String songId, AlbumResult album) onPlay;
 
   AlbumViewModel({
     required this.serverData,
     required this.currentSongId,
+    required this.loadAlbum,
     required this.onPlay,
   }) : super(equals: [
           serverData,
@@ -59,6 +66,7 @@ class AlbumScreen extends StatelessWidget {
             ctx: state.serverData.toClient(),
             currentSongId: state.currentSongId,
             albumId: albumId,
+            loadAlbum: state.loadAlbum,
             onPlay: state.onPlay,
           ),
         ),
@@ -71,6 +79,7 @@ class AlbumPage extends StatefulWidget {
   final SubsonicContext ctx;
   final String albumId;
   final String? currentSongId;
+  final Future<AlbumResult?> Function(String albumId) loadAlbum;
   final Function(String songId, AlbumResult album) onPlay;
 
   const AlbumPage({
@@ -79,6 +88,7 @@ class AlbumPage extends StatefulWidget {
     required this.albumId,
     required this.currentSongId,
     required this.onPlay,
+    required this.loadAlbum,
   }) : super(key: key);
 
   @override
@@ -329,11 +339,8 @@ class AlbumPageState extends State<AlbumPage> {
   }
 
   Future<AlbumResult> load(String albumId) {
-    return GetAlbum(albumId)
-        .run(widget.ctx)
-        .then((value) => value.data)
-        .catchError((err) {
-      log('GetArtist:error:$albumId', error: err);
+    return widget.loadAlbum(albumId).then((value) => value!).catchError((err) {
+      log('GetAlbum:error:$albumId', error: err);
       return Future<AlbumResult>.error(err);
     });
   }
