@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/stream_id.dart';
@@ -238,7 +237,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
         ? GetCoverArt(coverArtId).getImageUrl(ctx)
         : FallbackImageUrl;
 
-    log('coverArtLink=$coverArtLink');
+    // log('coverArtLink=$coverArtLink');
 
     final duration = getDuration(albumDataNew['duration']);
 
