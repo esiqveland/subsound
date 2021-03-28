@@ -344,8 +344,8 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
             ))
         .toList();
 
-    AudioService.updateQueue(mediaQueue);
-    AudioService.playFromMediaId(songId);
+    await AudioService.updateQueue(mediaQueue);
+    //AudioService.playFromMediaId(songId);
 
     return null;
   }
