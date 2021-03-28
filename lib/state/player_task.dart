@@ -32,7 +32,7 @@ class PlayQueue {
     } else {
       _currentIndex = idx;
       var item = _queue[_currentIndex];
-      await AudioServiceBackground.setMediaItem(item);
+      AudioServiceBackground.setMediaItem(item);
       await player.seek(Duration.zero, index: _currentIndex);
       player.play();
     }
@@ -121,7 +121,7 @@ class PlayQueue {
     }
     if (nextPos >= _queue.length) {
       player.pause();
-      player.seek(Duration.zero);
+      await player.seek(Duration.zero);
       return;
     }
 
