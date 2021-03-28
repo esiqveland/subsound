@@ -334,7 +334,7 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
 
     dispatch(PlayerCommandSetCurrentPlaying(
       selected,
-      playerstate: PlayerStates.paused,
+      playerstate: PlayerStates.playing,
       queue: queue,
     ));
 
@@ -344,9 +344,8 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
             ))
         .toList();
 
-    await AudioService.pause();
-    AudioService.updateQueue(mediaQueue);
-    AudioService.playFromMediaId(songId);
+    await AudioService.updateQueue(mediaQueue);
+    await AudioService.playFromMediaId(songId);
 
     return null;
   }
