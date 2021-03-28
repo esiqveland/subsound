@@ -146,12 +146,6 @@ class _AppScaffold extends StatelessWidget {
               ),
       body: Builder(builder: body),
       drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
-      // bottomSheet: disableBottomBar
-      //     ? null
-      //     : PlayerBottomBar(
-      //         height: PlayerBottomBarSize,
-      //         backgroundColor: bottomColor,
-      //       ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
