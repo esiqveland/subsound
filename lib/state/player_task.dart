@@ -144,7 +144,6 @@ class PlayQueue {
 class AudioPlayerTask extends BackgroundAudioTask {
   // e.g. just_audio
   final _player = AudioPlayer();
-  final _audioSource = ConcatenatingAudioSource(children: []);
   late final PlayQueue _playQueue;
 
   AudioPlayerTask() : super(cacheManager: ArtworkCacheManager());
@@ -164,6 +163,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   /// audio task.
   @override
   Future<void> onStart(Map<String, dynamic>? params) async {
+    final _audioSource = ConcatenatingAudioSource(children: []);
+
     _playQueue = PlayQueue(
       player: _player,
       audioSource: _audioSource,
