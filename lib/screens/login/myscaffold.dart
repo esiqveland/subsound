@@ -188,24 +188,25 @@ class _AppScaffold extends StatelessWidget {
               AppBar(
                 title: title,
               ),
-      body: Container(
-        padding: disableBottomBar
-            ? null
-            : EdgeInsets.only(bottom: PlayerBottomBarSize),
-        child: Builder(
-          builder: body,
-        ),
-      ),
+      body: Builder(builder: body),
       drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
-      bottomSheet: disableBottomBar
-          ? null
-          : PlayerBottomBar(
-              height: PlayerBottomBarSize,
-              backgroundColor: bottomColor,
-            ),
-      bottomNavigationBar: BottomNavigationBarWidget(
-        navItems: navBarItems,
-        backgroundColor: bottomColor,
+      // bottomSheet: disableBottomBar
+      //     ? null
+      //     : PlayerBottomBar(
+      //         height: PlayerBottomBarSize,
+      //         backgroundColor: bottomColor,
+      //       ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (!disableBottomBar)
+            PlayerBottomBar(
+                height: PlayerBottomBarSize, backgroundColor: bottomColor),
+          BottomNavigationBarWidget(
+            navItems: navBarItems,
+            backgroundColor: bottomColor,
+          ),
+        ],
       ),
     );
   }
