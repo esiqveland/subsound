@@ -177,6 +177,10 @@ class _AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _colorScheme = Theme.of(context).colorScheme;
+    final double _panelMinSize = PlayerBottomBarSize;
+    final double _panelMaxSize = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: disableAppBar
           ? null
