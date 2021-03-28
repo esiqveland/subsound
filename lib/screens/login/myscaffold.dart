@@ -8,6 +8,7 @@ import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/drawer.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:we_slide/we_slide.dart';
 
 import 'homescreen.dart';
 
@@ -16,6 +17,20 @@ class NavItems {
   final Function(BuildContext) handler;
 
   NavItems(this.item, this.handler);
+}
+
+class SlidingHome extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return WeSlide(
+      body: Container(),
+      panel: Container(),
+      panelHeader: Container(),
+      footer: BottomNavigationBar(
+        items: [],
+      ),
+    );
+  }
 }
 
 final navBarItems = [
