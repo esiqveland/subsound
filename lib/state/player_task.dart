@@ -51,17 +51,23 @@ class PlayQueue {
       player.pause();
       _queue.clear();
       _queue.add(mediaItem);
-      await audioSource.clear();
+      final length = audioSource.length;
+
       await audioSource.add(await _toSource(mediaItem));
+
+      if (length > 0) {
+        await audioSource.removeRange(0, length);
+      }
+
       AudioServiceBackground.setQueue(_queue);
       _currentIndex = 0;
     } else {
       var item = _queue[idx];
       _currentIndex = idx;
     }
+    AudioServiceBackground.setMediaItem(mediaItem);
     await player.seek(Duration.zero, index: _currentIndex);
     player.play();
-    AudioServiceBackground.setMediaItem(mediaItem);
   }
 
   Future<void> replaceWith(List<MediaItem> replaceQueue) async {
@@ -81,9 +87,13 @@ class PlayQueue {
     }));
     final nextSource = new ConcatenatingAudioSource(children: sources);
     audioSource = nextSource;
-    await player.setAudioSource(nextSource, initialIndex: _currentIndex);
     if (playNowIdx != -1) {
+      await player.setAudioSource(nextSource, initialIndex: playNowIdx);
+      await player.seek(Duration.zero, index: playNowIdx);
+      AudioServiceBackground.setMediaItem(_queue[playNowIdx]);
       player.play();
+    } else {
+      await player.setAudioSource(nextSource);
     }
     AudioServiceBackground.setQueue(_queue);
   }
@@ -323,7 +333,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       await _playQueue.playItem(mediaItem);
     }
     _broadcastState();
-    await onPlay();
+    onPlay();
   }
 
   @override
