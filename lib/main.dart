@@ -1,5 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/homescreen.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
@@ -18,6 +19,9 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   NavigateAction.setNavigatorKey(navigatorKey);
 
   final Store<AppState> store = createStore();
