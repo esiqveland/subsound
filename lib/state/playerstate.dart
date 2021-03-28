@@ -507,10 +507,16 @@ class StartupPlayer extends ReduxAction<AppState> {
 }
 
 PlayerStates getNextPlayerState(
-    AudioProcessingState processingState, bool playing) {
+  AudioProcessingState processingState,
+  bool playing,
+) {
   switch (processingState) {
     case AudioProcessingState.none:
-      return PlayerStates.stopped;
+      if (playing) {
+        return PlayerStates.playing;
+      } else {
+        return PlayerStates.stopped;
+      }
     case AudioProcessingState.connecting:
       if (playing) {
         return PlayerStates.playing;
