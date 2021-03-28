@@ -5,19 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
+import 'package:subsound/screens/login/bottomnavbar.dart';
 import 'package:subsound/screens/login/drawer.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:we_slide/we_slide.dart';
 
 import 'homescreen.dart';
-
-class NavItems {
-  final BottomNavigationBarItem item;
-  final Function(BuildContext) handler;
-
-  NavItems(this.item, this.handler);
-}
 
 class SlidingHome extends StatelessWidget {
   @override
@@ -68,44 +62,6 @@ final navBarItems = [
   )
 ];
 final navBarItemsList = navBarItems.map((e) => e.item).toList();
-
-class BottomNavigationBarWidget extends StatefulWidget {
-  final List<NavItems> navItems;
-  final Color backgroundColor;
-
-  const BottomNavigationBarWidget({
-    Key? key,
-    required this.navItems,
-    required this.backgroundColor,
-  }) : super(key: key);
-
-  @override
-  _BottomNavigationBarWidgetState createState() =>
-      _BottomNavigationBarWidgetState();
-}
-
-class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
-  int currentIndex;
-
-  _BottomNavigationBarWidgetState({
-    this.currentIndex = 0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: widget.backgroundColor,
-      currentIndex: currentIndex,
-      onTap: (idx) {
-        setState(() {
-          this.currentIndex = idx;
-        });
-        widget.navItems[idx].handler(context);
-      },
-      items: widget.navItems.map((item) => item.item).toList(),
-    );
-  }
-}
 
 class AppScaffoldModel extends Vm {
   final StartUpState startUpState;
