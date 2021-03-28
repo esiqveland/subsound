@@ -39,9 +39,13 @@ Non-goals:
 
 ## TODO:
  - [X] Playback support
+ - [ ] Fix heavy blinking in UI
+   - [ ] on play from album
+   - [ ] on play from starred list when nothing is already playing
  - [X] Media players support (lock screens) for Android
  - [X] Media players support (lock screens) for ios
  - [ ] Queue support
+ - [ ] Start up the background play task after a crash (or in general it is not running anymore)
  - [X] cache artwork
  - [X] download files
  - [\] cache files
@@ -53,6 +57,14 @@ Non-goals:
  - [X] Album page: play on click
  - [ ] Album page: Slide to enqueue
  - [ ] Artist page: play button
+ - [ ] Search
+   - [ ] search page
+   - [ ] search button in bottom bar
+ - [ ] Song meta: add information about cache state (whether we have the file already downloaded)
+ - [X] cache album data
+ - [ ] cache song data
+ - [ ] cache starred data
+ - [ ] cache playlist data
  - [ ] Setup sqlite database + migrations
     - [ ] Store artist index in sqlite db for offline use
  - [ ] Make it work offline
