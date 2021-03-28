@@ -73,7 +73,7 @@ class PlayerCommandPlay extends PlayerActions {
 class PlayerCommandSkipNext extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
-    await AudioService.skipToNext();
+    AudioService.skipToNext();
     return null;
   }
 }
@@ -81,7 +81,7 @@ class PlayerCommandSkipNext extends PlayerActions {
 class PlayerCommandSkipPrev extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
-    await AudioService.skipToPrevious();
+    AudioService.skipToPrevious();
     return null;
   }
 }
@@ -89,7 +89,7 @@ class PlayerCommandSkipPrev extends PlayerActions {
 class PlayerCommandPause extends PlayerActions {
   @override
   Future<AppState> reduce() async {
-    await AudioService.pause();
+    AudioService.pause();
     return state.copy(
       playerState: state.playerState.copy(current: PlayerStates.paused),
     );
@@ -108,7 +108,7 @@ class PlayerCommandSeekTo extends PlayerActions {
       log("SeekTo invalid position=$pos dur=${state.playerState.duration}");
       return state;
     }
-    await AudioService.seekTo(pos);
+    AudioService.seekTo(pos);
     return state.copy(
       playerState: state.playerState.copy(position: pos),
     );
@@ -270,7 +270,7 @@ class PlayerCommandEnqueueSong extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
     var mediaItem = PlayerSong.asMediaItem(song);
-    await AudioService.addQueueItem(mediaItem);
+    AudioService.addQueueItem(mediaItem);
     return state;
   }
 }
@@ -374,9 +374,9 @@ class PlayerCommandPlaySong extends PlayerActions {
     final queue = state.playerState.queue;
     final idx = queue.indexWhere((element) => element.id == song.id);
     if (idx == -1) {
-      await AudioService.playMediaItem(mediaItem);
+      AudioService.playMediaItem(mediaItem);
     } else {
-      await AudioService.playFromMediaId(mediaItem.id);
+      AudioService.playFromMediaId(mediaItem.id);
     }
     AudioService.play();
 
