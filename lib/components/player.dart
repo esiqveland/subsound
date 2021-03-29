@@ -478,6 +478,7 @@ class SongTitle extends StatelessWidget {
       songTitle ?? '',
       style: TextStyle(fontSize: 18.0),
       overflow: TextOverflow.fade,
+      maxLines: 1,
     );
   }
 }
@@ -498,6 +499,7 @@ class ArtistTitle extends StatelessWidget {
         color: Colors.white70,
       ),
       overflow: TextOverflow.ellipsis,
+      maxLines: 1,
     );
   }
 }
