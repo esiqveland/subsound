@@ -49,7 +49,7 @@ packages:
       name: audio_service
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.17.0-nullsafety.0"
+    version: "0.17.0"
   audio_session:
     dependency: transitive
     description:
@@ -70,7 +70,7 @@ packages:
       name: cached_network_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0-nullsafety"
+    version: "3.0.0"
   characters:
     dependency: transitive
     description:
@@ -201,14 +201,14 @@ packages:
       name: flutter_blurhash
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.4-nullsafety.0"
+    version: "0.6.0"
   flutter_cache_manager:
     dependency: "direct main"
     description:
       name: flutter_cache_manager
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0-nullsafety.3"
+    version: "3.0.1"
   flutter_isolate:
     dependency: transitive
     description:
@@ -344,7 +344,7 @@ packages:
       name: octo_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0-nullsafety.1"
+    version: "1.0.0"
   package_config:
     dependency: transitive
     description:
@@ -435,7 +435,7 @@ packages:
       name: process
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "4.2.1"
   pub_semver:
     dependency: transitive
     description:
@@ -629,7 +629,7 @@ packages:
       name: uuid
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.3"
   value_layout_builder:
     dependency: transitive
     description:
@@ -692,7 +692,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.5"
   xdg_directories:
     dependency: transitive
     description:
