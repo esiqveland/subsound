@@ -5,6 +5,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appcommands.dart';
+import 'package:subsound/state/networkstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/models/album.dart';
@@ -284,6 +285,7 @@ class AppState {
   final UserState userState;
   final PlayerState playerState;
   final DataState dataState;
+  final NetworkState networkState;
 
   AppState({
     required this.startUpState,
@@ -291,6 +293,7 @@ class AppState {
     required this.userState,
     required this.playerState,
     required this.dataState,
+    required this.networkState,
   });
 
   AppState copy({
@@ -299,6 +302,7 @@ class AppState {
     UserState? userState,
     PlayerState? playerState,
     DataState? dataState,
+    NetworkState? networkState,
   }) {
     return AppState(
       startUpState: startUpState ?? this.startUpState,
@@ -306,6 +310,7 @@ class AppState {
       userState: userState ?? this.userState,
       playerState: playerState ?? this.playerState,
       dataState: dataState ?? this.dataState,
+      networkState: networkState ?? this.networkState,
     );
   }
 
@@ -315,6 +320,7 @@ class AppState {
         userState: UserState.initialState(),
         playerState: PlayerState.initialState(),
         dataState: DataState.initialState(),
+        networkState: NetworkState.initialState(),
       );
 
   @override
