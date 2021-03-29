@@ -35,6 +35,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
     return BottomNavigationBar(
       backgroundColor: widget.backgroundColor,
       currentIndex: currentIndex,
+      type: BottomNavigationBarType.fixed,
       onTap: (idx) {
         setState(() {
           this.currentIndex = idx;
