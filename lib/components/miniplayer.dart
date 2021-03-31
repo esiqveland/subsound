@@ -8,23 +8,27 @@ import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
 
-// DraggableScrollableSheet
-// or BottomSheet ?
 class PlayerBottomBar extends StatelessWidget {
   final double height;
   final Color backgroundColor;
+  final Function onTap;
 
   PlayerBottomBar({
     Key? key,
     required this.height,
     required this.backgroundColor,
+    required this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MiniPlayer(
-      height: height,
-      backgroundColor: backgroundColor,
+    return Container(
+      color: backgroundColor,
+      child: MiniPlayer(
+        height: height,
+        backgroundColor: backgroundColor,
+        onTap: onTap,
+      ),
     );
   }
 }
@@ -216,11 +220,13 @@ const bottomBorderSize = 1.0;
 class MiniPlayer extends StatelessWidget {
   final double height;
   final Color backgroundColor;
+  final Function onTap;
 
   MiniPlayer({
     Key? key,
     required this.height,
     required this.backgroundColor,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -234,13 +240,13 @@ class MiniPlayer extends StatelessWidget {
         height: height,
         child: Container(
           decoration: BoxDecoration(
-              color: Colors.black12,
+              // color: Colors.black12,
               // color: Colors.pinkAccent,
               border: Border(
                   bottom: BorderSide(
-                color: Colors.black,
-                width: bottomBorderSize,
-              ))),
+            //color: Colors.black,
+            width: bottomBorderSize,
+          ))),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -253,7 +259,7 @@ class MiniPlayer extends StatelessWidget {
                 height: playerHeight,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed(PlayerScreen.routeName);
+                    this.onTap();
                   },
                   child: Container(
                     child: Row(

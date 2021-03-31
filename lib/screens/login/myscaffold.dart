@@ -78,21 +78,33 @@ class AppScaffoldModel extends Vm {
       );
 }
 
+/// AppBarSettings exists because we sometimes need a SliverAppBar
+/// and sometimes a regular AppBar.
+class AppBarSettings {
+  final bool disableAppBar;
+  final bool centerTitle;
+  final Widget? title;
+  final PreferredSizeWidget? bottom;
+
+  AppBarSettings({
+    this.disableAppBar = false,
+    this.centerTitle = false,
+    this.title,
+    this.bottom,
+  });
+}
+
 const PlayerBottomBarSize = 50.0;
 
 class MyScaffold extends StatelessWidget {
-  final AppBar? appBar;
+  final AppBarSettings? appBar;
   final WidgetBuilder body;
-  final Widget? title;
-  final bool disableAppBar;
   final bool disableBottomBar;
 
   MyScaffold({
     Key? key,
     required this.body,
     this.appBar,
-    this.title,
-    this.disableAppBar = false,
     this.disableBottomBar = false,
   }) : super(key: key);
 
@@ -103,60 +115,238 @@ class MyScaffold extends StatelessWidget {
       builder: (context, state) => state.startUpState == StartUpState.loading
           ? SplashScreen()
           : _AppScaffold(
-              title: title,
               body: body,
-              appBar: appBar,
-              disableAppBar: disableAppBar,
+              appBar: appBar ?? AppBarSettings(),
               disableBottomBar: disableBottomBar || !state.hasSong,
             ),
     );
   }
 }
 
-const Color bottomColor = Colors.black45;
+final Color bottomColor = Colors.black26.withOpacity(1.0);
 
 class _AppScaffold extends StatelessWidget {
-  final AppBar? appBar;
+  final AppBarSettings appBar;
   final WidgetBuilder body;
-  final Widget? title;
-  final bool disableAppBar;
   final bool disableBottomBar;
 
   _AppScaffold({
     Key? key,
     required this.body,
-    this.appBar,
-    this.title,
-    this.disableAppBar = false,
+    required this.appBar,
     this.disableBottomBar = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final _colorScheme = Theme.of(context).colorScheme;
-    final double _panelMinSize = PlayerBottomBarSize;
+    final bool disableAppBar = appBar.disableAppBar;
+    final WeSlideController _controller = WeSlideController();
+    final footerHeight = kBottomNavigationBarHeight;
+    final double _panelMinSize =
+        disableBottomBar ? footerHeight : PlayerBottomBarSize + footerHeight;
+    final double _panelMaxSize = MediaQuery.of(context).size.height;
+
+    //return TestApp2();
+    return Scaffold(
+      // appBar: disableAppBar
+      //     ? null
+      //     : appBar ??
+      //         AppBar(
+      //           title: title,
+      //         ),
+      extendBody: true,
+      // extendBodyBehindAppBar: true,
+      body: WeSlide(
+        controller: _controller,
+        panelMinSize: _panelMinSize,
+        panelMaxSize: _panelMaxSize,
+        hidePanelHeader: true,
+        hideFooter: true,
+        parallax: true,
+        overlayOpacity: 1.0,
+        // overlayColor: bottomColor,
+        // panelBackground: bottomColor,
+        overlay: true,
+        body: CustomScrollView(
+          slivers: <Widget>[
+            if (!disableAppBar)
+              SliverAppBar(
+                title: appBar.title,
+                centerTitle: appBar.centerTitle,
+                //floating: true,
+                //pinned: true,
+                bottom: appBar.bottom,
+              ),
+            SliverFillRemaining(
+              hasScrollBody: true,
+              child: Builder(builder: body),
+            ),
+          ],
+        ),
+        panel: Container(
+          child: PlayerView(
+            header: Text(
+              "Now Playing",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20.0),
+            ),
+          ),
+        ),
+        panelHeader: Container(
+          child: PlayerBottomBar(
+            height: PlayerBottomBarSize,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            onTap: () {
+              _controller.show();
+            },
+          ),
+        ),
+        footerOffset: footerHeight,
+        footer: BottomNavigationBarWidget(
+          navItems: navBarItems,
+          backgroundColor: bottomColor,
+        ),
+      ),
+      drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
+    );
+  }
+}
+
+class TestAppBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      title: Text("This is a title"),
+      // bottom: TabBar(
+      //   tabs: [
+      //     Tab(
+      //       text: "Tab1",
+      //     ),
+      //     Tab(
+      //       text: "Tab2",
+      //     ),
+      //     Tab(
+      //       text: "Tab3",
+      //     ),
+      //   ],
+      // ),
+    );
+  }
+}
+
+class TestApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final double _panelMinSize = 150.0;
     final double _panelMaxSize = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: disableAppBar
-          ? null
-          : appBar ??
-              AppBar(
-                title: title,
+      // appBar: AppBar(
+      //   title: Text("This is a title"),
+      //   bottom: TabBar(
+      //     tabs: [
+      //       Tab(
+      //         text: "Tab1",
+      //       ),
+      //       Tab(
+      //         text: "Tab2",
+      //       ),
+      //       Tab(
+      //         text: "Tab3",
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      backgroundColor: Colors.black,
+      body: WeSlide(
+        panelMinSize: _panelMinSize,
+        panelMaxSize: _panelMaxSize,
+        footerOffset: 60.0,
+        body: Stack(
+          children: <Widget>[
+            Container(
+              color: Colors.red,
+              child: Center(child: Text("This is the body 💪")),
+            ),
+            new Positioned(
+              top: 0.0,
+              left: 0.0,
+              right: 0.0,
+              child: TestAppBar(),
+            ),
+          ],
+        ),
+        panel: Container(
+          color: Colors.blue,
+          child: Center(child: Text("This is the panel 😊")),
+        ),
+        panelHeader: Container(
+          height: _panelMinSize,
+          color: Colors.green,
+          child: Center(child: Text("Slide to Up ☝️")),
+        ),
+        footer: Container(
+          height: 60.0,
+          color: Colors.amber,
+        ),
+      ),
+    );
+  }
+}
+
+class TestApp2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final double _panelMinSize = 150.0;
+    final double _panelMaxSize = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: WeSlide(
+        panelMinSize: _panelMinSize,
+        panelMaxSize: _panelMaxSize,
+        footerOffset: 60.0,
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              title: Text("Title"),
+              bottom: TabBar(
+                tabs: [
+                  Tab(
+                    text: "Tab1",
+                  ),
+                  Tab(
+                    text: "Tab2",
+                  ),
+                  Tab(
+                    text: "Tab3",
+                  ),
+                ],
               ),
-      body: Builder(builder: body),
-      drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (!disableBottomBar)
-            PlayerBottomBar(
-                height: PlayerBottomBarSize, backgroundColor: bottomColor),
-          BottomNavigationBarWidget(
-            navItems: navBarItems,
-            backgroundColor: bottomColor,
-          ),
-        ],
+            ),
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.red,
+                height: 5000,
+                child: Text("body"),
+              ),
+            ),
+          ],
+        ),
+        panel: Container(
+          color: Colors.blue,
+          child: Center(child: Text("This is the panel 😊")),
+        ),
+        panelHeader: Container(
+          height: _panelMinSize,
+          color: Colors.green,
+          child: Center(child: Text("Slide to Up ☝️")),
+        ),
+        footer: Container(
+          height: 60.0,
+          color: Colors.amber,
+        ),
       ),
     );
   }

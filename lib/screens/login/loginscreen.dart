@@ -27,7 +27,9 @@ class LoginScreen extends StatelessWidget {
                 next.password,
               ))),
       builder: (context, model) => MyScaffold(
-        title: const Text("Settings"),
+        appBar: AppBarSettings(
+          title: const Text("Settings"),
+        ),
         body: (context) => Center(
           child: Column(
             children: [

@@ -25,7 +25,8 @@ class HomeScreen extends StatelessWidget {
         length: 3,
         initialIndex: initialTabIndex,
         child: MyScaffold(
-          appBar: AppBar(
+          appBar: AppBarSettings(
+            title: Text("Home"),
             bottom: TabBar(
               onTap: (idx) {},
               tabs: [
@@ -38,7 +39,6 @@ class HomeScreen extends StatelessWidget {
                 Tab(
                   text: "Albums",
                 ),
-                //Tab(icon: Icon(Icons.add_shopping_cart)),
               ],
             ),
           ),

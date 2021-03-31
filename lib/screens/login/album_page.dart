@@ -59,8 +59,7 @@ class AlbumScreen extends StatelessWidget {
     return StoreConnector<AppState, AlbumViewModel>(
       vm: () => _AlbumViewModelFactory(this),
       builder: (context, state) => MyScaffold(
-        appBar: null,
-        disableAppBar: true,
+        appBar: AppBarSettings(disableAppBar: true),
         body: (context) => Center(
           child: AlbumPage(
             ctx: state.serverData.toClient(),

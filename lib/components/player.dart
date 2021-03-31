@@ -338,123 +338,129 @@ class PlayerViewModel extends Vm {
 }
 
 class PlayerView extends StatelessWidget {
+  final Widget? header;
   const PlayerView({
     Key? key,
+    this.header,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black26,
       child: StoreConnector<AppState, PlayerViewModel>(
         vm: () => _PlayerViewModelFactory(this),
         builder: (context, vm) => Center(
           child: ConstrainedBox(
             constraints: BoxConstraints.tightForFinite(width: 400),
-            //color: Colors.tealAccent,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: 100,
-                    maxHeight: MediaQuery.of(context).size.width * 0.8,
-                    minWidth: 100,
-                    maxWidth: MediaQuery.of(context).size.width * 0.8,
-                  ),
-                  child: SizedBox.expand(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (vm.albumId != null) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AlbumScreen(albumId: vm.albumId),
+                if (this.header != null) this.header!,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: 100,
+                        maxHeight: MediaQuery.of(context).size.width * 0.8,
+                        minWidth: 100,
+                        maxWidth: MediaQuery.of(context).size.width * 0.8,
+                      ),
+                      child: SizedBox.expand(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (vm.albumId != null) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AlbumScreen(albumId: vm.albumId),
+                                ),
+                              );
+                            }
+                          },
+                          child: FittedBox(
+                            child: vm.coverArtLink != null
+                                ? CoverArtImage(
+                                    vm.coverArtLink,
+                                    // height: 250,
+                                    // width: 250,
+                                    id: vm.coverArtId,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Icon(Icons.album),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.67,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SongTitle(songTitle: vm.songTitle),
+                                SizedBox(height: 10.0),
+                                ArtistTitle(artistName: vm.artistTitle),
+                              ],
                             ),
-                          );
-                        }
-                      },
-                      child: FittedBox(
-                        child: vm.coverArtLink != null
-                            ? CoverArtImage(
-                                vm.coverArtLink,
-                                // height: 250,
-                                // width: 250,
-                                id: vm.coverArtId,
-                                fit: BoxFit.cover,
-                              )
-                            : Icon(Icons.album),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if (vm.isStarred) {
+                                vm.onUnstar(vm.songId);
+                              } else {
+                                vm.onStar(vm.songId);
+                              }
+                            },
+                            child: Icon(
+                              vm.isStarred
+                                  ? Icons.star
+                                  : Icons.star_border_outlined,
+                              color: Theme.of(context).accentColor,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.67,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SongTitle(songTitle: vm.songTitle),
-                            SizedBox(height: 10.0),
-                            ArtistTitle(artistName: vm.artistTitle),
-                          ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        UpdatingPlayerSlider(
+                          playerState: vm,
+                          size: MediaQuery.of(context).size.width * 0.8,
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if (vm.isStarred) {
-                            vm.onUnstar(vm.songId);
-                          } else {
-                            vm.onStar(vm.songId);
-                          }
-                        },
-                        child: Icon(
-                          vm.isStarred
-                              ? Icons.star
-                              : Icons.star_border_outlined,
-                          color: Theme.of(context).accentColor,
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.skip_previous),
+                          iconSize: 42.0,
+                          onPressed: () {
+                            vm.onPlayPrev();
+                          },
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    UpdatingPlayerSlider(
-                      playerState: vm,
-                      size: MediaQuery.of(context).size.width * 0.8,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.skip_previous),
-                      iconSize: 42.0,
-                      onPressed: () {
-                        vm.onPlayPrev();
-                      },
-                    ),
-                    PlayButton(state: vm, size: 72.0),
-                    IconButton(
-                      icon: Icon(Icons.skip_next),
-                      iconSize: 42.0,
-                      onPressed: () {
-                        vm.onPlayNext();
-                      },
+                        PlayButton(state: vm, size: 72.0),
+                        IconButton(
+                          icon: Icon(Icons.skip_next),
+                          iconSize: 42.0,
+                          onPressed: () {
+                            vm.onPlayNext();
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -512,7 +518,7 @@ class PlayerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
-      appBar: AppBar(
+      appBar: AppBarSettings(
         centerTitle: true,
         title: Text(
           "NOW PLAYING",

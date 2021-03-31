@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/models/album.dart';
@@ -33,15 +32,18 @@ class AlbumRow extends StatelessWidget {
       onTap: () {
         this.onTap(album);
       },
-      leading: Hero(
-        tag: album.coverArtId,
-        child: CoverArtImage(
-          album.coverArtLink,
-          id: album.coverArtId,
-          width: 48.0,
-          height: 48.0,
-        ),
-      ),
+      // leading: CoverArtImage(
+      //   album.coverArtLink,
+      //   id: album.coverArtId,
+      //   width: 48.0,
+      //   height: 48.0,
+      // ),
+      // leading: Image.network(
+      //   album.coverArtLink,
+      //   //id: album.coverArtId,
+      //   width: 48.0,
+      //   height: 48.0,
+      // ),
       title: Text(album.title),
       subtitle: Text(album.artist),
     );
@@ -53,6 +55,7 @@ class AlbumsListView extends StatelessWidget {
   final List<Album> albums;
   final ScrollController controller;
   final bool isLoading;
+  final void Function() loadMore;
 
   const AlbumsListView({
     Key? key,
@@ -60,38 +63,65 @@ class AlbumsListView extends StatelessWidget {
     required this.albums,
     required this.controller,
     required this.isLoading,
+    required this.loadMore,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      controller: controller,
-      itemCount: albums.length,
-      itemBuilder: (context, idx) => Column(
-        children: [
-          AlbumRow(
-            album: albums[idx],
-            onTap: (album) {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => AlbumScreen(
-                  albumId: album.id,
-                ),
-              ));
-            },
+    return NotificationListener<ScrollNotification>(
+      onNotification: this._handleScrollNotification,
+      child: CustomScrollView(
+        controller: controller,
+        physics: BouncingScrollPhysics(),
+        slivers: <Widget>[
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, idx) {
+                return AlbumRow(
+                  album: albums[idx],
+                  onTap: (album) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => AlbumScreen(
+                        albumId: album.id,
+                      ),
+                    ));
+                  },
+                );
+              },
+              childCount: albums.length,
+            ),
           ),
-          if (isLoading && idx == albums.length - 1)
-            CircularProgressIndicator(),
+          if (isLoading)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
+                child: Center(
+                  child: SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: CircularProgressIndicator()),
+                ),
+              ),
+            )
         ],
       ),
     );
+  }
+
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollEndNotification) {
+      if (controller.position.extentAfter == 0) {
+        loadMore();
+      }
+    }
+    return false;
   }
 }
 
 class AlbumsPageState extends State<AlbumsPage> {
   final SubsonicContext ctx;
 
-  final int pageSize = 10;
+  final int pageSize = 30;
   List<Album> _albumList = [];
   bool hasMore = true;
   bool isLoading = false;
@@ -104,7 +134,7 @@ class AlbumsPageState extends State<AlbumsPage> {
   @override
   void initState() {
     super.initState();
-    _controller = new ScrollController();
+    _controller = ScrollController();
     isLoading = true;
     initialLoad = load(offset: 0, pageSize: pageSize).then((value) {
       if (!this.mounted) {
@@ -126,15 +156,6 @@ class AlbumsPageState extends State<AlbumsPage> {
     });
   }
 
-  bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification is ScrollEndNotification) {
-      if (_controller.position.extentAfter == 0) {
-        loadMore();
-      }
-    }
-    return false;
-  }
-
   @override
   void dispose() {
     super.dispose();
@@ -142,29 +163,27 @@ class AlbumsPageState extends State<AlbumsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: _handleScrollNotification,
-      child: Center(
-          child: FutureBuilder<List<Album>>(
-              future: initialLoad,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return CircularProgressIndicator();
+    return Center(
+        child: FutureBuilder<List<Album>>(
+            future: initialLoad,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return CircularProgressIndicator();
+              } else {
+                if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
                 } else {
-                  if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  } else {
-                    _albumList = snapshot.data!;
-                    return AlbumsListView(
-                      ctx: ctx,
-                      controller: _controller,
-                      albums: _albumList,
-                      isLoading: isLoading,
-                    );
-                  }
+                  _albumList = snapshot.data!;
+                  return AlbumsListView(
+                    ctx: ctx,
+                    controller: _controller,
+                    albums: _albumList,
+                    isLoading: isLoading,
+                    loadMore: this.loadMore,
+                  );
                 }
-              })),
-    );
+              }
+            }));
   }
 
   Future<void> loadMore() {
@@ -174,7 +193,7 @@ class AlbumsPageState extends State<AlbumsPage> {
       });
 
       return load(
-        pageSize: 10,
+        pageSize: 30,
         offset: _albumList.length,
       ).then((value) {
         setState(() {
