@@ -83,12 +83,16 @@ class AppScaffoldModel extends Vm {
 class AppBarSettings {
   final bool disableAppBar;
   final bool centerTitle;
+  final bool floating;
+  final bool pinned;
   final Widget? title;
   final PreferredSizeWidget? bottom;
 
   AppBarSettings({
     this.disableAppBar = false,
     this.centerTitle = false,
+    this.floating = false,
+    this.pinned = false,
     this.title,
     this.bottom,
   });
@@ -164,7 +168,7 @@ class _AppScaffold extends StatelessWidget {
         panelMaxSize: _panelMaxSize,
         hidePanelHeader: true,
         hideFooter: true,
-        parallax: true,
+        parallax: false,
         overlayOpacity: 1.0,
         overlayColor: bgColor,
         panelBackground: bgColor,
@@ -175,8 +179,8 @@ class _AppScaffold extends StatelessWidget {
               SliverAppBar(
                 title: appBar.title,
                 centerTitle: appBar.centerTitle,
-                //floating: true,
-                //pinned: true,
+                floating: appBar.floating,
+                pinned: appBar.pinned,
                 bottom: appBar.bottom,
               ),
             SliverFillRemaining(
@@ -187,6 +191,7 @@ class _AppScaffold extends StatelessWidget {
         ),
         panel: Container(
           child: PlayerView(
+            backgroundColor: bgColor,
             header: Text(
               "Now Playing",
               textAlign: TextAlign.center,

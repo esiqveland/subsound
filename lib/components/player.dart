@@ -339,14 +339,17 @@ class PlayerViewModel extends Vm {
 
 class PlayerView extends StatelessWidget {
   final Widget? header;
+  final Color? backgroundColor;
   const PlayerView({
     Key? key,
     this.header,
+    this.backgroundColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: backgroundColor,
       child: StoreConnector<AppState, PlayerViewModel>(
         vm: () => _PlayerViewModelFactory(this),
         builder: (context, vm) => Center(
