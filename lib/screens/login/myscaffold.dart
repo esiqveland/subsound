@@ -139,9 +139,11 @@ class _AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final bool disableAppBar = appBar.disableAppBar;
     final WeSlideController _controller = WeSlideController();
-    final footerHeight = kBottomNavigationBarHeight;
+    final footerHeight =
+        kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom;
     final double _panelMinSize =
         disableBottomBar ? footerHeight : PlayerBottomBarSize + footerHeight;
     final double _panelMaxSize = MediaQuery.of(context).size.height;
@@ -164,8 +166,8 @@ class _AppScaffold extends StatelessWidget {
         hideFooter: true,
         parallax: true,
         overlayOpacity: 1.0,
-        // overlayColor: bottomColor,
-        // panelBackground: bottomColor,
+        overlayColor: bgColor,
+        panelBackground: bgColor,
         overlay: true,
         body: CustomScrollView(
           slivers: <Widget>[
@@ -195,7 +197,7 @@ class _AppScaffold extends StatelessWidget {
         panelHeader: Container(
           child: PlayerBottomBar(
             height: PlayerBottomBarSize,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: bgColor,
             onTap: () {
               _controller.show();
             },
