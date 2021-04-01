@@ -3,21 +3,38 @@ import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/album_page.dart';
+import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
-import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
-import 'package:subsound/subsonic/requests/get_starred2.dart';
 
-class StarredPage extends StatefulWidget {
-  final SubsonicContext ctx;
+class StarredPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, StarredViewModel>(
+      converter: (st) => StarredViewModel(
+        currentSongId: st.state.playerState.currentSong?.id ?? '',
+        onPlayAlbum: (album) => st.dispatch(PlayerCommandPlayAlbum(album)),
+        onPlaySong: (song) => st.dispatch(PlayerCommandPlaySong(
+          PlayerSong.from(song),
+        )),
+        onLoadStarred: () => st
+            .dispatchFuture(RefreshStarredCommand())
+            .then((value) => st.state.dataState.stars),
+      ),
+      builder: (context, vm) => StarredPageStateful(model: vm),
+    );
+  }
+}
 
-  const StarredPage({Key? key, required this.ctx}) : super(key: key);
+class StarredPageStateful extends StatefulWidget {
+  final StarredViewModel model;
+  const StarredPageStateful({Key? key, required this.model}) : super(key: key);
 
   @override
-  State<StarredPage> createState() {
-    return StarredPageState(ctx);
+  State<StarredPageStateful> createState() {
+    return StarredPageState(model: model);
   }
 }
 
@@ -85,10 +102,6 @@ class StarredAlbumRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Container(
-    //   height: 100.0,
-    //   child: Text(album.name),
-    // );
     return ListTile(
       onTap: () {
         this.onTap(album);
@@ -128,21 +141,23 @@ class StarredViewModel extends Vm {
   final String currentSongId;
   final Function(SongResult) onPlaySong;
   final Function(AlbumResultSimple) onPlayAlbum;
+  final Future<Starred> Function() onLoadStarred;
 
   StarredViewModel({
     required this.currentSongId,
     required this.onPlaySong,
     required this.onPlayAlbum,
+    required this.onLoadStarred,
   }) : super(equals: [currentSongId]);
 }
 
 class StarredListView extends StatelessWidget {
-  final SubsonicContext ctx;
+  final StarredViewModel model;
   final List<StarredItem> data;
 
   const StarredListView({
     Key? key,
-    required this.ctx,
+    required this.model,
     required this.data,
   }) : super(key: key);
 
@@ -158,6 +173,9 @@ class StarredListView extends StatelessWidget {
         onPlaySong: (song) => st.dispatch(PlayerCommandPlaySong(
           PlayerSong.from(song),
         )),
+        onLoadStarred: () => st
+            .dispatchFuture(RefreshStarredCommand())
+            .then((value) => st.state.dataState.stars),
       ),
       builder: (context, model) => ListView.builder(
         physics: BouncingScrollPhysics(),
@@ -227,17 +245,47 @@ class StarredRow extends StatelessWidget {
   }
 }
 
-class StarredPageState extends State<StarredPage> {
-  final SubsonicContext ctx;
-  late Future<GetStarred2Result> initialLoad;
+class StarredPageState extends State<StarredPageStateful> {
+  final StarredViewModel model;
+  late Future<List<StarredItem>> initialLoad;
 
-  StarredPageState(this.ctx);
+  StarredPageState({required this.model});
 
   @override
   void initState() {
     super.initState();
-    initialLoad = load().then((value) {
-      return value;
+
+    initialLoad = model.onLoadStarred().then((value) {
+      final data = [
+        ...value.albums.entries
+            .map((key) => StarredItem(album: key.value))
+            .toList(),
+        ...value.songs.entries
+            .map((key) => StarredItem(song: key.value))
+            .toList(),
+      ];
+
+      data.sort((a, b) {
+        if (a.getAlbum() != null) {
+          if (b.getAlbum() != null) {
+            return a.getAlbum()!.createdAt.compareTo(b.getAlbum()!.createdAt) *
+                -1;
+          } else {
+            return a.getAlbum()!.createdAt.compareTo(b.getSong()!.createdAt) *
+                -1;
+          }
+        } else {
+          if (b.getAlbum() != null) {
+            return a.getSong()!.createdAt.compareTo(b.getAlbum()!.createdAt) *
+                -1;
+          } else {
+            return a.getSong()!.createdAt.compareTo(b.getSong()!.createdAt) *
+                -1;
+          }
+        }
+      });
+
+      return data;
     });
   }
 
@@ -248,64 +296,22 @@ class StarredPageState extends State<StarredPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: FutureBuilder<GetStarred2Result>(
-            future: initialLoad,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator();
-              } else {
-                if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                } else {
-                  final loadedData = snapshot.data!;
-                  return StarredListView(
-                    ctx: ctx,
-                    data: [
-                      ...loadedData.albums
-                          .map((album) => StarredItem(album: album))
-                          .toList(),
-                      ...loadedData.songs
-                          .map((e) => StarredItem(song: e))
-                          .toList(),
-                    ]..sort((a, b) {
-                        if (a.getAlbum() != null) {
-                          if (b.getAlbum() != null) {
-                            return a
-                                    .getAlbum()!
-                                    .createdAt
-                                    .compareTo(b.getAlbum()!.createdAt) *
-                                -1;
-                          } else {
-                            return a
-                                    .getAlbum()!
-                                    .createdAt
-                                    .compareTo(b.getSong()!.createdAt) *
-                                -1;
-                          }
-                        } else {
-                          if (b.getAlbum() != null) {
-                            return a
-                                    .getSong()!
-                                    .createdAt
-                                    .compareTo(b.getAlbum()!.createdAt) *
-                                -1;
-                          } else {
-                            return a
-                                    .getSong()!
-                                    .createdAt
-                                    .compareTo(b.getSong()!.createdAt) *
-                                -1;
-                          }
-                        }
-                      }),
-                  );
-                }
-              }
-            }));
-  }
-
-  Future<GetStarred2Result> load() {
-    return GetStarred2().run(ctx).then((value) => value.data);
+    return FutureBuilder<List<StarredItem>>(
+        future: initialLoad,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return CircularProgressIndicator();
+          } else {
+            if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            } else {
+              final loadedData = snapshot.data!;
+              return StarredListView(
+                model: model,
+                data: loadedData,
+              );
+            }
+          }
+        });
   }
 }
