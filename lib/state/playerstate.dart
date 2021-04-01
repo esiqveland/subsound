@@ -309,9 +309,32 @@ class PlayerCommandContextualPlay extends PlayerActions {
   PlayerCommandContextualPlay({required this.songId, required this.playQueue});
 
   @override
-  FutureOr<AppState?> reduce() {
-    // TODO: implement reduce
-    throw UnimplementedError();
+  Future<AppState?> reduce() async {
+    List<PlayerSong> queue = playQueue
+        .map((SongResult e) => PlayerSong.from(
+              e,
+              state.dataState.isSongStarred(e.id),
+            ))
+        .toList();
+
+    var selected = queue.singleWhere((element) => element.id == songId);
+
+    dispatch(PlayerCommandSetCurrentPlaying(
+      selected,
+      playerstate: PlayerStates.playing,
+      queue: queue,
+    ));
+
+    final mediaQueue = playQueue
+        .map((s) => s.toMediaItem(
+              playNow: s.id == songId,
+            ))
+        .toList();
+
+    await AudioService.updateQueue(mediaQueue);
+    //AudioService.playFromMediaId(songId);
+
+    return null;
   }
 }
 

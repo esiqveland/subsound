@@ -19,6 +19,10 @@ class StarredPage extends StatelessWidget {
         onPlaySong: (song) => st.dispatch(PlayerCommandPlaySong(
           PlayerSong.from(song),
         )),
+        onPlaySong2: (song, queue) => st.dispatch(PlayerCommandContextualPlay(
+          songId: song.id,
+          playQueue: queue,
+        )),
         onLoadStarred: () => st
             .dispatchFuture(RefreshStarredCommand())
             .then((value) => st.state.dataState.stars),
@@ -34,7 +38,7 @@ class StarredPageStateful extends StatefulWidget {
 
   @override
   State<StarredPageStateful> createState() {
-    return StarredPageState(model: model);
+    return StarredPageState();
   }
 }
 
@@ -140,6 +144,7 @@ class StarredItem {
 class StarredViewModel extends Vm {
   final String currentSongId;
   final Function(SongResult) onPlaySong;
+  final Function(SongResult, List<SongResult>) onPlaySong2;
   final Function(AlbumResultSimple) onPlayAlbum;
   final Future<Starred> Function() onLoadStarred;
 
@@ -147,6 +152,7 @@ class StarredViewModel extends Vm {
     required this.currentSongId,
     required this.onPlaySong,
     required this.onPlayAlbum,
+    required this.onPlaySong2,
     required this.onLoadStarred,
   }) : super(equals: [currentSongId]);
 }
@@ -166,31 +172,24 @@ class StarredListView extends StatelessWidget {
     //final itemCount = data.albums.length + data.songs.length;
     // final itemCount = data.songs.length;
     final itemCount = data.length;
-    return StoreConnector<AppState, StarredViewModel>(
-      converter: (st) => StarredViewModel(
-        currentSongId: st.state.playerState.currentSong?.id ?? '',
-        onPlayAlbum: (album) => st.dispatch(PlayerCommandPlayAlbum(album)),
-        onPlaySong: (song) => st.dispatch(PlayerCommandPlaySong(
-          PlayerSong.from(song),
-        )),
-        onLoadStarred: () => st
-            .dispatchFuture(RefreshStarredCommand())
-            .then((value) => st.state.dataState.stars),
-      ),
-      builder: (context, model) => ListView.builder(
-        physics: BouncingScrollPhysics(),
-        itemCount: itemCount,
-        itemBuilder: (context, idx) => StarredRow(
-          item: data[idx],
-          isPlaying: data[idx].isPlaying(model.currentSongId),
-          onPlay: (item) {
-            if (item.getSong() != null) {
-              model.onPlaySong(item.getSong()!);
-            } else if (item.getAlbum() != null) {
-              model.onPlayAlbum(item.getAlbum()!);
-            } else {}
-          },
-        ),
+    return ListView.builder(
+      physics: BouncingScrollPhysics(),
+      itemCount: itemCount,
+      itemBuilder: (context, idx) => StarredRow(
+        item: data[idx],
+        isPlaying: data[idx].isPlaying(model.currentSongId),
+        onPlay: (item) {
+          if (item.getSong() != null) {
+            var queue = data
+                .sublist(idx)
+                .where((element) => element.getSong() != null)
+                .map((e) => e.getSong()!)
+                .toList();
+            model.onPlaySong2(item.getSong()!, queue);
+          } else if (item.getAlbum() != null) {
+            model.onPlayAlbum(item.getAlbum()!);
+          } else {}
+        },
       ),
     );
   }
@@ -246,16 +245,13 @@ class StarredRow extends StatelessWidget {
 }
 
 class StarredPageState extends State<StarredPageStateful> {
-  final StarredViewModel model;
   late Future<List<StarredItem>> initialLoad;
-
-  StarredPageState({required this.model});
 
   @override
   void initState() {
     super.initState();
 
-    initialLoad = model.onLoadStarred().then((value) {
+    initialLoad = widget.model.onLoadStarred().then((value) {
       final data = [
         ...value.albums.entries
             .map((key) => StarredItem(album: key.value))
@@ -307,7 +303,7 @@ class StarredPageState extends State<StarredPageStateful> {
             } else {
               final loadedData = snapshot.data!;
               return StarredListView(
-                model: model,
+                model: widget.model,
                 data: loadedData,
               );
             }
