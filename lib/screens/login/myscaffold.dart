@@ -152,16 +152,7 @@ class _AppScaffold extends StatelessWidget {
         disableBottomBar ? footerHeight : PlayerBottomBarSize + footerHeight;
     final double _panelMaxSize = MediaQuery.of(context).size.height;
 
-    //return TestApp2();
     return Scaffold(
-      // appBar: disableAppBar
-      //     ? null
-      //     : appBar ??
-      //         AppBar(
-      //           title: title,
-      //         ),
-      extendBody: true,
-      // extendBodyBehindAppBar: true,
       body: WeSlide(
         controller: _controller,
         panelMinSize: _panelMinSize,
