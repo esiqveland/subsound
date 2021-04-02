@@ -130,7 +130,7 @@ class PlayQueue {
       return;
     }
     if (nextPos >= _queue.length) {
-      player.pause();
+      await player.pause();
       await player.seek(Duration.zero);
       return;
     }
