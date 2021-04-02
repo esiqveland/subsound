@@ -96,7 +96,6 @@ class GetArtist extends BaseRequest<ArtistResult> {
     }
 
     final artistData = data['subsonic-response']['artist'];
-    final coverArtId = artistData['coverArt'];
 
     final albums = (artistData['album'] as List).map((album) {
       final coverArtId = album['coverArt'];
@@ -132,9 +131,7 @@ class GetArtist extends BaseRequest<ArtistResult> {
         ? firstAlbumWithCover.coverArtLink
         : FallbackImageUrl;
 
-    final coverArtLink = coverArtId != null
-        ? GetCoverArt(coverArtId).getImageUrl(ctx)
-        : firstAlbumCoverLink ?? artistData['artistImageUrl'];
+    final coverArtLink = artistData['artistImageUrl'] ?? firstAlbumCoverLink;
 
     // log('firstAlbumCoverLink=$firstAlbumCoverLink');
     // log('coverArtLink=$coverArtLink');
@@ -142,7 +139,7 @@ class GetArtist extends BaseRequest<ArtistResult> {
     final artistResult = ArtistResult(
       artistData['id'],
       artistData['name'],
-      coverArtId,
+      coverArtLink,
       coverArtLink,
       artistData['albumCount'],
       albums,
