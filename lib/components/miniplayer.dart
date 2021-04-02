@@ -54,14 +54,14 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
       duration: state.playerState.duration,
       playbackProgress: playbackProgress,
       playerState: state.playerState.current,
-      onPlay: () => dispatch!(PlayerCommandPlay()),
-      onPause: () => dispatch!(PlayerCommandPause()),
-      onPlayNext: () => dispatch!(PlayerCommandSkipNext()),
-      onPlayPrev: () => dispatch!(PlayerCommandSkipPrev()),
+      onPlay: () => dispatch(PlayerCommandPlay()),
+      onPause: () => dispatch(PlayerCommandPause()),
+      onPlayNext: () => dispatch(PlayerCommandSkipNext()),
+      onPlayPrev: () => dispatch(PlayerCommandSkipPrev()),
       onStartListen: (listener) =>
-          dispatch!(PlayerStartListenPlayerPosition(listener)),
+          dispatch(PlayerStartListenPlayerPosition(listener)),
       onStopListen: (listener) =>
-          dispatch!(PlayerStopListenPlayerPosition(listener)),
+          dispatch(PlayerStopListenPlayerPosition(listener)),
     );
   }
 }

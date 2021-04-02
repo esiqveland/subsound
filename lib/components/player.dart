@@ -264,17 +264,17 @@ class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
       duration: state.playerState.duration,
       position: state.playerState.position,
       playerState: state.playerState.current,
-      onStar: (String id) => dispatch!(StarIdCommand(SongId(songId: id))),
-      onUnstar: (String id) => dispatch!(UnstarIdCommand(SongId(songId: id))),
-      onPlay: () => dispatch!(PlayerCommandPlay()),
-      onPause: () => dispatch!(PlayerCommandPause()),
-      onPlayNext: () => dispatch!(PlayerCommandSkipNext()),
-      onPlayPrev: () => dispatch!(PlayerCommandSkipPrev()),
+      onStar: (String id) => dispatch(StarIdCommand(SongId(songId: id))),
+      onUnstar: (String id) => dispatch(UnstarIdCommand(SongId(songId: id))),
+      onPlay: () => dispatch(PlayerCommandPlay()),
+      onPause: () => dispatch(PlayerCommandPause()),
+      onPlayNext: () => dispatch(PlayerCommandSkipNext()),
+      onPlayPrev: () => dispatch(PlayerCommandSkipPrev()),
       onStartListen: (listener) =>
-          dispatch!(PlayerStartListenPlayerPosition(listener)),
+          dispatch(PlayerStartListenPlayerPosition(listener)),
       onStopListen: (listener) =>
-          dispatch!(PlayerStopListenPlayerPosition(listener)),
-      onSeek: (val) => dispatch!(PlayerCommandSeekTo(val)),
+          dispatch(PlayerStopListenPlayerPosition(listener)),
+      onSeek: (val) => dispatch(PlayerCommandSeekTo(val)),
     );
   }
 }
