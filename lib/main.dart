@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/homescreen.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
@@ -18,6 +22,13 @@ final Map<String, WidgetBuilder> appRoutes = {
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
+  if (Platform.isWindows || Platform.isLinux) {
+    // Initialize FFI
+    sqfliteFfiInit();
+    // Change the default factory
+    databaseFactory = databaseFactoryFfi;
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
