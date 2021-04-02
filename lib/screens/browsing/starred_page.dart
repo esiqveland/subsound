@@ -1,7 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
-import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
@@ -16,10 +15,7 @@ class StarredPage extends StatelessWidget {
       converter: (st) => StarredViewModel(
         currentSongId: st.state.playerState.currentSong?.id ?? '',
         onPlayAlbum: (album) => st.dispatch(PlayerCommandPlayAlbum(album)),
-        onPlaySong: (song) => st.dispatch(PlayerCommandPlaySong(
-          PlayerSong.from(song),
-        )),
-        onPlaySong2: (song, queue) => st.dispatch(PlayerCommandContextualPlay(
+        onPlaySong: (song, queue) => st.dispatch(PlayerCommandContextualPlay(
           songId: song.id,
           playQueue: queue,
         )),
@@ -143,8 +139,7 @@ class StarredItem {
 
 class StarredViewModel extends Vm {
   final String currentSongId;
-  final Function(SongResult) onPlaySong;
-  final Function(SongResult, List<SongResult>) onPlaySong2;
+  final Function(SongResult, List<SongResult>) onPlaySong;
   final Function(AlbumResultSimple) onPlayAlbum;
   final Future<Starred> Function() onLoadStarred;
 
@@ -152,7 +147,6 @@ class StarredViewModel extends Vm {
     required this.currentSongId,
     required this.onPlaySong,
     required this.onPlayAlbum,
-    required this.onPlaySong2,
     required this.onLoadStarred,
   }) : super(equals: [currentSongId]);
 }
@@ -181,11 +175,11 @@ class StarredListView extends StatelessWidget {
         onPlay: (item) {
           if (item.getSong() != null) {
             var queue = data
-                .sublist(idx)
+                //.sublist(idx)
                 .where((element) => element.getSong() != null)
                 .map((e) => e.getSong()!)
                 .toList();
-            model.onPlaySong2(item.getSong()!, queue);
+            model.onPlaySong(item.getSong()!, queue);
           } else if (item.getAlbum() != null) {
             model.onPlayAlbum(item.getAlbum()!);
           } else {}
