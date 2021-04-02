@@ -372,7 +372,7 @@ class PlayerView extends StatelessWidget {
                       child: SizedBox.expand(
                         child: GestureDetector(
                           onTap: () {
-                            if (vm.albumId != null) {
+                            if (vm.albumId.isNotEmpty) {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) =>
@@ -641,13 +641,14 @@ class PlayerSlider extends StatelessWidget {
 
   static Duration _getDuration(PositionUpdate nextPos) {
     if (nextPos.duration.inMilliseconds == 0) {
+      // avoid division by zero
       return Duration(seconds: 1);
     }
     return nextPos.duration;
   }
 
   static Duration _getPosition(PositionUpdate nextPos) {
-    if (nextPos.position == null) {
+    if (nextPos.position == Duration.zero) {
       return Duration(seconds: 0);
     }
     if (nextPos.position > nextPos.duration) {
@@ -825,9 +826,6 @@ class PlayButton extends StatelessWidget {
   }
 
   _getIcon(PlayerStates current) {
-    if (current == null) {
-      return Icon(Icons.play_arrow, size: size);
-    }
     if (current == PlayerStates.playing) {
       return Icon(Icons.pause, size: size);
     }
