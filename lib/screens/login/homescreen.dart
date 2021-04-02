@@ -45,11 +45,11 @@ class HomeScreen extends StatelessWidget {
           body: (context) => Center(
             child: TabBarView(
               children: [
+                Center(child: StarredPage()),
                 Center(child: ArtistsPage(ctx: state.toClient())),
                 Center(child: AlbumsPage(ctx: state.toClient())),
               ],
             ),
-              StarredPage(),
           ),
         ),
       ),
