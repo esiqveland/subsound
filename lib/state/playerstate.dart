@@ -419,37 +419,25 @@ extension Formatter on PlaybackState {
   }
 }
 
-class StartupPlayer extends ReduxAction<AppState> {
+class CleanupPlayer extends ReduxAction<AppState> {
   @override
   Future<AppState> reduce() async {
-    if (!AudioService.connected) {
-      log('StartupPlayer: not connected: ${AudioService.connected}');
-      await AudioService.connect();
-      log('StartupPlayer: not connected after: ${AudioService.connected}');
-    }
+    await AudioService.disconnect();
+    await StartupPlayer.disconnect();
+    return state.copy();
+  }
+}
 
-    if (AudioService.running) {
-      log('StartupPlayer: already running');
-      return state.copy();
-    } else {
-      log('StartupPlayer: not running: will start');
-    }
-    final success = await AudioService.start(
-      backgroundTaskEntrypoint: _entrypoint,
-      //androidNotificationChannelName: 'Subsound',
-      androidEnableQueue: true,
+class StartupPlayer extends ReduxAction<AppState> {
+  static StreamSubscription<Duration>? positionStream;
+  static StreamSubscription<bool>? runningStream;
+  static StreamSubscription<PlaybackState>? playbackStream;
+  static StreamSubscription<MediaItem?>? currentMediaStream;
 
-      // Enable this if you want the Android service to exit the foreground state on pause.
-      androidStopForegroundOnPause: false,
-      androidNotificationClickStartsActivity: true,
-      androidShowNotificationBadge: false,
-      androidNotificationColor: 0xFF2196f3,
-      androidNotificationIcon: 'mipmap/ic_launcher',
-      //params: DownloadAudioTask.createStartParams(),
-    );
-    log('StartupPlayer: success=$success');
-
-    AudioService.createPositionStream(
+  Future<void> connectListeners() async {
+    await disconnect();
+    log('connectListeners() called');
+    positionStream = AudioService.createPositionStream(
       steps: 800,
       minPeriod: Duration(milliseconds: 500),
       maxPeriod: Duration(milliseconds: 500),
@@ -464,12 +452,11 @@ class StartupPlayer extends ReduxAction<AppState> {
         //dispatch(PlayerPositionChanged(pos));
       }
     });
-    AudioService.positionStream.listen((pos) {});
-    AudioService.runningStream.listen((event) {
+    runningStream = AudioService.runningStream.listen((event) {
       log("runningStream: event=$event");
     });
 
-    AudioService.playbackStateStream.listen((event) {
+    playbackStream = AudioService.playbackStateStream.listen((event) {
       log("playbackStateStream event=${event.format()}");
 
       PlayerStates nextState =
@@ -485,7 +472,8 @@ class StartupPlayer extends ReduxAction<AppState> {
         ));
       }
     });
-    AudioService.currentMediaItemStream.listen((MediaItem? item) async {
+    currentMediaStream =
+        AudioService.currentMediaItemStream.listen((MediaItem? item) async {
       log("currentMediaItemStream ${item?.toString()}");
       if (item == null) {
         return;
@@ -517,14 +505,52 @@ class StartupPlayer extends ReduxAction<AppState> {
         dispatch(PlayerCommandSetCurrentPlaying(ps));
       }
     });
-    // PlayerActions._player.onPlayerError.listen((msg) {
-    //   print('audioPlayer onError : $msg');
-    //   dispatch(PlayerStateChanged(PlayerStates.stopped));
-    //   dispatch(PlayerDurationChanged(Duration()));
-    //   dispatch(PlayerPositionChanged(Duration()));
-    //   dispatch(DisplayError('Error playing: $msg'));
-    // });
+  }
 
+  static Future<void> disconnect() async {
+    await positionStream?.cancel();
+    positionStream = null;
+    await runningStream?.cancel();
+    runningStream = null;
+    await playbackStream?.cancel();
+    playbackStream = null;
+    await currentMediaStream?.cancel();
+    currentMediaStream = null;
+  }
+
+  @override
+  Future<AppState> reduce() async {
+    if (!AudioService.connected) {
+      log('StartupPlayer: not connected: ${AudioService.connected}');
+      await AudioService.connect();
+      connectListeners();
+      log('StartupPlayer: not connected after: ${AudioService.connected}');
+    }
+
+    if (AudioService.running) {
+      log('StartupPlayer: already running');
+      connectListeners();
+      return state.copy();
+    } else {
+      log('StartupPlayer: not running: will start');
+    }
+    await disconnect();
+
+    final success = await AudioService.start(
+      backgroundTaskEntrypoint: _entrypoint,
+      //androidNotificationChannelName: 'Subsound',
+      androidEnableQueue: true,
+
+      // Enable this if you want the Android service to exit the foreground state on pause.
+      androidStopForegroundOnPause: false,
+      androidNotificationClickStartsActivity: true,
+      androidShowNotificationBadge: false,
+      androidNotificationColor: 0xFF2196f3,
+      androidNotificationIcon: 'mipmap/ic_launcher',
+      //params: DownloadAudioTask.createStartParams(),
+    );
+    log('StartupPlayer: success=$success');
+    connectListeners();
     return state.copy();
   }
 }
