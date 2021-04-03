@@ -258,18 +258,21 @@ class StarredPageState extends State<StarredPageStateful> {
       data.sort((a, b) {
         if (a.getAlbum() != null) {
           if (b.getAlbum() != null) {
-            return a.getAlbum()!.createdAt.compareTo(b.getAlbum()!.createdAt) *
+            return a
+                    .getAlbum()!
+                    .starredAt!
+                    .compareTo(b.getAlbum()!.starredAt!) *
                 -1;
           } else {
-            return a.getAlbum()!.createdAt.compareTo(b.getSong()!.createdAt) *
+            return a.getAlbum()!.starredAt!.compareTo(b.getSong()!.starredAt!) *
                 -1;
           }
         } else {
           if (b.getAlbum() != null) {
-            return a.getSong()!.createdAt.compareTo(b.getAlbum()!.createdAt) *
+            return a.getSong()!.starredAt!.compareTo(b.getAlbum()!.starredAt!) *
                 -1;
           } else {
-            return a.getSong()!.createdAt.compareTo(b.getSong()!.createdAt) *
+            return a.getSong()!.starredAt!.compareTo(b.getSong()!.starredAt!) *
                 -1;
           }
         }

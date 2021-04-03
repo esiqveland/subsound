@@ -80,6 +80,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
         isVideo: albumDataNew['isVideo'],
         parent: albumDataNew['parent'],
         playCount: albumDataNew['playcount'],
+        starredAt: parseDateTime(albumDataNew['starred']),
       );
 
       return albumResult;

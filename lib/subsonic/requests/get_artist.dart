@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/utils/duration.dart';
 
 import '../base_request.dart';
@@ -21,6 +22,7 @@ class AlbumResultSimple {
   final int playCount;
   final bool isVideo;
   final DateTime createdAt;
+  final DateTime? starredAt;
 
   AlbumResultSimple(
     this.id,
@@ -37,6 +39,7 @@ class AlbumResultSimple {
     this.playCount,
     this.isVideo,
     this.createdAt,
+    this.starredAt,
   );
 
   AlbumResultSimple.named({
@@ -54,6 +57,7 @@ class AlbumResultSimple {
     this.playCount = 0,
     this.isVideo = false,
     required this.createdAt,
+    required this.starredAt,
   });
 
   String durationNice() {
@@ -120,6 +124,7 @@ class GetArtist extends BaseRequest<ArtistResult> {
         album['playCount'] ?? 0,
         album['isVideo'] ?? false,
         DateTime.parse(album['created']),
+        parseDateTime(album['starred']),
       );
     }).toList()
       ..sort((a, b) => b.year.compareTo(a.year));
