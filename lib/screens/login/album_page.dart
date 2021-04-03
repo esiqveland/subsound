@@ -208,9 +208,9 @@ class AlbumView extends StatelessWidget {
                 album.name,
                 //textAlign: TextAlign.start,
                 style: TextStyle(
-                  fontFamily: 'Roboto',
+                  //fontFamily: 'Roboto',
                   fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
+                  fontSize: 14.0,
                 ),
                 //overflow: TextOverflow.ellipsis,
                 //maxLines: 1,
@@ -221,15 +221,12 @@ class AlbumView extends StatelessWidget {
                 children: [
                   ConstrainedBox(
                     constraints: BoxConstraints.tightFor(width: 450.0),
-                    child: Hero(
-                      tag: album.coverArtId,
-                      child: CoverArtImage(
-                        album.coverArtLink,
-                        id: album.coverArtId,
-                        height: expandedHeight * 1.6,
-                        width: expandedHeight * 1.6,
-                        fit: BoxFit.cover,
-                      ),
+                    child: CoverArtImage(
+                      album.coverArtLink,
+                      id: album.coverArtId,
+                      height: expandedHeight * 1.6,
+                      width: expandedHeight * 1.6,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   const DecoratedBox(
