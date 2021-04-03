@@ -113,13 +113,10 @@ class ArtistsPageState extends State<ArtistsPage> {
                           .map((a) => ArtistIndexEntryWidget(
                                 entry: a,
                                 onSelected: (entry) {
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (context) {
-                                    return ArtistScreen.of(
-                                      entry.id,
-                                      client: ctx,
-                                    );
-                                  }));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        ArtistScreen(artistId: entry.id),
+                                  ));
                                 },
                               ))
                           .toList(),

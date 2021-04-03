@@ -189,6 +189,21 @@ class Albums {
     return Albums(next, next2);
   }
 
+  Albums addAllSimple(List<AlbumResultSimple> data) {
+    final next = Map.of(albums);
+    data.forEach((a) {
+      next[a.id] = Album(
+        id: a.id,
+        artist: a.artistName,
+        title: a.name,
+        coverArtId: a.coverArtId ?? '',
+        coverArtLink: a.coverArtLink ?? '',
+        isDir: false,
+      );
+    });
+    return Albums(next, albumResults);
+  }
+
   Albums addAll(List<Album> data) {
     final next = Map.of(albums);
     data.forEach((a) {
@@ -204,8 +219,13 @@ class Albums {
 
 class Artists {
   final Map<String, Artist> artists;
+  final Map<String, ArtistResult> artistResults;
 
-  Artists(this.artists);
+  Artists(this.artists, this.artistResults);
+
+  ArtistResult? get(String artistId) {
+    return artistResults[artistId];
+  }
 
   Artists add(ArtistResult a) {
     final next = Map.of(artists);
@@ -216,7 +236,9 @@ class Artists {
       coverArtId: a.coverArtId,
       coverArtLink: a.coverArtLink,
     );
-    return Artists(next);
+    final artistResults = Map.of(this.artistResults);
+    artistResults[a.id] = a;
+    return Artists(next, artistResults);
   }
 
   Artists addAll(List<Artist> data) {
@@ -225,7 +247,7 @@ class Artists {
       next[a.id] = a;
     });
 
-    return Artists(next);
+    return Artists(next, this.artistResults);
   }
 }
 
@@ -258,7 +280,7 @@ class DataState {
         stars: Starred({}, {}),
         albums: Albums({}, {}),
         songs: Songs({}),
-        artists: Artists({}),
+        artists: Artists({}, {}),
       );
 
   bool isStarred(SongResult s) => stars.songs.containsKey(s.id);

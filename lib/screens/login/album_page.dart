@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
+import 'package:subsound/screens/login/artist_page.dart';
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
@@ -110,6 +111,7 @@ class SongRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return Container(
       child: InkWell(
         onTap: () {
@@ -120,7 +122,9 @@ class SongRow extends StatelessWidget {
             Text(
               "${song.trackNumber}",
               style: TextStyle(
-                color: isPlaying ? Theme.of(context).accentColor : null,
+                color: isPlaying
+                    ? theme.accentColor
+                    : theme.colorScheme.onPrimary.withOpacity(0.7),
               ),
             ),
             Flexible(
@@ -130,9 +134,11 @@ class SongRow extends StatelessWidget {
                     Text(
                       song.title,
                       style: TextStyle(
-                        color: isPlaying ? Theme.of(context).accentColor : null,
+                        color: isPlaying
+                            ? theme.accentColor
+                            : theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16.0,
+                        //fontSize: 16.0,
                       ),
                       textAlign: TextAlign.left,
                       maxLines: 1,
@@ -248,9 +254,43 @@ class AlbumView extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            child: SliverList(
-                delegate: SliverChildBuilderDelegate(
+          SliverToBoxAdapter(
+            child: Container(
+              height: 60,
+              padding: EdgeInsets.only(left: 20, top: 10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ArtistScreen(artistId: album.artistId),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      album.artistName,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Text(
+                    "${album.year}",
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimary
+                            .withOpacity(0.7)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 final song = album.songs[index];
                 final isPlaying =
@@ -264,14 +304,8 @@ class AlbumView extends StatelessWidget {
                 );
               },
               childCount: album.songs.length,
-            )),
+            ),
           ),
-          // Expanded(
-          //   child: AlbumList(
-          //     album: album,
-          //     songs: album.songs,
-          //   ),
-          // ),
         ],
       ),
     );
@@ -316,7 +350,7 @@ class AlbumPageState extends State<AlbumPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black54,
+      // color: Colors.black54,
       child: FutureBuilder<AlbumResult>(
           future: load(widget.albumId),
           builder: (context, snapshot) {
