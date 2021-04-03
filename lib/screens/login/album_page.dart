@@ -312,33 +312,6 @@ class AlbumView extends StatelessWidget {
   }
 }
 
-class AlbumList extends StatelessWidget {
-  final AlbumResult album;
-  final String? currentSongId;
-  final List<SongResult> songs;
-
-  const AlbumList({
-    Key? key,
-    required this.album,
-    required this.currentSongId,
-    required this.songs,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: this
-          .songs
-          .map((s) => SongRow(
-                isPlaying: currentSongId != null && s.id == currentSongId,
-                song: s,
-                onPlay: (SongResult s) {},
-              ))
-          .toList(),
-    );
-  }
-}
-
 class AlbumPageState extends State<AlbumPage> {
   late Future<AlbumResult> future;
 
