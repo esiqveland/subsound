@@ -307,10 +307,17 @@ class AudioPlayerTask extends BackgroundAudioTask {
   // Future<Function> onPrepare() {}
   // Future<Function> onPrepareFromMediaId(String mediaId) {}
 
+  @override
   Future<void> onPlayFromMediaId(String mediaId) async {
     await _playQueue.playItemInQueue(mediaId);
     _broadcastState();
     onPlay();
+  }
+
+  @override
+  Future<void> onAddQueueItemAt(MediaItem mediaItem, int index) async {
+    await _playQueue.addItem(mediaItem);
+    _broadcastState();
   }
 
   @override
