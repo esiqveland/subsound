@@ -10,6 +10,16 @@ A subsonic music player.
 
 ![Screenshot](screenshots/artistview.png)
 
+## Release todo
+
+- [ ] fix random breakage of player sometimes. seems like onStart is not working after background player task crashes
+- [ ] fix blinking in album when selecting different song
+- [ ] sort starred by most recently added
+- [ ] fix intermediate render with blank coverart on artist page
+- [ ] enqueue next track
+- [ ] browse playlists
+- [ ] fix package naming
+
 ## Goals
 
 - [X] Browsing content
@@ -19,9 +29,9 @@ A subsonic music player.
   - [X] Android
   - [X] ios
 - [ ] A nice, smooth interface
-- [ ] Make play queue actually work in all contexts
+- [X] Make play queue actually work in all contexts
   - [X] Play a song in album with queue
-  - [ ] Play a song from starred with queue
+  - [X] Play a song from starred with queue
 - [ ] Offline support
   - [ ] Sync content for local access in database
   - [ ] Selective caching

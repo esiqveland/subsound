@@ -340,11 +340,14 @@ class AlbumList extends StatelessWidget {
 }
 
 class AlbumPageState extends State<AlbumPage> {
+  late Future<AlbumResult> future;
+
   AlbumPageState();
 
   @override
   void initState() {
     super.initState();
+    this.future = load(widget.albumId);
   }
 
   @override
@@ -352,7 +355,7 @@ class AlbumPageState extends State<AlbumPage> {
     return Container(
       // color: Colors.black54,
       child: FutureBuilder<AlbumResult>(
-          future: load(widget.albumId),
+          future: future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasError) {
