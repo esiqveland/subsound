@@ -13,9 +13,9 @@ A subsonic music player.
 ## Release todo
 
 - [ ] fix random breakage of player sometimes. seems like onStart is not working after background player task crashes
-- [ ] fix blinking in album when selecting different song
+- [X] fix blinking in album when selecting different song
+- [X] fix intermediate render with blank coverart on artist page
 - [ ] sort starred by most recently added
-- [ ] fix intermediate render with blank coverart on artist page
 - [ ] enqueue next track
 - [ ] browse playlists
 - [ ] fix package naming
