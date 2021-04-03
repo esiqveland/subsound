@@ -93,8 +93,13 @@ class UnstarIdCommand extends RunRequest {
 }
 
 class RefreshStarredCommand extends RunRequest {
+  final bool forceRefresh;
+
+  RefreshStarredCommand({this.forceRefresh = true});
+
   @override
   Future<AppState> reduce() async {
+    if (!forceRefresh) {}
     final subsonicResponse =
         await GetStarred2().run(state.loginState.toClient());
 
