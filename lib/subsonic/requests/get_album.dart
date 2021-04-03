@@ -61,6 +61,7 @@ class SongResult {
   final int trackNumber;
   final int fileSize;
   final bool starred;
+  final DateTime? starredAt;
   final String contentType;
   final String suffix;
 
@@ -84,6 +85,7 @@ class SongResult {
     required this.trackNumber,
     required this.fileSize,
     required this.starred,
+    required this.starredAt,
     required this.suffix,
     required this.contentType,
   });
@@ -161,6 +163,7 @@ class GetSongRequest extends BaseRequest<SongResult> {
       trackNumber: songData['track'] ?? 0,
       fileSize: songData['size'] ?? 0,
       starred: parseStarred(songData['starred']),
+      starredAt: parseDateTime(songData['starred']),
       contentType: songData['contentType'] ?? '',
       suffix: songData['suffix'] ?? '',
     );
@@ -228,6 +231,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
         trackNumber: songData['track'] ?? 0,
         fileSize: songData['size'] ?? 0,
         starred: parseStarred(songData['starred']),
+        starredAt: parseDateTime(songData['starred']),
         contentType: songData['contentType'] ?? '',
         suffix: songData['suffix'] ?? '',
       );

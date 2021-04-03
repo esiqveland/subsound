@@ -24,6 +24,18 @@ bool parseStarred(dynamic value) {
   }
 }
 
+DateTime? parseDateTime(String? value) {
+  if (value != null) {
+    return DateTime.tryParse(value);
+  } else {
+    return null;
+  }
+}
+
+enum StarredSorting {
+  recent,
+}
+
 class GetStarred2 extends BaseRequest<GetStarred2Result> {
   GetStarred2();
 
@@ -50,8 +62,6 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
       final coverArtLink = coverArtId != null
           ? GetCoverArt(coverArtId).getImageUrl(ctx)
           : FallbackImageUrl;
-
-      //log('coverArtLink=$coverArtLink');
 
       final duration = getDuration(albumDataNew['duration']);
 
@@ -103,10 +113,12 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
         trackNumber: songData['track'] ?? 0,
         fileSize: songData['size'] ?? 0,
         starred: parseStarred(songData['starred']),
+        starredAt: parseDateTime(songData['starred']),
         contentType: songData['contentType'] ?? '',
         suffix: songData['suffix'] ?? '',
       );
-    }).toList();
+    }).toList()
+      ..sort((a, b) => a.starredAt!.compareTo(b.starredAt!));
 
     final getStarred2Result = GetStarred2Result(
       albums: albums,
