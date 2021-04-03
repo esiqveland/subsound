@@ -19,6 +19,7 @@ A subsonic music player.
 - [ ] enqueue next track
 - [ ] browse playlists
 - [ ] fix package naming
+- [ ] crash reporting
 
 ## Goals
 
@@ -49,21 +50,21 @@ Non-goals:
 
 ## TODO:
  - [X] Playback support
- - [ ] Fix heavy blinking in UI
-   - [ ] on play from album
-   - [ ] on play from starred list when nothing is already playing
  - [X] Media players support (lock screens) for Android
  - [X] Media players support (lock screens) for ios
  - [ ] Queue support
+   - [ ] view queue
+   - [ ] edit queue?
  - [ ] Start up the background play task after a crash (or in general it is not running anymore)
  - [X] cache artwork
  - [X] download files
  - [\] cache files
    - [X] partial, should cache files now, but the user has no control over this
- - [ ] link from album back to artist
- - [ ] Album page: Star button in song list
- - [ ] Album page: summary in bottom of song list
- - [ ] Album page: play button
+ - [X] link from album back to artist
+ - [ ] Pull to refresh starred list
+ - [ ] Album page: Star button in song list?
+ - [ ] Album page: summary in bottom of song list?
+ - [ ] Album page: play button?
  - [X] Album page: play on click
  - [ ] Album page: Slide to enqueue
  - [ ] Artist page: play button
