@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/storage/cache.dart';
 
 class PlayQueue {
@@ -483,5 +486,96 @@ extension SongMeta on MediaItem {
       contentType: extras!["type"],
       playNow: extras!["playNow"] ?? false,
     );
+  }
+}
+
+class AudioWidgetModelFactory extends VmFactory<AppState, MyAudioWidget> {
+  AudioWidgetModelFactory(MyAudioWidget myAudioWidget) : super(myAudioWidget);
+
+  @override
+  AudioWidgetModel fromStore() {
+    return AudioWidgetModel(
+      onConnect: () => dispatch(StartupPlayer()),
+      onDisconnect: () => dispatch(CleanupPlayer()),
+    );
+  }
+}
+
+class AudioWidgetModel extends Vm {
+  final Function onConnect;
+  final Function onDisconnect;
+
+  AudioWidgetModel({
+    required this.onConnect,
+    required this.onDisconnect,
+  }) : super(equals: []);
+}
+
+class MyAudioWidget extends StatelessWidget {
+  final Widget child;
+
+  const MyAudioWidget({Key? key, required this.child}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, AudioWidgetModel>(
+      vm: () => AudioWidgetModelFactory(this),
+      builder: (context, vm) => _MyAudioWidgetStateful(child: child, model: vm),
+    );
+  }
+}
+
+class _MyAudioWidgetStateful extends StatefulWidget {
+  final Widget child;
+  final AudioWidgetModel model;
+
+  _MyAudioWidgetStateful({
+    required this.child,
+    required this.model,
+  });
+
+  @override
+  State<_MyAudioWidgetStateful> createState() => _AudioServiceWidgetState();
+}
+
+class _AudioServiceWidgetState extends State<_MyAudioWidgetStateful>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addObserver(this);
+    widget.model.onConnect();
+  }
+
+  @override
+  void dispose() {
+    widget.model.onDisconnect();
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        widget.model.onConnect();
+        break;
+      case AppLifecycleState.paused:
+        widget.model.onDisconnect();
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
+  Future<bool> didPopRoute() async {
+    widget.model.onDisconnect();
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

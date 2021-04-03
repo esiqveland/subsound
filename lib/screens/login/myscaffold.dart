@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/miniplayer.dart';
@@ -10,6 +9,7 @@ import 'package:subsound/screens/login/bottomnavbar.dart';
 import 'package:subsound/screens/login/drawer.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/player_task.dart';
 import 'package:we_slide/we_slide.dart';
 
 import 'homescreen.dart';
@@ -153,7 +153,7 @@ class _AppScaffold extends StatelessWidget {
         disableBottomBar ? footerHeight : PlayerBottomBarSize + footerHeight;
     final double _panelMaxSize = MediaQuery.of(context).size.height;
 
-    return AudioServiceWidget(
+    return MyAudioWidget(
       child: Scaffold(
         body: WeSlide(
           controller: _controller,
