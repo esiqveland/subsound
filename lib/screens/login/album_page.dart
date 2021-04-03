@@ -331,14 +331,14 @@ class AlbumPageState extends State<AlbumPage> {
           future: future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                return Center(child: Text("${snapshot.error}"));
-              } else {
+              if (snapshot.hasData) {
                 return AlbumView(
                   currentSongId: widget.currentSongId,
                   album: snapshot.data!,
                   onPlay: widget.onPlay,
                 );
+              } else {
+                return Center(child: Text("${snapshot.error}"));
               }
             } else {
               return Center(child: CircularProgressIndicator());
