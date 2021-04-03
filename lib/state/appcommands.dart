@@ -8,6 +8,7 @@ import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_album_list2.dart';
+import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_artists.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/ping.dart';
@@ -141,6 +142,34 @@ class GetAlbumCommand extends RunRequest {
       dataState: state.dataState.copy(
         albums: albums,
         songs: songs,
+      ),
+    );
+  }
+}
+
+class GetArtistCommand extends RunRequest {
+  final String artistId;
+
+  GetArtistCommand({required this.artistId});
+
+  @override
+  Future<AppState?> reduce() async {
+    ArtistResult? artistCached = state.dataState.artists.get(artistId);
+    if (artistCached != null) {
+      return null;
+    }
+    final subsonicResponse =
+        await GetArtist(artistId).run(state.loginState.toClient());
+
+    ArtistResult artist = subsonicResponse.data;
+
+    final artists = state.dataState.artists.add(artist);
+    final albums = state.dataState.albums.addAllSimple(artist.albums);
+
+    return state.copy(
+      dataState: state.dataState.copy(
+        artists: artists,
+        albums: albums,
       ),
     );
   }
