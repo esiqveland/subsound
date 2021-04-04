@@ -9,7 +9,6 @@ import 'package:subsound/screens/login/bottomnavbar.dart';
 import 'package:subsound/screens/login/drawer.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/state/appstate.dart';
-import 'package:subsound/state/player_task.dart';
 import 'package:we_slide/we_slide.dart';
 
 import 'homescreen.dart';
@@ -153,62 +152,60 @@ class _AppScaffold extends StatelessWidget {
         disableBottomBar ? footerHeight : PlayerBottomBarSize + footerHeight;
     final double _panelMaxSize = MediaQuery.of(context).size.height;
 
-    return MyAudioWidget(
-      child: Scaffold(
-        body: WeSlide(
-          controller: _controller,
-          panelMinSize: _panelMinSize,
-          panelMaxSize: _panelMaxSize,
-          hidePanelHeader: true,
-          hideFooter: true,
-          parallax: false,
-          overlayOpacity: 1.0,
-          overlayColor: bgColor,
-          panelBackground: bgColor,
-          overlay: true,
-          body: CustomScrollView(
-            slivers: <Widget>[
-              if (!disableAppBar)
-                SliverAppBar(
-                  title: appBar.title,
-                  centerTitle: appBar.centerTitle,
-                  floating: appBar.floating,
-                  pinned: appBar.pinned,
-                  bottom: appBar.bottom,
-                ),
-              SliverFillRemaining(
-                hasScrollBody: true,
-                child: Builder(builder: body),
+    return Scaffold(
+      body: WeSlide(
+        controller: _controller,
+        panelMinSize: _panelMinSize,
+        panelMaxSize: _panelMaxSize,
+        hidePanelHeader: true,
+        hideFooter: true,
+        parallax: false,
+        overlayOpacity: 1.0,
+        overlayColor: bgColor,
+        panelBackground: bgColor,
+        overlay: true,
+        body: CustomScrollView(
+          slivers: <Widget>[
+            if (!disableAppBar)
+              SliverAppBar(
+                title: appBar.title,
+                centerTitle: appBar.centerTitle,
+                floating: appBar.floating,
+                pinned: appBar.pinned,
+                bottom: appBar.bottom,
               ),
-            ],
-          ),
-          panel: Container(
-            child: PlayerView(
-              backgroundColor: bgColor,
-              header: Text(
-                "Now Playing",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20.0),
-              ),
+            SliverFillRemaining(
+              hasScrollBody: true,
+              child: Builder(builder: body),
             ),
-          ),
-          panelHeader: Container(
-            child: PlayerBottomBar(
-              height: PlayerBottomBarSize,
-              backgroundColor: bgColor,
-              onTap: () {
-                _controller.show();
-              },
+          ],
+        ),
+        panel: Container(
+          child: PlayerView(
+            backgroundColor: bgColor,
+            header: Text(
+              "Now Playing",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20.0),
             ),
-          ),
-          footerOffset: footerHeight,
-          footer: BottomNavigationBarWidget(
-            navItems: navBarItems,
-            backgroundColor: bottomColor,
           ),
         ),
-        drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
+        panelHeader: Container(
+          child: PlayerBottomBar(
+            height: PlayerBottomBarSize,
+            backgroundColor: bgColor,
+            onTap: () {
+              _controller.show();
+            },
+          ),
+        ),
+        footerOffset: footerHeight,
+        footer: BottomNavigationBarWidget(
+          navItems: navBarItems,
+          backgroundColor: bottomColor,
+        ),
       ),
+      drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
     );
   }
 }

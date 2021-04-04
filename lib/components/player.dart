@@ -140,7 +140,7 @@ class PlayerSong {
       contentType: song.contentType,
     );
     final playItem = MediaItem(
-      id: song.id,
+      id: song.songUrl,
       artist: song.artist,
       album: song.album,
       title: song.songTitle,

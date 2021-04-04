@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:async_redux/async_redux.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
@@ -10,6 +11,8 @@ import 'package:subsound/screens/login/homescreen.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/player_task.dart';
+import 'package:subsound/storage/cache.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   Navigator.defaultRouteName: (context) => RootScreen(),
@@ -30,6 +33,25 @@ void main() async {
   }
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  // store this in a singleton
+  final h = await AudioService.init(
+    builder: () => MyAudioHandler(),
+    cacheManager: ArtworkCacheManager(),
+    config: AudioServiceConfig(
+      androidNotificationChannelName: 'SubSound',
+      androidEnableQueue: true,
+      // Enable this if you want the Android service to exit the foreground state on pause.
+      androidStopForegroundOnPause: false,
+      androidNotificationClickStartsActivity: true,
+      androidShowNotificationBadge: false,
+      // androidNotificationIcon: 'mipmap/ic_launcher',
+      //params: DownloadAudioTask.createStartParams(),
+    ),
+  );
+
+  // save handler as singleton
+  audioHandler = h;
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 

@@ -7,25 +7,28 @@ import 'package:flutter/foundation.dart';
 import 'package:subsound/components/player.dart' hide PlayerState;
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/errors.dart';
 import 'package:subsound/state/player_task.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 
+import 'player_task.dart';
+
 // Must be a top-level function
-void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
+// void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
 
 abstract class PlayerActions extends ReduxAction<AppState> {
   static final String playerId = 'e5dde786-5365-11eb-ae93-0242ac130002';
 
   @override
   Future<void> before() async {
-    if (!AudioService.connected) {
-      await dispatchFuture(StartupPlayer());
-    }
-    if (!AudioService.running) {
-      await dispatchFuture(StartupPlayer());
-    }
+    // if (!AudioService.connected) {
+    //   await dispatchFuture(StartupPlayer());
+    // }
+    // if (!AudioService.running) {
+    //   await dispatchFuture(StartupPlayer());
+    // }
   }
 }
 
@@ -57,11 +60,13 @@ class PlayerPositionChanged extends PlayerActions {
 class PlayerCommandPlay extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
-    AudioService.play();
-    final current = AudioService.currentMediaItem;
+    audioHandler.play();
+
+    final current = audioHandler.mediaItem.valueWrapper?.value;
     if (current == null) {
       return null;
     }
+
     return state.copy(
       playerState: state.playerState.copy(
         current: PlayerStates.playing,
@@ -73,7 +78,7 @@ class PlayerCommandPlay extends PlayerActions {
 class PlayerCommandSkipNext extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
-    AudioService.skipToNext();
+    audioHandler.skipToNext();
     return null;
   }
 }
@@ -81,7 +86,7 @@ class PlayerCommandSkipNext extends PlayerActions {
 class PlayerCommandSkipPrev extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
-    AudioService.skipToPrevious();
+    audioHandler.skipToPrevious();
     return null;
   }
 }
@@ -89,7 +94,7 @@ class PlayerCommandSkipPrev extends PlayerActions {
 class PlayerCommandPause extends PlayerActions {
   @override
   Future<AppState> reduce() async {
-    AudioService.pause();
+    audioHandler.pause();
     return state.copy(
       playerState: state.playerState.copy(current: PlayerStates.paused),
     );
@@ -108,7 +113,7 @@ class PlayerCommandSeekTo extends PlayerActions {
       log("SeekTo invalid position=$pos dur=${state.playerState.duration}");
       return state;
     }
-    AudioService.seekTo(pos);
+    audioHandler.seekTo(pos);
     return state.copy(
       playerState: state.playerState.copy(position: pos),
     );
@@ -270,7 +275,7 @@ class PlayerCommandEnqueueSong extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
     var mediaItem = PlayerSong.asMediaItem(song);
-    AudioService.addQueueItem(mediaItem);
+    audioHandler.addQueueItem(mediaItem);
     return state;
   }
 }
@@ -287,13 +292,13 @@ extension ToMediaItem on SongResult {
       playNow: playNow,
     );
     final playItem = MediaItem(
-      id: song.id,
+      id: song.playUrl,
       artist: song.artistName,
       album: song.albumName,
       title: song.title,
       displayTitle: song.title,
       displaySubtitle: song.artistName,
-      artUri: song.coverArtLink != null ? Uri.parse(song.coverArtLink) : null,
+      artUri: song.coverArtLink.isNotEmpty ? Uri.parse(song.coverArtLink) : null,
       duration: song.duration.inSeconds > 0 ? song.duration : Duration.zero,
       extras: {},
     ).setSongMetadata(meta);
@@ -317,7 +322,8 @@ class PlayerCommandContextualPlay extends PlayerActions {
             ))
         .toList();
 
-    var selected = queue.singleWhere((element) => element.id == songId);
+    var selectedIdx = queue.indexWhere((element) => element.id == songId);
+    var selected = queue[selectedIdx];
 
     dispatch(PlayerCommandSetCurrentPlaying(
       selected,
@@ -325,14 +331,11 @@ class PlayerCommandContextualPlay extends PlayerActions {
       queue: queue,
     ));
 
-    final mediaQueue = playQueue
-        .map((s) => s.toMediaItem(
-              playNow: s.id == songId,
-            ))
-        .toList();
+    final mediaQueue = playQueue.map((s) => s.toMediaItem()).toList();
 
-    await AudioService.updateQueue(mediaQueue);
-    //AudioService.playFromMediaId(songId);
+    await audioHandler.updateQueue(mediaQueue);
+    await audioHandler.skipToQueueItem(selectedIdx);
+    audioHandler.play();
 
     return null;
   }
@@ -353,7 +356,8 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
             ))
         .toList();
 
-    var selected = queue.singleWhere((element) => element.id == songId);
+    var selectedIdx = queue.indexWhere((element) => element.id == songId);
+    var selected = queue[selectedIdx];
 
     dispatch(PlayerCommandSetCurrentPlaying(
       selected,
@@ -367,8 +371,10 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
             ))
         .toList();
 
-    await AudioService.updateQueue(mediaQueue);
-    //AudioService.playFromMediaId(songId);
+    await audioHandler.updateQueue(mediaQueue);
+    await audioHandler.skipToQueueItem(selectedIdx);
+    //audioHandler.playFromMediaId(selected.songUrl);
+    audioHandler.play();
 
     return null;
   }
@@ -397,11 +403,11 @@ class PlayerCommandPlaySong extends PlayerActions {
     final queue = state.playerState.queue;
     final idx = queue.indexWhere((element) => element.id == song.id);
     if (idx == -1) {
-      AudioService.playMediaItem(mediaItem);
+      audioHandler.playMediaItem(mediaItem);
     } else {
-      AudioService.playFromMediaId(mediaItem.id);
+      audioHandler.playFromMediaId(mediaItem.id);
     }
-    AudioService.play();
+    audioHandler.play();
 
     return state.copy(
       playerState: state.playerState.copy(
@@ -415,14 +421,13 @@ class PlayerCommandPlaySong extends PlayerActions {
 
 extension Formatter on PlaybackState {
   String format() {
-    return "PlaybackState={playing=$playing, actions=$actions, processingState=${describeEnum(processingState)}, updateTime=$updateTime,}";
+    return "PlaybackState={playing=$playing, processingState=${describeEnum(processingState)}, queueIndex=$queueIndex, errorMessage=$errorMessage, updateTime=$updateTime,}";
   }
 }
 
 class CleanupPlayer extends ReduxAction<AppState> {
   @override
   Future<AppState> reduce() async {
-    await AudioService.disconnect();
     await StartupPlayer.disconnect();
     return state.copy();
   }
@@ -452,11 +457,8 @@ class StartupPlayer extends ReduxAction<AppState> {
         //dispatch(PlayerPositionChanged(pos));
       }
     });
-    runningStream = AudioService.runningStream.listen((event) {
-      log("runningStream: event=$event");
-    });
 
-    playbackStream = AudioService.playbackStateStream.listen((event) {
+    playbackStream = audioHandler.playbackState.listen((event) {
       log("playbackStateStream event=${event.format()}");
 
       PlayerStates nextState =
@@ -464,16 +466,18 @@ class StartupPlayer extends ReduxAction<AppState> {
       if (state.playerState.current != nextState) {
         dispatch(PlayerStateChanged(nextState));
       }
-      final currentPosition = event.currentPosition;
+      final currentPosition = event.position;
       if (state.playerState.position != currentPosition) {
         PlayerStartListenPlayerPosition.updateListeners(PositionUpdate(
           position: currentPosition,
           duration: state.playerState.duration,
         ));
       }
+    }, onError: (err) {
+      log("playbackStateStream error=$err", error: err);
+      dispatch(DisplayError(err));
     });
-    currentMediaStream =
-        AudioService.currentMediaItemStream.listen((MediaItem? item) async {
+    currentMediaStream = audioHandler.mediaItem.listen((MediaItem? item) async {
       log("currentMediaItemStream ${item?.toString()}");
       if (item == null) {
         return;
@@ -482,11 +486,12 @@ class StartupPlayer extends ReduxAction<AppState> {
           item.duration != state.playerState.duration) {
         dispatch(PlayerDurationChanged(item.duration!));
       }
-      if (item.id == state.playerState.currentSong?.id) {
+      var songMetadata = item.getSongMetadata();
+      var id = songMetadata.songId;
+      if (id == state.playerState.currentSong?.id) {
         return;
       }
 
-      var id = item.id;
       var song = state.dataState.songs.getSongId(id);
       //final song = PlayerSong.fromMediaItem(item);
 
@@ -520,36 +525,36 @@ class StartupPlayer extends ReduxAction<AppState> {
 
   @override
   Future<AppState> reduce() async {
-    if (!AudioService.connected) {
-      log('StartupPlayer: not connected: ${AudioService.connected}');
-      await AudioService.connect();
-      connectListeners();
-      log('StartupPlayer: not connected after: ${AudioService.connected}');
-    }
+    // if (!AudioService.connected) {
+    //   log('StartupPlayer: not connected: ${AudioService.connected}');
+    //   await AudioService.connect();
+    //   connectListeners();
+    //   log('StartupPlayer: not connected after: ${AudioService.connected}');
+    // }
 
-    if (AudioService.running) {
-      log('StartupPlayer: already running');
-      connectListeners();
-      return state.copy();
-    } else {
-      log('StartupPlayer: not running: will start');
-    }
+    // if (AudioService.running) {
+    //   log('StartupPlayer: already running');
+    //   connectListeners();
+    //   return state.copy();
+    // } else {
+    //   log('StartupPlayer: not running: will start');
+    // }
     await disconnect();
 
-    final success = await AudioService.start(
-      backgroundTaskEntrypoint: _entrypoint,
-      //androidNotificationChannelName: 'Subsound',
-      androidEnableQueue: true,
-
-      // Enable this if you want the Android service to exit the foreground state on pause.
-      androidStopForegroundOnPause: false,
-      androidNotificationClickStartsActivity: true,
-      androidShowNotificationBadge: false,
-      androidNotificationColor: 0xFF2196f3,
-      androidNotificationIcon: 'mipmap/ic_launcher',
-      //params: DownloadAudioTask.createStartParams(),
-    );
-    log('StartupPlayer: success=$success');
+    // final success = await AudioService.start(
+    //   backgroundTaskEntrypoint: _entrypoint,
+    //   //androidNotificationChannelName: 'Subsound',
+    //   androidEnableQueue: true,
+    //
+    //   // Enable this if you want the Android service to exit the foreground state on pause.
+    //   androidStopForegroundOnPause: false,
+    //   androidNotificationClickStartsActivity: true,
+    //   androidShowNotificationBadge: false,
+    //   androidNotificationColor: 0xFF2196f3,
+    //   androidNotificationIcon: 'mipmap/ic_launcher',
+    //   //params: DownloadAudioTask.createStartParams(),
+    // );
+    //log('StartupPlayer: success=$success');
     connectListeners();
     return state.copy();
   }
@@ -560,18 +565,6 @@ PlayerStates getNextPlayerState(
   bool playing,
 ) {
   switch (processingState) {
-    case AudioProcessingState.none:
-      if (playing) {
-        return PlayerStates.playing;
-      } else {
-        return PlayerStates.stopped;
-      }
-    case AudioProcessingState.connecting:
-      if (playing) {
-        return PlayerStates.playing;
-      } else {
-        return PlayerStates.stopped;
-      }
     case AudioProcessingState.ready:
       if (playing) {
         return PlayerStates.playing;
@@ -584,21 +577,13 @@ PlayerStates getNextPlayerState(
       } else {
         return PlayerStates.buffering;
       }
-    case AudioProcessingState.fastForwarding:
-      return PlayerStates.playing;
-    case AudioProcessingState.rewinding:
-      return PlayerStates.playing;
-    case AudioProcessingState.skippingToPrevious:
-      return PlayerStates.playing;
-    case AudioProcessingState.skippingToNext:
-      return PlayerStates.playing;
-    case AudioProcessingState.skippingToQueueItem:
-      return PlayerStates.playing;
     case AudioProcessingState.completed:
-      return PlayerStates.stopped;
-    case AudioProcessingState.stopped:
       return PlayerStates.stopped;
     case AudioProcessingState.error:
       return PlayerStates.stopped;
+    case AudioProcessingState.idle:
+      return PlayerStates.stopped;
+    case AudioProcessingState.loading:
+      return PlayerStates.playing;
   }
 }
