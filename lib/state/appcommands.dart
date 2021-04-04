@@ -105,8 +105,10 @@ class RefreshStarredCommand extends RunRequest {
 
     final starred = Starred.of(subsonicResponse.data);
 
+    var songs = state.dataState.songs.addAll(starred.songs.values.toList());
     final dataState = state.dataState.copy(
       stars: starred,
+      songs: songs,
     );
 
     final song = state.playerState.currentSong?.copy(
