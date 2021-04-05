@@ -25,8 +25,8 @@ class ArtworkCacheManager extends CacheManager with ImageCacheManager {
       : super(
           Config(
             key,
-            stalePeriod: const Duration(days: 700),
-            maxNrOfCacheObjects: 1000,
+            stalePeriod: const Duration(days: 7000),
+            maxNrOfCacheObjects: 5000,
             //repo: JsonCacheInfoRepository(databaseName: key),
             fileService: HttpFileService(
               httpClient: LoggingClient(Client()),

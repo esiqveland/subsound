@@ -10,7 +10,7 @@ const FallbackImageUrl =
     'https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png';
 
 class CoverArtImage extends StatelessWidget {
-  final String id;
+  final String? id;
   final String? url;
   final double height;
   final double width;
@@ -23,11 +23,14 @@ class CoverArtImage extends StatelessWidget {
     this.height = 48.0,
     this.width = 48.0,
     this.fit,
-  })  : this.id = id ?? url ?? FallbackImageUrl,
+  })  : this.id = id ?? url,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (this.id == null || this.id!.startsWith("http")) {
+      //log('broken cache id for CoverArtImage: id=$id url=$url');
+    }
     return CachedNetworkImage(
       imageUrl: url ?? FallbackImageUrl,
       height: height,
@@ -36,6 +39,7 @@ class CoverArtImage extends StatelessWidget {
       cacheManager: ArtworkCacheManager(),
       fit: fit,
       cacheKey: this.id,
+
       // progressIndicatorBuilder: (context, url, downloadProgress) =>
       //     CircularProgressIndicator(value: downloadProgress.progress),
       errorWidget: (context, url, error) => Icon(Icons.error),

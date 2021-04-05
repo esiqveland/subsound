@@ -385,9 +385,9 @@ class PlayerView extends StatelessWidget {
                             child: vm.coverArtLink != null
                                 ? CoverArtImage(
                                     vm.coverArtLink,
+                                    id: vm.coverArtId,
                                     // height: 250,
                                     // width: 250,
-                                    id: vm.coverArtId,
                                     fit: BoxFit.cover,
                                   )
                                 : Icon(Icons.album),
