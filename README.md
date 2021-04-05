@@ -19,7 +19,7 @@ A subsonic music player.
 - [ ] enqueue next track
 - [ ] browse playlists
 - [ ] fix package naming
-- [ ] crash reporting
+- [X] crash reporting
 
 ## Goals
 
