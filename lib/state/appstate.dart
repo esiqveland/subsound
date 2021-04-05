@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appcommands.dart';
@@ -48,6 +49,11 @@ class MyErrorObserver<St> implements ErrorObserver<St> {
     Store store,
   ) {
     print("Error thrown during $action: $error");
+    Sentry.configureScope((scope) {
+      scope.setContexts("action", action.runtimeType.toString());
+      scope.setTag("action", action.runtimeType.toString());
+    });
+    Sentry.captureException(error, stackTrace: stackTrace);
     return true;
   }
 }

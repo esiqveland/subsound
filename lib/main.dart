@@ -4,6 +4,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:subsound/components/player.dart';
@@ -32,6 +33,16 @@ void main() async {
     databaseFactory = databaseFactoryFfi;
   }
 
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://873f2393ea7c458694f56f647100c224@o564637.ingest.sentry.io/5705472';
+    },
+    appRunner: () => runMain(),
+  );
+}
+
+void runMain() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // store this in a singleton

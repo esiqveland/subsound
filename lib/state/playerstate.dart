@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:subsound/components/player.dart' hide PlayerState;
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
@@ -473,8 +474,13 @@ class StartupPlayer extends ReduxAction<AppState> {
           duration: state.playerState.duration,
         ));
       }
-    }, onError: (err) {
+    }, onError: (err, stackTrace) {
       log("playbackStateStream error=$err", error: err);
+      Sentry.configureScope((scope) {
+        scope.setContexts("action", "playbackStateStream");
+        scope.setTag("action", "playbackStateStream");
+      });
+       Sentry.captureException(err, stackTrace: stackTrace);
       dispatch(DisplayError(err));
     });
     currentMediaStream = audioHandler.mediaItem.listen((MediaItem? item) async {
