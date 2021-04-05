@@ -1,4 +1,4 @@
-package com.example.subsound
+package com.github.subsound
 
 import io.flutter.embedding.android.FlutterActivity
 
