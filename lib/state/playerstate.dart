@@ -299,7 +299,8 @@ extension ToMediaItem on SongResult {
       title: song.title,
       displayTitle: song.title,
       displaySubtitle: song.artistName,
-      artUri: song.coverArtLink.isNotEmpty ? Uri.parse(song.coverArtLink) : null,
+      artUri:
+          song.coverArtLink.isNotEmpty ? Uri.parse(song.coverArtLink) : null,
       duration: song.duration.inSeconds > 0 ? song.duration : Duration.zero,
       extras: {},
     ).setSongMetadata(meta);
@@ -447,7 +448,6 @@ class StartupPlayer extends ReduxAction<AppState> {
       steps: 800,
       minPeriod: Duration(milliseconds: 500),
       maxPeriod: Duration(milliseconds: 500),
-      //: Duration(milliseconds: 1000),
     ).listen((pos) {
       //log("createPositionStream $pos");
       PlayerStartListenPlayerPosition.updateListeners(PositionUpdate(
