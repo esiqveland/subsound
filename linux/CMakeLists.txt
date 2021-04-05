@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
 set(BINARY_NAME "subsound")
-set(APPLICATION_ID "com.example.subsound")
+set(APPLICATION_ID "com.github.subsound")
 
 cmake_policy(SET CMP0063 NEW)
 
