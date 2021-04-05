@@ -411,6 +411,7 @@ class PlayerView extends StatelessWidget {
                                 SongTitle(songTitle: vm.songTitle),
                                 SizedBox(height: 10.0),
                                 ArtistTitle(artistName: vm.artistTitle),
+                                SizedBox(height: 12.0),
                               ],
                             ),
                           ),
@@ -668,6 +669,13 @@ class CachedSliderState extends State<CachedSlider> {
     return SliderTheme(
       data: SliderThemeData(
         trackShape: CustomTrackShape(),
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: 8.0),
+        trackHeight: 2.0,
+        //rangeThumbShape: RoundRangeSliderThumbShape(enabledThumbRadius: 4.0),
+        //rangeTrackShape: RoundedRectSliderTrackShape(),
+        //tickMarkShape: SliderTickMarkShape.noTickMark,
+        //rangeTickMarkShape: RoundRangeSliderTickMarkShape(tickMarkRadius: 2.0),
       ),
       child: Slider.adaptive(
         activeColor: Colors.tealAccent,
@@ -776,6 +784,7 @@ class ProgressBar extends StatelessWidget {
             width: size,
             onChanged: onChanged,
           ),
+          SizedBox(height: 10.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
