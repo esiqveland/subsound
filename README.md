@@ -13,14 +13,13 @@ A subsonic music player.
 ## Release todo
 
 - [ ] fix random breakage of player sometimes. seems like onStart is not working after background player task crashes
+- [ ] fix crash on cover artwork in albums listing
+- [ ] enqueue next track
 - [X] fix blinking in album when selecting different song
 - [X] fix intermediate render with blank coverart on artist page
 - [X] sort starred by most recently added
-- [ ] enqueue next track
-- [ ] browse playlists
 - [X] fix package naming
 - [X] crash reporting
-- [ ] fix crash on cover artwork in albums listing
 
 ## Goals
 
@@ -63,6 +62,10 @@ Non-goals:
    - [X] partial, should cache files now, but the user has no control over this
  - [X] link from album back to artist
  - [ ] Pull to refresh starred list
+ - [ ] browse playlists
+  - [ ] playlist api
+  - [ ] playlist listing
+  - [ ] new homescreen?
  - [ ] Album page: Star button in song list?
  - [ ] Album page: summary in bottom of song list?
  - [ ] Album page: play button?
