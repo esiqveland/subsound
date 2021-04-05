@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/utils/duration.dart';
@@ -141,7 +140,7 @@ class GetArtist extends BaseRequest<ArtistResult> {
     final coverArtLink = artistData['artistImageUrl'] ?? firstAlbumCoverLink;
 
     // log('firstAlbumCoverLink=$firstAlbumCoverLink');
-    log('id=$id $name coverArtLink=$coverArtLink');
+    //log('id=$id $name coverArtLink=$coverArtLink');
 
     final artistResult = ArtistResult(
       artistData['id'],
