@@ -18,8 +18,9 @@ A subsonic music player.
 - [X] sort starred by most recently added
 - [ ] enqueue next track
 - [ ] browse playlists
-- [ ] fix package naming
+- [X] fix package naming
 - [X] crash reporting
+- [ ] fix crash on cover artwork in albums listing
 
 ## Goals
 
