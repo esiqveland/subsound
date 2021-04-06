@@ -132,9 +132,14 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
     try {
       await _player.setAudioSource(source);
-    } on Exception catch (e) {
-      Sentry.captureException(e,
-          hint: "changing audiosource to item=${item.id}");
+    } on PlayerInterruptedException catch (e, st) {
+      // ignore interrupts to load()
+    } on Exception catch (e, st) {
+      Sentry.captureException(
+        e,
+        stackTrace: st,
+        hint: "error changing audiosource to item=${item.id}",
+      );
     }
   }
 
