@@ -6,6 +6,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/storage/cache.dart';
@@ -125,9 +126,16 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   @override
   Future<void> skipToQueueItem(int index) async {
     final q = queue.value!;
-    await super.skipToQueueItem(index);
     var item = q[index];
-    await _player.setAudioSource(await _toSource(item));
+    await super.skipToQueueItem(index);
+    final source = await _toSource(item);
+
+    try {
+      await _player.setAudioSource(source);
+    } on Exception catch (e) {
+      Sentry.captureException(e,
+          hint: "changing audiosource to item=${item.id}");
+    }
   }
 
   Future<void> customAction(
