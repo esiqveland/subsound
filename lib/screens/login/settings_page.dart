@@ -49,6 +49,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         DownloadCacheStatsWidget(
           stats: DownloadCacheManager().getStats(),
