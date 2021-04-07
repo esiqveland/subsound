@@ -162,7 +162,7 @@ class _AppScaffold extends StatelessWidget {
         parallax: false,
         overlayOpacity: 1.0,
         overlayColor: bgColor,
-        panelBackground: bgColor,
+        backgroundColor: bgColor,
         overlay: true,
         body: CustomScrollView(
           slivers: <Widget>[
@@ -199,7 +199,7 @@ class _AppScaffold extends StatelessWidget {
             },
           ),
         ),
-        footerOffset: footerHeight,
+        footerHeight: footerHeight,
         footer: BottomNavigationBarWidget(
           navItems: navBarItems,
           backgroundColor: bottomColor,
@@ -260,7 +260,7 @@ class TestApp extends StatelessWidget {
       body: WeSlide(
         panelMinSize: _panelMinSize,
         panelMaxSize: _panelMaxSize,
-        footerOffset: 60.0,
+        footerHeight: 60.0,
         body: Stack(
           children: <Widget>[
             Container(
@@ -304,7 +304,7 @@ class TestApp2 extends StatelessWidget {
       body: WeSlide(
         panelMinSize: _panelMinSize,
         panelMaxSize: _panelMaxSize,
-        footerOffset: 60.0,
+        footerHeight: 60.0,
         body: CustomScrollView(
           slivers: <Widget>[
             SliverAppBar(
