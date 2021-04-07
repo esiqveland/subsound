@@ -27,8 +27,10 @@ class LoginScreen extends StatelessWidget {
                 next.password,
               ))),
       builder: (context, model) => MyScaffold(
+        disableBottomBar: true,
         appBar: AppBarSettings(
           title: const Text("Settings"),
+          pinned: true,
         ),
         body: (context) => Center(
           child: Column(
