@@ -180,25 +180,29 @@ class _AppScaffold extends StatelessWidget {
             ),
           ],
         ),
-        panel: Container(
-          child: PlayerView(
-            backgroundColor: bgColor,
-            header: Text(
-              "Now Playing",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20.0),
-            ),
-          ),
-        ),
-        panelHeader: Container(
-          child: PlayerBottomBar(
-            height: PlayerBottomBarSize,
-            backgroundColor: bgColor,
-            onTap: () {
-              _controller.show();
-            },
-          ),
-        ),
+        panel: disableBottomBar
+            ? SizedBox()
+            : Container(
+                child: PlayerView(
+                  backgroundColor: bgColor,
+                  header: Text(
+                    "Now Playing",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                ),
+              ),
+        panelHeader: disableBottomBar
+            ? SizedBox()
+            : Container(
+                child: PlayerBottomBar(
+                  height: PlayerBottomBarSize,
+                  backgroundColor: bgColor,
+                  onTap: () {
+                    _controller.show();
+                  },
+                ),
+              ),
         footerHeight: footerHeight,
         footer: BottomNavigationBarWidget(
           navItems: navBarItems,
