@@ -607,7 +607,11 @@ Future<AudioSource> _toSource(MediaItem mediaItem) async {
 Future<AudioSource> _toAudioSource(
     MediaItem mediaItem, SongMetadata meta) async {
   var uri = Uri.parse(meta.songUrl);
-  var cacheFile = await DownloadCacheManager().getCachedSongFile(meta);
+  var cacheFile = await DownloadCacheManager().getCachedSongFile(CachedSong(
+    songId: meta.songId,
+    fileSize: meta.fileSize,
+    fileExtension: meta.fileExtension,
+  ));
 
   var source = LockCachingAudioSource(
     uri,

@@ -68,6 +68,18 @@ class PathInfo {
   PathInfo(this.entity, this.stat);
 }
 
+class CachedSong {
+  final String songId;
+  final String fileExtension;
+  final int fileSize;
+
+  CachedSong({
+    required this.songId,
+    required this.fileExtension,
+    required this.fileSize,
+  });
+}
+
 class DownloadCacheManager extends CacheManager {
   static const key = 'downloadCacheKey';
 
@@ -81,10 +93,19 @@ class DownloadCacheManager extends CacheManager {
   Future<Directory> _getCacheDir() async {
     final dir = await getTemporaryDirectory();
     final cacheDir = Directory(p.join(dir.path, 'cache'));
+    if (!await cacheDir.exists()) {
+      await cacheDir.create(recursive: true);
+    }
     return cacheDir;
   }
 
-  Future<File> getCachedSongFile(SongMetadata meta) async {
+  Future<bool> isCached(CachedSong meta) async {
+    final f = await getCachedSongFile(meta);
+    final len = await f.length();
+    return len == meta.fileSize;
+  }
+
+  Future<File> getCachedSongFile(CachedSong meta) async {
     final dir = await _getCacheDir();
     return File(p.joinAll([
       dir.path,
