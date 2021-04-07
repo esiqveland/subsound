@@ -48,7 +48,7 @@ packages:
     description:
       path: audio_service
       ref: one-isolate
-      resolved-ref: "9d0a2bdd0e1a57b366d1bff3ab1c728968555304"
+      resolved-ref: ccde6ee25893b9e2ab23735e8da003abae6ecfdb
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "0.16.2"
@@ -57,7 +57,7 @@ packages:
     description:
       path: audio_service_platform_interface
       ref: one-isolate
-      resolved-ref: "9d0a2bdd0e1a57b366d1bff3ab1c728968555304"
+      resolved-ref: ccde6ee25893b9e2ab23735e8da003abae6ecfdb
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "1.0.0"
@@ -66,7 +66,7 @@ packages:
     description:
       path: audio_service_web
       ref: one-isolate
-      resolved-ref: "9d0a2bdd0e1a57b366d1bff3ab1c728968555304"
+      resolved-ref: ccde6ee25893b9e2ab23735e8da003abae6ecfdb
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "0.16.2"
@@ -174,7 +174,7 @@ packages:
       name: crypto
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "3.0.1"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -357,7 +357,7 @@ packages:
       name: octo_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.0+1"
   package_config:
     dependency: transitive
     description:
@@ -462,7 +462,7 @@ packages:
       name: petitparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.2"
+    version: "4.1.0"
   platform:
     dependency: transitive
     description:
@@ -614,7 +614,7 @@ packages:
       name: source_span
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0"
+    version: "1.8.1"
   sqflite:
     dependency: "direct main"
     description:
@@ -733,7 +733,7 @@ packages:
       name: vm_service
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.0+1"
+    version: "6.2.0"
   watcher:
     dependency: transitive
     description:
@@ -747,7 +747,7 @@ packages:
       name: we_slide
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.1.0"
   weak_map:
     dependency: transitive
     description:
@@ -789,7 +789,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.2"
+    version: "5.1.0"
   yaml:
     dependency: transitive
     description:
