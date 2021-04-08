@@ -8,6 +8,7 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/screens/login/homescreen.dart';
+import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/context.dart';
@@ -18,14 +19,52 @@ import 'package:subsound/utils/utils.dart';
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return MyScaffold(
+      appBar: AppBarSettings(
+        title: const Text("Settings"),
+        pinned: true,
+      ),
+      disableBottomBar: true,
+      body: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 20),
+          ServerSettings(),
+          SizedBox(height: 20),
+          SettingsSect(
+            title: "Caching",
+            child: DownloadCacheStatsWidget(
+                stats: DownloadCacheManager().getStats()),
+          ),
+          SizedBox(height: 10),
+          ArtworkCacheStats(),
+        ],
+      ),
+    );
+  }
+}
+
+class SettingsSect extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  SettingsSect({
+    Key? key,
+    required this.title,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        //ServerSettings(),
-        DownloadCacheStatsWidget(
-          stats: DownloadCacheManager().getStats(),
-        ),
-        ArtworkCacheStats(),
+        Row(children: [
+          Text(title, style: Theme.of(context).textTheme.subtitle1)
+        ]),
+        SizedBox(height: 5),
+        child,
       ],
     );
   }
@@ -42,8 +81,10 @@ class ArtworkCacheStats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Artwork Cache"),
+        SizedBox(height: 5),
         Text("Not implemented"),
       ],
     );
@@ -63,7 +104,10 @@ class DownloadCacheStatsWidget extends StatelessWidget {
         if (snapshot.hasData) {
           CacheStats data = snapshot.data!;
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text("Song cache"),
+              SizedBox(height: 5),
               Text("Items: ${data.itemCount}"),
               Text("Storage used: ${formatFileSize(data.totalSize)}"),
             ],
@@ -143,7 +187,12 @@ class _ServerSetupFormState extends State<_ServerSetupForm> {
         onChanged: () {},
         child: Column(
           children: <Widget>[
-            Text('Server setup'),
+            Row(
+              children: [
+                Text('Server setup',
+                    style: Theme.of(context).textTheme.subtitle1),
+              ],
+            ),
             TextFormField(
               initialValue: _dataHolder.uri,
               decoration: const InputDecoration(hintText: "Enter url"),
