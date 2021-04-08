@@ -385,7 +385,7 @@ class ServerData {
   final String username;
   final String password;
 
-  ServerData({
+  const ServerData({
     required this.uri,
     required this.username,
     required this.password,
