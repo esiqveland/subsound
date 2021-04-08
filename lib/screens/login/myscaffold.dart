@@ -8,6 +8,7 @@ import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/login/bottomnavbar.dart';
 import 'package:subsound/screens/login/drawer.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
+import 'package:subsound/screens/login/settings_page.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:we_slide/we_slide.dart';
 
@@ -57,7 +58,8 @@ final navBarItems = [
       icon: Icon(Icons.settings),
     ),
     (context) {
-      Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => SettingsPage()));
     },
   )
 ];
