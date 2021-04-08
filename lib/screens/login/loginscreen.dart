@@ -13,7 +13,7 @@ class LoginScreen extends StatelessWidget {
     return MyScaffold(
       disableBottomBar: true,
       appBar: AppBarSettings(
-        title: const Text("Settings"),
+        title: const Text("Setup"),
         pinned: true,
       ),
       body: (context) => Column(
