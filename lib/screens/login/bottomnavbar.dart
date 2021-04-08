@@ -12,7 +12,7 @@ class BottomNavigationBarWidget extends StatefulWidget {
   final List<NavItems> navItems;
   final Color backgroundColor;
 
-  const BottomNavigationBarWidget({
+  BottomNavigationBarWidget({
     Key? key,
     required this.navItems,
     required this.backgroundColor,
