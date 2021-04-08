@@ -28,7 +28,12 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
 
   _BottomNavigationBarWidgetState({
     this.currentIndex = 0,
-  });
+  }) : super();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
