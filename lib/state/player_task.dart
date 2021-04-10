@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
@@ -63,7 +64,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         bufferedPosition: _player.bufferedPosition,
         speed: _player.speed,
       ));
-    });
+    }, onError: _handleErrors);
 
     // skip to next song when playback completes
     _player.playbackEventStream.listen((nextState) {
@@ -71,7 +72,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
           nextState.processingState == ProcessingState.completed) {
         skipToNext();
       }
-    });
+    }, onError: _handleErrors);
   }
 
   play() => _player.play();
@@ -153,6 +154,37 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         // app-specific code
         break;
     }
+  }
+
+  _handleErrors(Object e, StackTrace st) async {
+    // PlatformException(-1004, Could not connect to the server., null, null)
+    if (e is PlatformException && e.message == '-1004') {
+      Sentry.configureScope((scope) {
+        scope.setExtra("handled", true);
+      });
+      Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+      return;
+    }
+    // PlatformException(abort, Connection aborted, null, null)
+    if (e is PlatformException && e.message == 'abort') {
+      Sentry.configureScope((scope) {
+        scope.setExtra("handled", true);
+      });
+      Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+      return;
+    }
+    // PlayerException: (-1004) Could not connect to the server.
+    if (e is PlayerException && e.code == -1004) {
+      Sentry.configureScope((scope) {
+        scope.setExtra("handled", true);
+      });
+      Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+      return;
+    }
+    Sentry.configureScope((scope) {
+      scope.setExtra("handled", false);
+    });
+    Sentry.captureException(e, stackTrace: st);
   }
 }
 
