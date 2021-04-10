@@ -157,46 +157,53 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   }
 
   _handleErrors(Object e, StackTrace st) async {
-    // PlatformException(-1004, Could not connect to the server., null, null)
-    if (e is PlatformException && e.message == '-1004') {
+    try {
+      // PlatformException(-1004, Could not connect to the server., null, null)
+      if (e is PlatformException && e.code == '-1004') {
+        Sentry.configureScope((scope) {
+          scope.setExtra("handled", true);
+        });
+        Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+        playbackState.add(playbackState.value!.copyWith(
+          processingState: AudioProcessingState.error,
+          errorMessage: e.code,
+        ));
+        return;
+      }
+      // PlatformException(abort, Connection aborted, null, null)
+      if (e is PlatformException && e.code == 'abort') {
+        Sentry.configureScope((scope) {
+          scope.setExtra("handled", true);
+        });
+        Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+        playbackState.add(playbackState.value!.copyWith(
+          processingState: AudioProcessingState.error,
+          errorMessage: e.code,
+        ));
+        return;
+      }
+      // PlayerException: (-1004) Could not connect to the server.
+      if (e is PlayerException && e.code == -1004) {
+        Sentry.configureScope((scope) {
+          scope.setExtra("handled", true);
+        });
+        Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+        playbackState.add(playbackState.value!.copyWith(
+          processingState: AudioProcessingState.error,
+          errorCode: e.code,
+          errorMessage: e.message,
+        ));
+        return;
+      }
       Sentry.configureScope((scope) {
-        scope.setExtra("handled", true);
+        scope.setExtra("handled", false);
       });
-      Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
-      playbackState.add(playbackState.value!.copyWith(
-        processingState: AudioProcessingState.error,
-        errorMessage: e.code,
-      ));
-      return;
+      Sentry.captureException(e, stackTrace: st);
+    } finally {
+      // try stopping the player after a crash, so it hopefully can start
+      // playing again when we set a new audiosource next time.
+      await _player.stop();
     }
-    // PlatformException(abort, Connection aborted, null, null)
-    if (e is PlatformException && e.message == 'abort') {
-      Sentry.configureScope((scope) {
-        scope.setExtra("handled", true);
-      });
-      Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
-      playbackState.add(playbackState.value!.copyWith(
-        processingState: AudioProcessingState.error,
-        errorMessage: e.code,
-      ));
-      return;
-    }
-    // PlayerException: (-1004) Could not connect to the server.
-    if (e is PlayerException && e.code == -1004) {
-      Sentry.configureScope((scope) {
-        scope.setExtra("handled", true);
-      });
-      Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
-      playbackState.add(playbackState.value!.copyWith(
-        processingState: AudioProcessingState.error,
-        errorCode: e.code,
-      ));
-      return;
-    }
-    Sentry.configureScope((scope) {
-      scope.setExtra("handled", false);
-    });
-    Sentry.captureException(e, stackTrace: st);
   }
 }
 
@@ -660,6 +667,7 @@ Future<AudioSource> _toAudioSource(
   var source = LockCachingAudioSource(
     uri,
     cacheFile: cacheFile,
+    //tag: ,
     headers: {
       "X-Request-ID": uuid.v1().toString(),
       "Host": uri.host,
