@@ -82,40 +82,44 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
       throw StateError('${data['subsonic-response']['error']['code']}');
     }
 
-    final artists = data['subsonic-response']['artists'];
+    final artists = data['subsonic-response']['artists'] ?? {};
+    final String? ignoredArticles = artists['ignoredArticles'];
+    final List<dynamic> artistIndex = artists['index'] ?? [];
 
     final out = GetArtistsData(
-      artists['ignoredArticles'],
-      (artists['index'] as List).map((entry) {
+      ignoredArticles ?? '',
+      artistIndex.map((entry) {
         return ArtistIndexEntry(
-          entry['name'],
+          entry['name'] ?? '',
           (entry['artist'] as List)
               .map((artist) {
-                final coverArtId = artist['coverArt'];
-                final coverArtLink = coverArtId != null
-                    ? GetCoverArt(coverArtId).getImageUrl(ctx)
-                    : artist["artistImageUrl"] ??
-                        "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png";
-                if (coverArtLink == null) {
-                  return null;
-                }
-                final artistName = artist['name'];
+                String artistImageUrl = artist["artistImageUrl"] ?? '';
+                final String coverArt = artist['coverArt'] ?? '';
+                final coverArtLink = artistImageUrl.isNotEmpty
+                    ? artistImageUrl
+                    : coverArt.isNotEmpty
+                        ? GetCoverArt(coverArt).getImageUrl(ctx)
+                        : "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png";
+
+                final String coverArtId =
+                    coverArt.isNotEmpty ? coverArt : coverArtLink;
+                final String artistName = artist['name'] ?? '';
 
                 return Artist(
                   id: artist['id'],
                   name: artistName,
                   coverArtId: coverArtId,
                   coverArtLink: coverArtLink,
-                  albumCount: artist['albumCount'],
+                  albumCount: artist['albumCount'] ?? 0,
                 );
               })
-              .where((element) => element != null)
-              .map((element) => element!)
+              .map((element) => element)
               .toList(),
         );
       }).toList(),
     );
 
-    return SubsonicResponse(ResponseStatus.ok, data['version'], out);
+    return SubsonicResponse(
+        ResponseStatus.ok, data['subsonic-response']['version'], out);
   }
 }

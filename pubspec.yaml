@@ -35,7 +35,7 @@ dependencies:
       path: audio_service
   just_audio: ^0.7.3
   cached_network_image: ^3.0.0-nullsafety
-  flutter_sticky_header: ^0.5.0
+  flutter_sticky_header: ^0.6.0
   flutter_cache_manager: ^3.0.0-nullsafety.1
   uuid: ^3.0.0
   connectivity: ^3.0.3

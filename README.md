@@ -20,6 +20,9 @@ A subsonic music player.
 - [X] sort starred by most recently added
 - [X] fix package naming
 - [X] crash reporting
+- [ ] find an app icon
+  - [ ] android
+  - [ ] ios
 
 ## Goals
 

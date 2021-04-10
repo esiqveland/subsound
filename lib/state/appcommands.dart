@@ -240,9 +240,11 @@ class GetArtistsCommand extends RunRequest {
     final subsonicResponse =
         await GetArtistsRequest().run(state.loginState.toClient());
 
-    final artists = state.dataState.artists.addAll(
-      subsonicResponse.data.index.expand((e) => e.artist).toList(),
-    );
+    final artists = state.dataState.artists
+        .addAll(
+          subsonicResponse.data.index.expand((e) => e.artist).toList(),
+        )
+        .addIndex(subsonicResponse.data.index);
 
     return state.copy(
       dataState: state.dataState.copy(

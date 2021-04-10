@@ -48,7 +48,11 @@ class MyErrorObserver<St> implements ErrorObserver<St> {
     ReduxAction<St> action,
     Store store,
   ) {
-    print("Error thrown during $action: $error");
+    log(
+      "Error thrown during ${action.runtimeType.toString()}: $error",
+      error: error,
+      stackTrace: stackTrace,
+    );
     Sentry.configureScope((scope) {
       scope.setContexts("action", action.runtimeType.toString());
       scope.setTag("action", action.runtimeType.toString());
@@ -225,9 +229,10 @@ class Albums {
 
 class Artists {
   final Map<String, Artist> artists;
+  final List<ArtistIndexEntry> artistsIndex;
   final Map<String, ArtistResult> artistResults;
 
-  Artists(this.artists, this.artistResults);
+  Artists(this.artists, this.artistsIndex, this.artistResults);
 
   ArtistResult? get(String artistId) {
     return artistResults[artistId];
@@ -244,7 +249,11 @@ class Artists {
     );
     final artistResults = Map.of(this.artistResults);
     artistResults[a.id] = a;
-    return Artists(next, artistResults);
+    return Artists(next, this.artistsIndex, artistResults);
+  }
+
+  Artists addIndex(List<ArtistIndexEntry> index) {
+    return Artists(this.artists, index, artistResults);
   }
 
   Artists addAll(List<Artist> data) {
@@ -253,7 +262,7 @@ class Artists {
       next[a.id] = a;
     });
 
-    return Artists(next, this.artistResults);
+    return Artists(next, this.artistsIndex, this.artistResults);
   }
 }
 
@@ -263,11 +272,12 @@ class DataState {
   final Songs songs;
   final Artists artists;
 
-  DataState(
-      {required this.stars,
-      required this.albums,
-      required this.songs,
-      required this.artists});
+  DataState({
+    required this.stars,
+    required this.albums,
+    required this.songs,
+    required this.artists,
+  });
 
   DataState copy({
     Starred? stars,
@@ -286,7 +296,7 @@ class DataState {
         stars: Starred({}, {}),
         albums: Albums({}, {}),
         songs: Songs({}),
-        artists: Artists({}, {}),
+        artists: Artists({}, [], {}),
       );
 
   bool isStarred(SongResult s) => stars.songs.containsKey(s.id);
