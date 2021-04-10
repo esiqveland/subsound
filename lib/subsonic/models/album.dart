@@ -30,7 +30,7 @@ class Album {
       title: data['title'],
       artist: data['artist'],
       isDir: data['isDir'],
-      coverArtId: data['coverArt'],
+      coverArtId: coverArtId,
       coverArtLink: coverArtLink,
     );
   }
