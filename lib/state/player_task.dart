@@ -163,6 +163,10 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         scope.setExtra("handled", true);
       });
       Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+      playbackState.add(playbackState.value!.copyWith(
+        processingState: AudioProcessingState.error,
+        errorMessage: e.code,
+      ));
       return;
     }
     // PlatformException(abort, Connection aborted, null, null)
@@ -171,6 +175,10 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         scope.setExtra("handled", true);
       });
       Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+      playbackState.add(playbackState.value!.copyWith(
+        processingState: AudioProcessingState.error,
+        errorMessage: e.code,
+      ));
       return;
     }
     // PlayerException: (-1004) Could not connect to the server.
@@ -179,6 +187,10 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         scope.setExtra("handled", true);
       });
       Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+      playbackState.add(playbackState.value!.copyWith(
+        processingState: AudioProcessingState.error,
+        errorCode: e.code,
+      ));
       return;
     }
     Sentry.configureScope((scope) {

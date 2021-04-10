@@ -461,7 +461,10 @@ class StartupPlayer extends ReduxAction<AppState> {
 
     playbackStream = audioHandler.playbackState.listen((event) {
       log("playbackStateStream event=${event.format()}");
-
+      if (event.processingState == AudioProcessingState.error) {
+        dispatch(DisplayError(
+            "${event.errorCode ?? -1}: ${event.errorMessage ?? ''}"));
+      }
       PlayerStates nextState =
           getNextPlayerState(event.processingState, event.playing);
       if (state.playerState.current != nextState) {
@@ -480,7 +483,7 @@ class StartupPlayer extends ReduxAction<AppState> {
         scope.setContexts("action", "playbackStateStream");
         scope.setTag("action", "playbackStateStream");
       });
-       Sentry.captureException(err, stackTrace: stackTrace);
+      Sentry.captureException(err, stackTrace: stackTrace);
       dispatch(DisplayError(err));
     });
     currentMediaStream = audioHandler.mediaItem.listen((MediaItem? item) async {
