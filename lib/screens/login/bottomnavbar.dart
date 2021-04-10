@@ -11,16 +11,16 @@ class NavItems {
 
 class BottomNavigationBarWidget extends StatefulWidget {
   final List<NavItems> navItems;
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   BottomNavigationBarWidget({
     Key? key,
     required this.navItems,
-    required this.backgroundColor,
+    this.backgroundColor,
   }) : super(key: key);
 
   @override
-  _BottomNavigationBarWidgetState createState() =>
+  State<BottomNavigationBarWidget> createState() =>
       _BottomNavigationBarWidgetState();
 }
 
@@ -39,7 +39,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      //backgroundColor: widget.backgroundColor,
+      backgroundColor: widget.backgroundColor,
       currentIndex: currentIndex,
       type: BottomNavigationBarType.fixed,
       onTap: (idx) {

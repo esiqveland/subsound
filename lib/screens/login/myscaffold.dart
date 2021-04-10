@@ -186,7 +186,7 @@ class _AppScaffold extends StatelessWidget {
             ? SizedBox()
             : Container(
                 child: PlayerView(
-                  backgroundColor: bgColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                   header: Text(
                     "Now Playing",
                     textAlign: TextAlign.center,
@@ -199,7 +199,7 @@ class _AppScaffold extends StatelessWidget {
             : Container(
                 child: PlayerBottomBar(
                   height: PlayerBottomBarSize,
-                  backgroundColor: bgColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                   onTap: () {
                     _controller.show();
                   },
@@ -208,7 +208,7 @@ class _AppScaffold extends StatelessWidget {
         footerHeight: footerHeight,
         footer: BottomNavigationBarWidget(
           navItems: navBarItems,
-          backgroundColor: bottomColor,
+          backgroundColor: Theme.of(context).primaryColor,
         ),
       ),
       drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
