@@ -23,18 +23,18 @@ class StarredPage extends StatelessWidget {
             .dispatchFuture(RefreshStarredCommand())
             .then((value) => st.state.dataState.stars),
       ),
-      builder: (context, vm) => StarredPageStateful(model: vm),
+      builder: (context, vm) => _StarredPageStateful(model: vm),
     );
   }
 }
 
-class StarredPageStateful extends StatefulWidget {
+class _StarredPageStateful extends StatefulWidget {
   final StarredViewModel model;
-  const StarredPageStateful({Key? key, required this.model}) : super(key: key);
+  _StarredPageStateful({Key? key, required this.model}) : super(key: key);
 
   @override
-  State<StarredPageStateful> createState() {
-    return StarredPageState();
+  State<_StarredPageStateful> createState() {
+    return _StarredPageState();
   }
 }
 
@@ -238,7 +238,7 @@ class StarredRow extends StatelessWidget {
   }
 }
 
-class StarredPageState extends State<StarredPageStateful> {
+class _StarredPageState extends State<_StarredPageStateful> {
   late Future<List<StarredItem>> initialLoad;
 
   @override
