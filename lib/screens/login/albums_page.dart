@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/models/album.dart';
@@ -32,18 +33,12 @@ class AlbumRow extends StatelessWidget {
       onTap: () {
         this.onTap(album);
       },
-      // leading: CoverArtImage(
-      //   album.coverArtLink,
-      //   id: album.coverArtLink,
-      //   width: 48.0,
-      //   height: 48.0,
-      // ),
-      // leading: Image.network(
-      //   album.coverArtLink,
-      //   //id: album.coverArtId,
-      //   width: 48.0,
-      //   height: 48.0,
-      // ),
+      leading: CoverArtImage(
+        album.coverArtLink,
+        id: album.coverArtLink,
+        width: 48.0,
+        height: 48.0,
+      ),
       title: Text(album.title),
       subtitle: Text(album.artist),
     );
@@ -193,7 +188,7 @@ class AlbumsPageState extends State<AlbumsPage> {
       });
 
       return load(
-        pageSize: 30,
+        pageSize: pageSize,
         offset: _albumList.length,
       ).then((value) {
         setState(() {
@@ -210,7 +205,7 @@ class AlbumsPageState extends State<AlbumsPage> {
   }
 
   Future<List<Album>> load({
-    int pageSize = 50,
+    required int pageSize,
     int offset = 0,
   }) {
     return GetAlbumList2(
