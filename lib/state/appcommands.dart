@@ -80,8 +80,8 @@ class UnstarIdCommand extends RunRequest {
         currentSong.copy(isStarred: false),
       ));
     }
-    final res = await UnstarItem(id: id).run(state.loginState.toClient());
     try {
+      final res = await UnstarItem(id: id).run(state.loginState.toClient());
       if (res.status == ResponseStatus.ok) {
         final next = state.playerState.currentSong?.id == id.getId
             ? state.playerState.copy(
