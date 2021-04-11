@@ -13,13 +13,15 @@ A subsonic music player.
 ## Release todo
 
 - [ ] fix random breakage of player sometimes. seems like onStart is not working after background player task crashes
-- [ ] fix crash on cover artwork in albums listing
+- [X] fix crash on cover artwork in albums listing
+ - [ ] this was due to flutter engine crashing on a broken GIF file
 - [ ] enqueue next track
 - [X] fix blinking in album when selecting different song
 - [X] fix intermediate render with blank coverart on artist page
 - [X] sort starred by most recently added
 - [X] fix package naming
 - [X] crash reporting
+- [ ] pull-to-refresh on starred/artists/albums?
 - [ ] find an app icon
   - [ ] android
   - [ ] ios
@@ -32,30 +34,32 @@ A subsonic music player.
 - [X] Media players support (lock screens)
   - [X] Android
   - [X] ios
-- [ ] A nice, smooth interface
+- [X] A nice, smooth interface
 - [X] Make play queue actually work in all contexts
   - [X] Play a song in album with queue
   - [X] Play a song from starred with queue
+- [ ] Airplay
 - [ ] Offline support
   - [ ] Sync content for local access in database
   - [ ] Selective caching
 
 Possible goals:
  - Chromecast
- - Airplay
  - Support other servers than Subsonic compatible APIs
  - Linux
- - Transcoding when needed
+ - Transcoding when needed/wanted
  
 Non-goals:
  - Video support
  - EQ/Gain
+ - Jukebox support/remote playing
 
 ## TODO:
  - [X] Playback support
  - [X] Media players support (lock screens) for Android
  - [X] Media players support (lock screens) for ios
- - [ ] Queue support
+ - [X] Queue support
+   - [X] a play queue
    - [ ] view queue
    - [ ] edit queue?
  - [ ] Start up the background play task after a crash (or in general it is not running anymore)
@@ -63,12 +67,16 @@ Non-goals:
  - [X] download files
  - [\] cache files
    - [X] partial, should cache files now, but the user has no control over this
+   - [ ] cache artwork for system notification. have to deliver a file:/// 
+         to the system notification so it does not load the artwork over the network
  - [X] link from album back to artist
- - [ ] Pull to refresh starred list
- - [ ] browse playlists
-  - [ ] playlist api
+ - [ ] playlists
+  - [X] playlist api
   - [ ] playlist listing
-  - [ ] new homescreen?
+  - [ ] new homescreen with
+     - [ ] recent albums
+     - [ ] recent playlists
+     - [ ] starred songs
  - [ ] Album page: Star button in song list?
  - [ ] Album page: summary in bottom of song list?
  - [ ] Album page: play button?
@@ -90,6 +98,9 @@ Non-goals:
     - [ ] store artwork persistent locally
     - [ ] store files persistent locally
     - [ ] store metadata persistent locally in database (as part of a full metadata sync?)
+
+## UX ideas
+ - [ ] slide animation in player when skipping next/prev song
 
 ## Eventually
  - [ ] Album page: save button
