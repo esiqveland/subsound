@@ -23,8 +23,8 @@ class StarIdCommand extends RunRequest {
   @override
   Future<AppState?> reduce() async {
     final stateBefore = state.playerState.currentSong;
-    if (state.playerState.currentSong?.id == id.getId) {
-      final starred = state.playerState.currentSong?.copy(isStarred: true);
+    if (stateBefore?.id == id.getId) {
+      final starred = stateBefore?.copy(isStarred: true);
       if (starred != null) {
         dispatch(PlayerCommandSetCurrentPlaying(starred));
       }
@@ -39,10 +39,16 @@ class StarIdCommand extends RunRequest {
               )
             : state.playerState;
 
+        Starred stars = store.state.dataState.stars;
+        SongResult? song = store.state.dataState.songs.getSongId(id.getId);
+        if (song != null) {
+          stars = store.state.dataState.stars.addSong(song);
+        }
         store.dispatchFuture(RefreshStarredCommand());
 
         return state.copy(
           playerState: next,
+          dataState: state.dataState.copy(stars: stars),
         );
       } else {
         if (stateBefore != null) {
