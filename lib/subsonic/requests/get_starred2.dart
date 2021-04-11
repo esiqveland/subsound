@@ -12,8 +12,13 @@ import '../subsonic.dart';
 class GetStarred2Result {
   final List<AlbumResultSimple> albums;
   final List<SongResult> songs;
+  final DateTime lastModified;
 
-  GetStarred2Result({required this.albums, required this.songs});
+  GetStarred2Result({
+    required this.albums,
+    required this.songs,
+    required this.lastModified,
+  });
 }
 
 bool parseStarred(dynamic value) {
@@ -55,6 +60,10 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
     final starred2Field = data['subsonic-response']['starred2'];
     final albumField = (starred2Field["album"] ?? []) as List;
     final songField = (starred2Field["song"] ?? []) as List;
+
+    final lastModifiedField =
+        data['subsonic-response']['starred2']["lastModified"] ?? 0;
+    final lastModified = DateTime.fromMillisecondsSinceEpoch(lastModifiedField);
 
     final albums = albumField.map((albumDataNew) {
       final coverArtId = albumDataNew['coverArt'];
@@ -124,6 +133,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
     final getStarred2Result = GetStarred2Result(
       albums: albums,
       songs: songs,
+      lastModified: lastModified,
     );
 
     return SubsonicResponse(

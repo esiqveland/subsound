@@ -44,7 +44,7 @@ class StarredSongRow extends StatelessWidget {
   final Function(SongResult) onTapRow;
   final Function(SongResult) onTapCover;
 
-  const StarredSongRow({
+  StarredSongRow({
     Key? key,
     required this.song,
     required this.isPlaying,
@@ -163,12 +163,11 @@ class StarredListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final itemCount = data.albums.length + data.songs.length;
-    // final itemCount = data.songs.length;
     final itemCount = data.length;
     return ListView.builder(
       physics: BouncingScrollPhysics(),
       itemCount: itemCount,
+      padding: EdgeInsets.zero,
       itemBuilder: (context, idx) => StarredRow(
         item: data[idx],
         isPlaying: data[idx].isPlaying(model.currentSongId),
