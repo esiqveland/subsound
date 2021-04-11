@@ -87,14 +87,22 @@ Non-goals:
    - [ ] search page
    - [ ] search button in bottom bar
  - [ ] Song meta: add information about cache state (whether we have the file already downloaded)
- - [X] cache album data
- - [ ] cache song data
- - [ ] cache starred data
- - [ ] cache playlist data
+ - [ ] local cache:
+     - [X] artist data
+     - [X] album data
+     - [X] song data
+     - [X] starred data
+     - [ ] playlist data
  - [ ] Setup sqlite database + migrations
     - [ ] Store artist index in sqlite db for offline use
+ - [ ] persistent cache (offline mode):
+     - [ ] artist data
+     - [ ] album data
+     - [ ] song data
+     - [ ] starred data
+     - [ ] playlist data
  - [ ] Make it work offline
-    - [ ] Download starred
+    - [ ] Download starred?
     - [ ] store artwork persistent locally
     - [ ] store files persistent locally
     - [ ] store metadata persistent locally in database (as part of a full metadata sync?)
