@@ -324,6 +324,7 @@ class AppState {
   final PlayerState playerState;
   final DataState dataState;
   final NetworkState networkState;
+  final InFlightState inFlightState;
 
   AppState({
     required this.startUpState,
@@ -332,6 +333,7 @@ class AppState {
     required this.playerState,
     required this.dataState,
     required this.networkState,
+    required this.inFlightState,
   });
 
   AppState copy({
@@ -341,6 +343,7 @@ class AppState {
     PlayerState? playerState,
     DataState? dataState,
     NetworkState? networkState,
+    InFlightState? inFlightState,
   }) {
     return AppState(
       startUpState: startUpState ?? this.startUpState,
@@ -349,6 +352,7 @@ class AppState {
       playerState: playerState ?? this.playerState,
       dataState: dataState ?? this.dataState,
       networkState: networkState ?? this.networkState,
+      inFlightState: inFlightState ?? this.inFlightState,
     );
   }
 
@@ -359,6 +363,7 @@ class AppState {
         playerState: PlayerState.initialState(),
         dataState: DataState.initialState(),
         networkState: NetworkState.initialState(),
+        inFlightState: InFlightState.initialState(),
       );
 
   @override
@@ -444,4 +449,57 @@ class ServerData {
           uri == other.uri &&
           username == other.username &&
           password == other.password;
+}
+
+class StartRequest extends ReduxAction<AppState> {
+  final String requestId;
+  StartRequest(this.requestId);
+
+  @override
+  AppState? reduce() {
+    var next = state.inFlightState.start(requestId);
+    return state.copy(inFlightState: next);
+  }
+}
+
+class FinishRequest extends ReduxAction<AppState> {
+  final String requestId;
+  FinishRequest(this.requestId);
+
+  @override
+  AppState? reduce() {
+    var next = state.inFlightState.finish(requestId);
+    return state.copy(inFlightState: next);
+  }
+}
+
+class InFlightState {
+  // map of request id --> operation count
+  // keeps track of how many operations a request from the UI is waiting for
+  final Map<String, int> requestsInFlight;
+
+  InFlightState(this.requestsInFlight);
+
+  InFlightState start(String requestId) {
+    final m = Map.of(requestsInFlight);
+    if (m.containsKey(requestId)) {
+      m[requestId] = m[requestId] ?? 0 + 1;
+    } else {
+      m[requestId] = 1;
+    }
+    return InFlightState(m);
+  }
+
+  InFlightState finish(String requestId) {
+    final m = Map.of(requestsInFlight);
+    int count = m[requestId] ?? 0 - 1;
+    if (count <= 0) {
+      m.remove(requestId);
+    }
+    return InFlightState(m);
+  }
+
+  static InFlightState initialState() {
+    return InFlightState({});
+  }
 }
