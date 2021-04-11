@@ -22,6 +22,9 @@ class ArtistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
+      appBar: AppBarSettings(
+        disableAppBar: true,
+      ),
       body: (context) => Center(
         child: ArtistPage(
           artistId: this.artistId,
@@ -154,6 +157,9 @@ class ArtistView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // var expandedHeight = MediaQuery.of(context).size.height / 3;
+    var expandedHeight = 350.0;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -167,40 +173,74 @@ class ArtistView extends StatelessWidget {
         ),
       ),
       child: CustomScrollView(
+        primary: true,
+        physics: BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         slivers: <Widget>[
-          SliverToBoxAdapter(
-            child: Container(
-              margin: EdgeInsets.only(bottom: 10.0),
-              child: CoverArtImage(
-                artist.coverArtLink,
-                id: artist.coverArtId,
-                height: 250.0,
-                width: 250.0,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              margin: EdgeInsets.only(
-                bottom: 10.0,
-                left: 10.0,
-              ),
-              child: Text(
+          SliverAppBar(
+            backgroundColor: Colors.black54,
+            expandedHeight: expandedHeight,
+            stretch: true,
+            centerTitle: false,
+            snap: false,
+            floating: true,
+            pinned: true,
+            primary: true,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              //titlePadding: EdgeInsets.only(left: 5.0, bottom: 10.0),
+              title: Text(
                 artist.name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
+                //textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
+                ),
               ),
+              collapseMode: CollapseMode.parallax,
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints.tightFor(width: 450.0),
+                    child: CoverArtImage(
+                      artist.coverArtLink,
+                      id: artist.coverArtId,
+                      height: expandedHeight * 1.6,
+                      width: expandedHeight * 1.6,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        // end: Alignment(0.0, 0.0),
+                        begin: Alignment.bottomCenter,
+                        end: Alignment(0.0, 0.0),
+                        colors: <Color>[
+                          Color(0x60000000),
+                          Color(0x00000000),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              stretchModes: [
+                StretchMode.fadeTitle,
+                StretchMode.zoomBackground,
+                //StretchMode.blurBackground,
+              ],
             ),
           ),
           SliverList(
-            delegate: SliverChildListDelegate(
-              this
-                  .artist
-                  .albums
-                  .map((album) =>
-                      AlbumRow(album: album, onSelectedAlbum: onSelectedAlbum))
-                  .toList(),
-            ),
+            delegate: SliverChildListDelegate(this
+                .artist
+                .albums
+                .map((album) =>
+                    AlbumRow(album: album, onSelectedAlbum: onSelectedAlbum))
+                .toList()),
           ),
         ],
       ),
