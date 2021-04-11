@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
+import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/errors.dart';
 import 'package:subsound/state/playerstate.dart';
@@ -73,26 +74,42 @@ class UnstarIdCommand extends RunRequest {
 
   @override
   Future<AppState?> reduce() async {
+    PlayerSong? currentSong = state.playerState.currentSong;
+    if (currentSong != null) {
+      dispatch(PlayerCommandSetCurrentPlaying(
+        currentSong.copy(isStarred: false),
+      ));
+    }
     final res = await UnstarItem(id: id).run(state.loginState.toClient());
-    if (res.status == ResponseStatus.ok) {
-      final next = state.playerState.currentSong?.id == id.getId
-          ? state.playerState.copy(
-              currentSong:
-                  state.playerState.currentSong?.copy(isStarred: false),
-            )
-          : state.playerState;
+    try {
+      if (res.status == ResponseStatus.ok) {
+        final next = state.playerState.currentSong?.id == id.getId
+            ? state.playerState.copy(
+                currentSong:
+                    state.playerState.currentSong?.copy(isStarred: false),
+              )
+            : state.playerState;
 
-      var itemId = id.getId;
-      var stars = state.dataState.stars.remove(itemId);
+        var itemId = id.getId;
+        var stars = state.dataState.stars.remove(itemId);
 
-      return state.copy(
-        dataState: state.dataState.copy(
-          stars: stars,
-        ),
-        playerState: next,
-      );
-    } else {
-      dispatch(DisplayError("something went wrong"));
+        return state.copy(
+          dataState: state.dataState.copy(
+            stars: stars,
+          ),
+          playerState: next,
+        );
+      } else {
+        dispatch(DisplayError("something went wrong"));
+        if (currentSong != null) {
+          dispatch(PlayerCommandSetCurrentPlaying(currentSong));
+        }
+      }
+    } catch (e) {
+      if (currentSong != null) {
+        dispatch(PlayerCommandSetCurrentPlaying(currentSong));
+      }
+      throw e;
     }
     return null;
   }
