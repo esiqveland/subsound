@@ -76,8 +76,6 @@ void runMain() async {
   ));
 }
 
-final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
-
 class MyApp extends StatelessWidget {
   final Store<AppState> store;
 
