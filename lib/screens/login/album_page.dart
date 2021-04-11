@@ -175,10 +175,11 @@ class AlbumView extends StatelessWidget {
           ],
         ),
       ),
-      //color: Colors.black54,
       child: CustomScrollView(
         primary: true,
-        physics: const BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         slivers: <Widget>[
           SliverAppBar(
             backgroundColor: Colors.black54,
