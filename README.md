@@ -25,6 +25,11 @@ A subsonic music player.
 - [ ] find an app icon
   - [ ] android
   - [ ] ios
+- [ ] Play Store
+  - [ ] app icon 512x512px
+  - [ ] graphics feature: 1024x500px image
+- [ ] App Store
+  - [ ] ???
 
 ## Goals
 
@@ -39,8 +44,13 @@ A subsonic music player.
   - [X] Play a song in album with queue
   - [X] Play a song from starred with queue
 - [ ] Airplay
+- [ ] Shuffle modes
+- [ ] Loop modes
 - [ ] Offline support
+  - [X] Play music from cache
+  - [X] Browse data without loading live from API only
   - [ ] Sync content for local access in database
+  - [ ] Store metadata persistently for offline mode
   - [ ] Selective caching
 
 Possible goals:
