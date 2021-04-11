@@ -112,47 +112,37 @@ class SongRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    return Container(
-      child: InkWell(
-        onTap: () {
-          this.onPlay(this.song);
-        },
-        child: Row(
-          children: [
-            Text(
-              "${song.trackNumber}",
-              style: TextStyle(
-                color: isPlaying
-                    ? theme.accentColor
-                    : theme.colorScheme.onPrimary.withOpacity(0.7),
-              ),
-            ),
-            Flexible(
-              child: Container(
-                child: Column(
-                  children: [
-                    Text(
-                      song.title,
-                      style: TextStyle(
-                        color: isPlaying
-                            ? theme.accentColor
-                            : theme.colorScheme.onPrimary,
-                        fontWeight: FontWeight.bold,
-                        //fontSize: 16.0,
-                      ),
-                      textAlign: TextAlign.left,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+    return ListTile(
+      onTap: () {
+        this.onPlay(this.song);
+      },
+      leading: Column(
+        //mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "${song.trackNumber}",
+            style: TextStyle(
+                // color: isPlaying
+                //     ? theme.accentColor
+                //     : theme.colorScheme.onPrimary.withOpacity(0.7),
                 ),
-                margin: EdgeInsets.all(10.0),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-      margin: EdgeInsets.all(10.0),
+      dense: true,
+      minLeadingWidth: 15,
+      title: Text(
+        song.title,
+        style: TextStyle(
+          color: isPlaying ? theme.accentColor : theme.colorScheme.onPrimary,
+          fontWeight: FontWeight.bold,
+        ),
+        textAlign: TextAlign.left,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(song.artistName),
     );
   }
 }
@@ -208,7 +198,6 @@ class AlbumView extends StatelessWidget {
                 album.name,
                 //textAlign: TextAlign.start,
                 style: TextStyle(
-                  //fontFamily: 'Roboto',
                   fontWeight: FontWeight.bold,
                   fontSize: 14.0,
                 ),
@@ -247,7 +236,7 @@ class AlbumView extends StatelessWidget {
               stretchModes: [
                 StretchMode.fadeTitle,
                 StretchMode.zoomBackground,
-                StretchMode.blurBackground,
+                //StretchMode.blurBackground,
               ],
             ),
           ),
