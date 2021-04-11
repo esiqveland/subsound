@@ -35,7 +35,7 @@ class AlbumRow extends StatelessWidget {
       },
       leading: CoverArtImage(
         album.coverArtLink,
-        id: album.coverArtLink,
+        id: album.coverArtId,
         width: 48.0,
         height: 48.0,
       ),
