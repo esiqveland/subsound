@@ -19,7 +19,7 @@ class StarredPage extends StatelessWidget {
           songId: song.id,
           playQueue: queue,
         )),
-        onLoadStarred: () => st
+        onLoadStarred: (bool forceRefresh) => st
             .dispatchFuture(RefreshStarredCommand())
             .then((value) => st.state.dataState.stars),
       ),
@@ -141,7 +141,7 @@ class StarredViewModel extends Vm {
   final String currentSongId;
   final Function(SongResult, List<SongResult>) onPlaySong;
   final Function(AlbumResultSimple) onPlayAlbum;
-  final Future<Starred> Function() onLoadStarred;
+  final Future<Starred> Function(bool forceRefresh) onLoadStarred;
 
   StarredViewModel({
     required this.currentSongId,
@@ -244,7 +244,7 @@ class _StarredPageState extends State<_StarredPageStateful> {
   void initState() {
     super.initState();
 
-    initialLoad = widget.model.onLoadStarred().then((value) {
+    initialLoad = widget.model.onLoadStarred(false).then((value) {
       final data = [
         ...value.albums.entries
             .map((key) => StarredItem(album: key.value))
