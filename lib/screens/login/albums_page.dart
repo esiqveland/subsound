@@ -13,7 +13,7 @@ class AlbumsPage extends StatefulWidget {
 
   @override
   State<AlbumsPage> createState() {
-    return AlbumsPageState(ctx);
+    return AlbumsPageState();
   }
 }
 
@@ -46,7 +46,6 @@ class AlbumRow extends StatelessWidget {
 }
 
 class AlbumsListView extends StatelessWidget {
-  final SubsonicContext ctx;
   final List<Album> albums;
   final ScrollController controller;
   final bool isLoading;
@@ -54,7 +53,6 @@ class AlbumsListView extends StatelessWidget {
 
   const AlbumsListView({
     Key? key,
-    required this.ctx,
     required this.albums,
     required this.controller,
     required this.isLoading,
@@ -114,17 +112,15 @@ class AlbumsListView extends StatelessWidget {
 }
 
 class AlbumsPageState extends State<AlbumsPage> {
-  final SubsonicContext ctx;
-
   final int pageSize = 30;
+  late ScrollController _controller;
+  late Future<List<Album>> initialLoad;
+
   List<Album> _albumList = [];
   bool hasMore = true;
   bool isLoading = false;
-  late ScrollController _controller;
 
-  late Future<List<Album>> initialLoad;
-
-  AlbumsPageState(this.ctx);
+  AlbumsPageState();
 
   @override
   void initState() {
@@ -170,7 +166,6 @@ class AlbumsPageState extends State<AlbumsPage> {
                 } else {
                   _albumList = snapshot.data!;
                   return AlbumsListView(
-                    ctx: ctx,
                     controller: _controller,
                     albums: _albumList,
                     isLoading: isLoading,
@@ -212,7 +207,7 @@ class AlbumsPageState extends State<AlbumsPage> {
       type: GetAlbumListType.alphabeticalByName,
       size: pageSize,
       offset: offset,
-    ).run(ctx).then((value) => value.data).then((List<Album> nextList) {
+    ).run(widget.ctx).then((value) => value.data).then((List<Album> nextList) {
       if (nextList.length < pageSize) {
         setState(() {
           hasMore = false;
