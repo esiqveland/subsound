@@ -4,11 +4,15 @@ A subsonic music player.
 
 ## Screenshots
 
-![Screenshot](screenshots/screenshot_161625497.png)
+![Screenshot](screenshots/Screenshot_1618144770.png)
 
-![Screenshot](screenshots/albumview.png)
+![Screenshot](screenshots/Screenshot_1618144779.png)
 
-![Screenshot](screenshots/artistview.png)
+![Screenshot](screenshots/Screenshot_1618144796.png)
+
+![Screenshot](screenshots/Screenshot_1618144844.png)
+
+![Screenshot](screenshots/Screenshot_1618144846.png)
 
 ## Release todo
 
