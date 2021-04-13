@@ -49,6 +49,7 @@ A subsonic music player.
 - [ ] Offline support
   - [X] Play music from cache
   - [X] Browse data without loading live from API only
+  - [ ] deliver artwork to system notification from cache
   - [ ] Sync content for local access in database
   - [ ] Store metadata persistently for offline mode
   - [ ] Selective caching
