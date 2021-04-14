@@ -1,5 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:subsound/screens/browsing/home_page.dart';
 import 'package:subsound/screens/browsing/starred_page.dart';
 import 'package:subsound/screens/login/albums_page.dart';
 import 'package:subsound/screens/login/artists_page.dart';
@@ -22,7 +23,7 @@ class HomeScreen extends StatelessWidget {
     return StoreConnector<AppState, ServerData>(
       converter: (st) => st.state.loginState,
       builder: (context, state) => DefaultTabController(
-        length: 3,
+        length: 4,
         initialIndex: initialTabIndex,
         child: MyScaffold(
           appBar: AppBarSettings(
@@ -39,6 +40,9 @@ class HomeScreen extends StatelessWidget {
                 Tab(
                   text: "Albums",
                 ),
+                Tab(
+                  text: "Home",
+                ),
               ],
             ),
           ),
@@ -48,6 +52,7 @@ class HomeScreen extends StatelessWidget {
                 Center(child: StarredPage()),
                 Center(child: ArtistsPage()),
                 Center(child: AlbumsPage(ctx: state.toClient())),
+                Center(child: HomePage()),
               ],
             ),
           ),
