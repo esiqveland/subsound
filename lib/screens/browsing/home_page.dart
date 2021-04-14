@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
@@ -6,22 +8,75 @@ import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
+import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, StarredViewModel>(
-      converter: (st) => StarredViewModel(
+    return StoreConnector<AppState, _HomePageViewModel>(
+      converter: (st) => _HomePageViewModel(
         currentSongId: st.state.playerState.currentSong?.id ?? '',
         onPlayAlbum: (album) => st.dispatch(PlayerCommandPlayAlbum(album)),
         onPlaySong: (song, queue) => st.dispatch(PlayerCommandContextualPlay(
           songId: song.id,
           playQueue: queue,
         )),
-        onLoadStarred: () => st
-            .dispatchFuture(RefreshStarredCommand())
-            .then((value) => st.state.dataState.stars),
+        onLoadStarred: () async {
+          final load1 = st.dispatchFuture(RefreshStarredCommand());
+          final load2 = st.dispatchFuture(
+              GetAlbumsCommand(type: GetAlbumListType.recent, pageSize: 20));
+
+          await Future.wait([load1, load2]);
+
+          final starred = st.state.dataState.stars;
+
+          final data = [
+            ...starred.albums.entries
+                .map((key) => StarredItem(album: key.value))
+                .toList(),
+            ...starred.songs.entries
+                .map((key) => StarredItem(song: key.value))
+                .toList(),
+          ];
+
+          data.sort((a, b) {
+            if (a.getAlbum() != null) {
+              if (b.getAlbum() != null) {
+                return a
+                        .getAlbum()!
+                        .starredAt!
+                        .compareTo(b.getAlbum()!.starredAt!) *
+                    -1;
+              } else {
+                return a
+                        .getAlbum()!
+                        .starredAt!
+                        .compareTo(b.getSong()!.starredAt!) *
+                    -1;
+              }
+            } else {
+              if (b.getAlbum() != null) {
+                return a
+                        .getSong()!
+                        .starredAt!
+                        .compareTo(b.getAlbum()!.starredAt!) *
+                    -1;
+              } else {
+                return a
+                        .getSong()!
+                        .starredAt!
+                        .compareTo(b.getSong()!.starredAt!) *
+                    -1;
+              }
+            }
+          });
+
+          return HomeData(
+            data,
+            st.state.dataState.albums,
+          );
+        },
       ),
       builder: (context, vm) => _StarredPageStateful(model: vm),
     );
@@ -29,7 +84,7 @@ class HomePage extends StatelessWidget {
 }
 
 class _StarredPageStateful extends StatefulWidget {
-  final StarredViewModel model;
+  final _HomePageViewModel model;
   _StarredPageStateful({Key? key, required this.model}) : super(key: key);
 
   @override
@@ -77,11 +132,14 @@ class StarredSongRow extends StatelessWidget {
       ),
       title: Text(
         song.title,
+        maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: isPlaying ? TextStyle(color: theme.accentColor) : null,
       ),
       subtitle: Text(
         subtitle,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: isPlaying ? TextStyle(color: theme.selectedRowColor) : null,
       ),
     );
@@ -137,13 +195,20 @@ class StarredItem {
   }
 }
 
-class StarredViewModel extends Vm {
+class HomeData {
+  final List<StarredItem> starred;
+  final Albums albums;
+
+  HomeData(this.starred, this.albums);
+}
+
+class _HomePageViewModel extends Vm {
   final String currentSongId;
   final Function(SongResult, List<SongResult>) onPlaySong;
   final Function(AlbumResultSimple) onPlayAlbum;
-  final Future<Starred> Function() onLoadStarred;
+  final Future<HomeData> Function() onLoadStarred;
 
-  StarredViewModel({
+  _HomePageViewModel({
     required this.currentSongId,
     required this.onPlaySong,
     required this.onPlayAlbum,
@@ -152,8 +217,8 @@ class StarredViewModel extends Vm {
 }
 
 class StarredListView extends StatelessWidget {
-  final StarredViewModel model;
-  final List<StarredItem> data;
+  final _HomePageViewModel model;
+  final HomeData data;
 
   const StarredListView({
     Key? key,
@@ -163,26 +228,149 @@ class StarredListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final itemCount = data.length;
+    var starred = data.starred;
+    var albums = data.starred;
+
+    final itemCount = starred.length + 1;
+
     return ListView.builder(
       physics: BouncingScrollPhysics(),
       itemCount: itemCount,
       padding: EdgeInsets.zero,
-      itemBuilder: (context, idx) => StarredRow(
-        item: data[idx],
-        isPlaying: data[idx].isPlaying(model.currentSongId),
-        onPlay: (item) {
-          if (item.getSong() != null) {
-            var queue = data
-                //.sublist(idx)
-                .where((element) => element.getSong() != null)
-                .map((e) => e.getSong()!)
-                .toList();
-            model.onPlaySong(item.getSong()!, queue);
-          } else if (item.getAlbum() != null) {
-            model.onPlayAlbum(item.getAlbum()!);
-          } else {}
-        },
+      itemBuilder: (context, listIndex) {
+        if (listIndex == 0) {
+          return AlbumsScrollView(data: data);
+        } else {
+          final idx = listIndex - 1;
+          return StarredRow(
+            item: starred[idx],
+            isPlaying: starred[idx].isPlaying(model.currentSongId),
+            onPlay: (item) {
+              if (item.getSong() != null) {
+                var queue = starred
+                    //.sublist(idx)
+                    .where((element) => element.getSong() != null)
+                    .map((e) => e.getSong()!)
+                    .toList();
+                model.onPlaySong(item.getSong()!, queue);
+              } else if (item.getAlbum() != null) {
+                model.onPlayAlbum(item.getAlbum()!);
+              } else {}
+            },
+          );
+        }
+      },
+    );
+  }
+}
+
+class AlbumsScrollView extends StatelessWidget {
+  final HomeData data;
+
+  AlbumsScrollView({
+    Key? key,
+    required this.data,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    const albumHeight = 120.0;
+    const albumPaddingTop = 8.0;
+    const albumPaddingLeft = 8.0;
+    const albumPaddingBottom = 8.0;
+    const albumFooterHeight = 30.0;
+    const containerHeight =
+        albumHeight + albumPaddingTop + albumPaddingBottom + albumFooterHeight;
+
+    final totalCount = data.albums.albums.length;
+    final albums =
+        data.albums.albums.values.toList().sublist(0, min(7, totalCount));
+
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: albumPaddingLeft,
+                bottom: albumPaddingBottom,
+              ),
+              child: Text(
+                "Recent albums",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: BouncingScrollPhysics(),
+              child: Row(
+                children: albums
+                    .map((a) => Padding(
+                          padding: const EdgeInsets.only(
+                            left: albumPaddingLeft,
+                            top: albumPaddingTop,
+                            right: 8.0,
+                            bottom: albumPaddingBottom,
+                          ),
+                          child: Column(
+                            children: [
+                              CoverArtImage(
+                                a.coverArtLink,
+                                id: a.coverArtId,
+                                height: albumHeight,
+                                width: albumHeight,
+                              ),
+                              Container(
+                                width: albumHeight,
+                                // color: Colors.black,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: albumPaddingBottom / 2),
+                                    Text(a.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: theme.textTheme.subtitle1),
+                                    SizedBox(height: albumPaddingBottom / 2),
+                                    Text(
+                                      a.artist,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          theme.textTheme.bodyText2!.copyWith(
+                                        color: theme.textTheme.caption!.color,
+                                      ),
+                                    ),
+                                    SizedBox(height: albumPaddingBottom / 2),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ))
+                    .toList(),
+              ),
+            ),
+            // ListView.builder(
+            //   scrollDirection: Axis.horizontal,
+            //   itemCount: albums.length,
+            //   itemBuilder: (context, idx) {
+            //     var a = albums[idx];
+            //
+            //     return Container(
+            //       child: CoverArtImage(
+            //         a.coverArtLink,
+            //         id: a.coverArtLink,
+            //       ),
+            //     );
+            //   },
+            // ),
+          ],
+        ),
       ),
     );
   }
@@ -238,47 +426,13 @@ class StarredRow extends StatelessWidget {
 }
 
 class _StarredPageState extends State<_StarredPageStateful> {
-  late Future<List<StarredItem>> initialLoad;
+  late Future<HomeData> initialLoad;
 
   @override
   void initState() {
     super.initState();
 
-    initialLoad = widget.model.onLoadStarred().then((value) {
-      final data = [
-        ...value.albums.entries
-            .map((key) => StarredItem(album: key.value))
-            .toList(),
-        ...value.songs.entries
-            .map((key) => StarredItem(song: key.value))
-            .toList(),
-      ];
-
-      data.sort((a, b) {
-        if (a.getAlbum() != null) {
-          if (b.getAlbum() != null) {
-            return a
-                    .getAlbum()!
-                    .starredAt!
-                    .compareTo(b.getAlbum()!.starredAt!) *
-                -1;
-          } else {
-            return a.getAlbum()!.starredAt!.compareTo(b.getSong()!.starredAt!) *
-                -1;
-          }
-        } else {
-          if (b.getAlbum() != null) {
-            return a.getSong()!.starredAt!.compareTo(b.getAlbum()!.starredAt!) *
-                -1;
-          } else {
-            return a.getSong()!.starredAt!.compareTo(b.getSong()!.starredAt!) *
-                -1;
-          }
-        }
-      });
-
-      return data;
-    });
+    initialLoad = widget.model.onLoadStarred();
   }
 
   @override
@@ -288,7 +442,7 @@ class _StarredPageState extends State<_StarredPageStateful> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<StarredItem>>(
+    return FutureBuilder<HomeData>(
         future: initialLoad,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
