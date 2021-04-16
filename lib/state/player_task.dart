@@ -21,7 +21,7 @@ MyAudioHandler get audioHandler {
 
 set audioHandler(MyAudioHandler h) {
   if (_audioHandler != null) {
-    throw new ArgumentError.value(
+    throw ArgumentError.value(
         'audioHandler was already set. make sure you only do this once.');
   }
   _audioHandler = h;
@@ -134,7 +134,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
     try {
       await _player.setAudioSource(source);
-    } on PlayerInterruptedException catch (e, st) {
+    } on PlayerInterruptedException catch (_) {
       // ignore interrupts to load()
     } on Exception catch (e, st) {
       Sentry.captureException(
@@ -287,7 +287,7 @@ class PlayQueue {
       final src = await _toAudioSource(mediaItem.mediaItem, mediaItem.meta);
       return src;
     }));
-    final nextSource = new ConcatenatingAudioSource(children: sources);
+    final nextSource = ConcatenatingAudioSource(children: sources);
     audioSource = nextSource;
     if (playNowIdx != -1) {
       await player.setAudioSource(nextSource, initialIndex: playNowIdx);
@@ -318,7 +318,7 @@ class PlayQueue {
 
   Future<void> skipRelative(int offset) async {
     final nextPos = _currentIndex + offset;
-    if (nextPos < 0 && _queue.length > 0 && offset < 0) {
+    if (nextPos < 0 && _queue.isNotEmpty && offset < 0) {
       await player.seek(Duration.zero);
       return;
     }
@@ -354,6 +354,7 @@ class PlayQueue {
   }
 }
 
+// ignore: deprecated_member_use
 class AudioPlayerTask extends BackgroundAudioTask {
   // e.g. just_audio
   final _player = AudioPlayer();
@@ -374,7 +375,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
   /// audio, in response to [AudioService.start]. [params] will contain any
   /// params passed into [AudioService.start] when starting this background
   /// audio task.
-  @override
   Future<void> onStart(Map<String, dynamic>? params) async {
     final _audioSource = ConcatenatingAudioSource(children: []);
 
@@ -384,7 +384,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     );
 
     // Broadcast that we're connecting, and what controls are available.
-    _broadcastState();
+    unawaited(_broadcastState());
 
     // Handle unplugged headphones.
     // session.becomingNoisyEventStream.listen((_) {
@@ -434,6 +434,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
     final item = _playQueue.currentMediaItem;
     if (item != null) {
+      // ignore: deprecated_member_use
       AudioServiceBackground.setMediaItem(item);
     }
 
@@ -461,6 +462,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   /// Broadcasts the current state to all clients.
   Future<void> _broadcastState() async {
+    // ignore: deprecated_member_use
     await AudioServiceBackground.setState(
       controls: getControls(),
       systemActions: getActions(),

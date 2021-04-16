@@ -61,7 +61,7 @@ class StarIdCommand extends RunRequest {
       if (stateBefore != null) {
         dispatch(PlayerCommandSetCurrentPlaying(stateBefore));
       }
-      throw e;
+      rethrow;
     }
     return null;
   }
@@ -109,7 +109,7 @@ class UnstarIdCommand extends RunRequest {
       if (currentSong != null) {
         dispatch(PlayerCommandSetCurrentPlaying(currentSong));
       }
-      throw e;
+      rethrow;
     }
     return null;
   }

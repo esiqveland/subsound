@@ -273,7 +273,7 @@ class TestApp extends StatelessWidget {
               color: Colors.red,
               child: Center(child: Text("This is the body 💪")),
             ),
-            new Positioned(
+            Positioned(
               top: 0.0,
               left: 0.0,
               right: 0.0,

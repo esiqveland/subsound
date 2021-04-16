@@ -231,7 +231,6 @@ class StarredListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var starred = data.starred;
-    var albums = data.starred;
 
     final itemCount = starred.length + 1;
 
@@ -446,7 +445,7 @@ class StarredRow extends StatelessWidget {
         },
       );
     }
-    throw new StateError("unhandled item type");
+    throw StateError("unhandled item type");
   }
 }
 

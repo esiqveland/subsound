@@ -150,7 +150,7 @@ class ServerSetupForm extends StatelessWidget {
 
 class _ServerSetupForm extends StatefulWidget {
   final ServerData initialData;
-  final Function(ServerData) onSave;
+  final Future<void> Function(ServerData) onSave;
 
   const _ServerSetupForm({
     Key? key,
@@ -213,7 +213,7 @@ class _ServerSetupFormState extends State<_ServerSetupForm> {
 
                 setState(() {
                   var old = _dataHolder;
-                  _dataHolder = new ServerData(
+                  _dataHolder = ServerData(
                     uri: value,
                     username: old.username,
                     password: old.password,
@@ -236,7 +236,7 @@ class _ServerSetupFormState extends State<_ServerSetupForm> {
 
                 setState(() {
                   var old = _dataHolder;
-                  _dataHolder = new ServerData(
+                  _dataHolder = ServerData(
                     uri: old.uri,
                     username: value,
                     password: old.password,
@@ -260,7 +260,7 @@ class _ServerSetupFormState extends State<_ServerSetupForm> {
 
                 setState(() {
                   var old = _dataHolder;
-                  _dataHolder = new ServerData(
+                  _dataHolder = ServerData(
                     uri: old.uri,
                     username: old.username,
                     password: value,
@@ -285,12 +285,13 @@ class _ServerSetupFormState extends State<_ServerSetupForm> {
                             });
 
                             var data = _dataHolder;
-                            var ctx = new SubsonicContext(
-                                serverId: '',
-                                name: '',
-                                endpoint: Uri.parse(data.uri),
-                                user: data.username,
-                                pass: data.password);
+                            var ctx = SubsonicContext(
+                              serverId: '',
+                              name: '',
+                              endpoint: Uri.parse(data.uri),
+                              user: data.username,
+                              pass: data.password,
+                            );
                             var pong = await Ping().run(ctx).catchError((err) {
                               log('error: network issue?', error: err);
                               return Future.value(SubsonicResponse(

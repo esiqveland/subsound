@@ -80,7 +80,7 @@ class SetupCheckInternetCommand extends ReduxAction<AppState> {
     dispatch(SetInternetStatusCommand(status.toNetworkStatus()));
 
     // TODO: find a way to cancel stream...
-    var stream = Connectivity().onConnectivityChanged.listen((result) {
+    var _ = Connectivity().onConnectivityChanged.listen((result) {
       dispatch(SetInternetStatusCommand(result.toNetworkStatus()));
     });
     //stream.cancel();

@@ -233,7 +233,7 @@ class StarredRow extends StatelessWidget {
         },
       );
     }
-    throw new StateError("unhandled item type");
+    throw StateError("unhandled item type");
   }
 }
 
