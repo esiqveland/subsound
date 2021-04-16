@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/utils/duration.dart';
@@ -133,8 +134,9 @@ class GetArtist extends BaseRequest<ArtistResult> {
     }).toList()
       ..sort((a, b) => b.year.compareTo(a.year));
 
-    final firstAlbumWithCover =
-        albums.firstWhere((element) => element.coverArtLink != null);
+    final firstAlbumWithCover = albums.firstWhereOrNull(
+      (a) => a.coverArtLink != null,
+    );
 
     final firstAlbumCoverLink = firstAlbumWithCover != null
         ? firstAlbumWithCover.coverArtLink

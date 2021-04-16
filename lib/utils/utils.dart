@@ -59,3 +59,20 @@ String formatFileSize(int size, [int round = 1]) {
     return "${r.toStringAsFixed(round)} PB";
   }
 }
+
+extension IterableExtension<E> on Iterable<E> {
+  E? findFirst(bool Function(E) test) {}
+
+  E? findLast(bool Function(E) test) {}
+
+  E? findSingle(bool Function(E) test) {}
+}
+
+extension<T> on Stream<T> {
+  Future<T?> get firstWhereOrNull async {
+    await for (var e in this) {
+      return e;
+    }
+    return null;
+  }
+}
