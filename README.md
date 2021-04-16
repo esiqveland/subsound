@@ -86,9 +86,9 @@ Non-goals:
          to the system notification so it does not load the artwork over the network
  - [X] link from album back to artist
  - [ ] playlists
-  - [X] playlist api
-  - [ ] playlist listing
-  - [ ] new homescreen with
+   - [X] playlist api
+   - [ ] playlist listing
+   - [ ] new homescreen with
      - [ ] recent albums
      - [ ] recent playlists
      - [ ] starred songs
