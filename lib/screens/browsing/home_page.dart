@@ -302,9 +302,6 @@ class AlbumsScrollView extends StatelessWidget {
 
     const albumHeight = 120.0;
     const albumPaddingTop = 8.0;
-    const albumFooterHeight = 30.0;
-    const containerHeight =
-        albumHeight + albumPaddingTop + homePaddingBottom + albumFooterHeight;
 
     final totalCount = data.albums.albums.length;
     final albums =
