@@ -332,8 +332,13 @@ class AlbumsScrollView extends StatelessWidget {
                             right: 8.0,
                             bottom: homePaddingBottom,
                           ),
-                          child: InkWell(
-                            onTap: () {},
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    AlbumScreen(albumId: a.id),
+                              ));
+                            },
                             child: Column(
                               children: [
                                 CoverArtImage(
