@@ -34,7 +34,7 @@ class PlayerBottomBar extends StatelessWidget {
 }
 
 class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
-  _MiniPlayerModelFactory(widget) : super(widget);
+  _MiniPlayerModelFactory(MiniPlayer widget) : super(widget);
 
   @override
   MiniPlayerModel fromStore() {

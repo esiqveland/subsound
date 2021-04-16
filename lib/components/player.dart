@@ -248,7 +248,7 @@ class PlayerState {
 }
 
 class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
-  _PlayerViewModelFactory(widget) : super(widget);
+  _PlayerViewModelFactory(PlayerView widget) : super(widget);
 
   @override
   PlayerViewModel fromStore() {
@@ -834,7 +834,7 @@ class PlayButton extends StatelessWidget {
     );
   }
 
-  _getIcon(PlayerStates current) {
+  Icon _getIcon(PlayerStates current) {
     if (current == PlayerStates.playing) {
       return Icon(Icons.pause, size: size);
     }
