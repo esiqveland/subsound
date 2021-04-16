@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/state/appcommands.dart';
@@ -115,6 +116,7 @@ class StarredSongRow extends StatelessWidget {
       subtitle = subtitle + "  -  ${song.albumName}";
     }
     return ListTile(
+      contentPadding: EdgeInsets.symmetric(horizontal: homePaddingLeft),
       dense: true,
       onTap: () {
         this.onTapRow(song);
@@ -240,8 +242,10 @@ class StarredListView extends StatelessWidget {
       itemBuilder: (context, listIndex) {
         if (listIndex == 0) {
           return AlbumsScrollView(data: data);
+        } else if (listIndex == 1) {
+          return HomePageTitle("Starred");
         } else {
-          final idx = listIndex - 1;
+          final idx = listIndex - 2;
           return StarredRow(
             item: starred[idx],
             isPlaying: starred[idx].isPlaying(model.currentSongId),
@@ -264,6 +268,27 @@ class StarredListView extends StatelessWidget {
   }
 }
 
+class HomePageTitle extends StatelessWidget {
+  final String text;
+  const HomePageTitle(this.text, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.only(
+          left: homePaddingLeft,
+          bottom: homePaddingBottom,
+        ),
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 24),
+        ));
+  }
+}
+
+const homePaddingLeft = 8.0;
+const homePaddingBottom = 8.0;
+
 class AlbumsScrollView extends StatelessWidget {
   final HomeData data;
 
@@ -278,31 +303,22 @@ class AlbumsScrollView extends StatelessWidget {
 
     const albumHeight = 120.0;
     const albumPaddingTop = 8.0;
-    const albumPaddingLeft = 8.0;
-    const albumPaddingBottom = 8.0;
     const albumFooterHeight = 30.0;
     const containerHeight =
-        albumHeight + albumPaddingTop + albumPaddingBottom + albumFooterHeight;
+        albumHeight + albumPaddingTop + homePaddingBottom + albumFooterHeight;
 
     final totalCount = data.albums.albums.length;
     final albums =
-        data.albums.albums.values.toList().sublist(0, min(7, totalCount));
+        data.albums.albums.values.toList().sublist(0, min(10, totalCount));
 
     return Container(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: albumPaddingLeft,
-                bottom: albumPaddingBottom,
-              ),
-              child: Text(
-                "Recent albums",
-                style: TextStyle(fontSize: 18),
-              ),
+            HomePageTitle(
+              "Recent albums",
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -311,45 +327,49 @@ class AlbumsScrollView extends StatelessWidget {
                 children: albums
                     .map((a) => Padding(
                           padding: const EdgeInsets.only(
-                            left: albumPaddingLeft,
+                            left: homePaddingLeft,
                             top: albumPaddingTop,
                             right: 8.0,
-                            bottom: albumPaddingBottom,
+                            bottom: homePaddingBottom,
                           ),
-                          child: Column(
-                            children: [
-                              CoverArtImage(
-                                a.coverArtLink,
-                                id: a.coverArtId,
-                                height: albumHeight,
-                                width: albumHeight,
-                              ),
-                              Container(
-                                width: albumHeight,
-                                // color: Colors.black,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: albumPaddingBottom / 2),
-                                    Text(a.title,
+                          child: InkWell(
+                            onTap: () {},
+                            child: Column(
+                              children: [
+                                CoverArtImage(
+                                  a.coverArtLink,
+                                  id: a.coverArtId,
+                                  height: albumHeight,
+                                  width: albumHeight,
+                                ),
+                                Container(
+                                  width: albumHeight,
+                                  // color: Colors.black,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: homePaddingBottom / 2),
+                                      Text(a.title,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.subtitle1),
+                                      SizedBox(height: homePaddingBottom / 2),
+                                      Text(
+                                        a.artist,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.subtitle1),
-                                    SizedBox(height: albumPaddingBottom / 2),
-                                    Text(
-                                      a.artist,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style:
-                                          theme.textTheme.bodyText2!.copyWith(
-                                        color: theme.textTheme.caption!.color,
+                                        style:
+                                            theme.textTheme.bodyText2!.copyWith(
+                                          color: theme.textTheme.caption!.color,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: albumPaddingBottom / 2),
-                                  ],
-                                ),
-                              )
-                            ],
+                                      SizedBox(height: homePaddingBottom / 2),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ))
                     .toList(),
