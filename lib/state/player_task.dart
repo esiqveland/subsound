@@ -137,11 +137,11 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     } on PlayerInterruptedException catch (_) {
       // ignore interrupts to load()
     } on Exception catch (e, st) {
-      Sentry.captureException(
+      unawaited(Sentry.captureException(
         e,
         stackTrace: st,
         hint: "error changing audiosource to item=${item.id}",
-      );
+      ));
     }
   }
 
@@ -250,7 +250,7 @@ class PlayQueue {
   Future<void> playItem(MediaItem mediaItem) async {
     final idx = _queue.indexWhere((element) => element.id == mediaItem.id);
     if (idx == -1) {
-      player.pause();
+      unawaited(player.pause());
       _queue.clear();
       _queue.add(mediaItem);
       final length = audioSource.length;

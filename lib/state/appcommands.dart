@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/errors.dart';
@@ -45,7 +46,7 @@ class StarIdCommand extends RunRequest {
         if (song != null) {
           stars = store.state.dataState.stars.addSong(song);
         }
-        store.dispatchFuture(RefreshStarredCommand());
+        unawaited(store.dispatchFuture(RefreshStarredCommand()));
 
         return state.copy(
           playerState: next,
