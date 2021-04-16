@@ -24,7 +24,7 @@ class SubsonicContext {
         client = defaultClient();
 
   static Client defaultClient() {
-    return LoggingClient(new Client());
+    return LoggingClient(Client());
   }
 
   factory SubsonicContext.parse(Map<String, dynamic> row) {

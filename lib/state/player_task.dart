@@ -6,6 +6,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:subsound/state/appstate.dart';
@@ -308,7 +309,7 @@ class PlayQueue {
     }
     _currentIndex = nextIdx;
     if (nextIdx == -1) {
-      player.pause();
+      await player.pause();
     } else {
       final item = _queue[nextIdx];
       await AudioServiceBackground.setMediaItem(item);
@@ -561,6 +562,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       _skipRelative(-1);
     } else {
       await onSeekTo(Duration.zero);
+
       _broadcastState();
     }
   }
@@ -584,14 +586,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onPlay() async {
-    _player.play();
-    _broadcastState();
+    unawaited(_player.play());
+    await _broadcastState();
   }
 
   @override
   Future<void> onPause() async {
-    _player.pause();
-    _broadcastState();
+    await _player.pause();
+    await _broadcastState();
   }
 
   @override
@@ -604,13 +606,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onClick(MediaButton? button) async {
     switch (button) {
       case MediaButton.media:
-        playPause();
+        unawaited(playPause());
         break;
       case MediaButton.next:
-        onSkipToNext();
+        unawaited(onSkipToNext());
         break;
       case MediaButton.previous:
-        onSkipToPrevious();
+        unawaited(onSkipToPrevious());
         break;
       case null:
         break;
@@ -689,7 +691,7 @@ extension SongMeta on MediaItem {
 
   SongMetadata getSongMetadata() {
     if (extras == null) {
-      throw new StateError('invalid mediaItem: $this');
+      throw StateError('invalid mediaItem: $this');
     }
     return SongMetadata(
       songId: extras!["id"],

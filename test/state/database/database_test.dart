@@ -32,6 +32,7 @@ void main() {
   group('Database', () {
     test('creating', () async {
       final db = await openDB();
+      expect(db, isNotNull);
     });
     test('migrations', () {});
     test('adding server', () {});

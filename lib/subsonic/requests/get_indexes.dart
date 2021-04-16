@@ -73,7 +73,7 @@ class GetIndexesRequest extends BaseRequest<GetArtistsData> {
 
     //final indexes = data['subsonic-response']['indexes'] as Map;
 
-    throw new StateError("Not implemented yet.");
+    throw StateError("Not implemented yet.");
 
     // indexes.keys.map((e) => null).toList();
     //

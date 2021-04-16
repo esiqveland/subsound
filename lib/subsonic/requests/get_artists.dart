@@ -65,10 +65,11 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
   Future<SubsonicResponse<GetArtistsData>> run(SubsonicContext ctx) async {
     var uri = ctx.endpoint.resolve("rest/getArtists");
     uri = ctx.applyUriParams(uri);
-    if (musicFolderId != null)
+    if (musicFolderId != null) {
       uri = uri.replace(
           queryParameters: Map.from(uri.queryParameters)
             ..['musicFolderId'] = '$musicFolderId');
+    }
 
     final response = await ctx.client.get(uri, headers: {
       "Accept-Charset": "utf-8",

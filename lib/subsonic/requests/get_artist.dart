@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/utils/duration.dart';
 
@@ -91,12 +92,15 @@ class GetArtist extends BaseRequest<ArtistResult> {
         .get(ctx.buildRequestUri('getArtist', params: {'id': id}));
 
     // navidrome needs this call to load extra artistinfo for next call
-    ctx.client.get(ctx.buildRequestUri('getArtistInfo2', params: {'id': id}));
+    unawaited(ctx.client.get(ctx.buildRequestUri(
+      'getArtistInfo2',
+      params: {'id': id},
+    )));
 
     final data = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (data['subsonic-response']['status'] != 'ok') {
-      throw StateError(data);
+      throw Exception(data);
     }
 
     final artistData = data['subsonic-response']['artist'];

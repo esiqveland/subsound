@@ -44,7 +44,7 @@ class DownloadItem extends BaseRequest<Uint8List> {
         return event;
       } else {
         log('error: event is of type DownloadProgress');
-        throw new StateError('error: event is of type DownloadProgress');
+        throw StateError('error: event is of type DownloadProgress');
       }
     });
   }
