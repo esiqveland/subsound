@@ -392,7 +392,7 @@ class AppState {
 }
 
 class UserState {
-  static initialState() => UserState();
+  static UserState initialState() => UserState();
 }
 
 class ServerData {
@@ -420,9 +420,10 @@ class ServerData {
   bool get isValid =>
       uri.isNotEmpty && username.isNotEmpty && password.isNotEmpty;
 
-  static initialState() => ServerData(uri: '', username: '', password: '');
+  static ServerData initialState() =>
+      ServerData(uri: '', username: '', password: '');
 
-  static fromPrefs(SharedPreferences prefs) {
+  static ServerData fromPrefs(SharedPreferences prefs) {
     return ServerData(
       uri: prefs.getString("uri") ?? "",
       username: prefs.getString("username") ?? "",

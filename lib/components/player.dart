@@ -214,7 +214,7 @@ class PlayerState {
         position: position ?? this.position,
       );
 
-  static initialState() => PlayerState(
+  static PlayerState initialState() => PlayerState(
         current: PlayerStates.stopped,
         currentSong: null,
         duration: Duration.zero,

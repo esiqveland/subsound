@@ -54,7 +54,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
     final data = jsonDecode(utf8.decode(response.bodyBytes));
 
     if (data['subsonic-response']['status'] != 'ok') {
-      throw StateError(data);
+      throw Exception(data);
     }
 
     final starred2Field = data['subsonic-response']['starred2'];

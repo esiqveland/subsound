@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
@@ -63,7 +61,7 @@ class ArtistPage extends StatelessWidget {
 }
 
 class ArtistPageModelFactory extends VmFactory<AppState, ArtistPage> {
-  ArtistPageModelFactory(widget) : super(widget);
+  ArtistPageModelFactory(ArtistPage widget) : super(widget);
   @override
   ArtistPageModel fromStore() {
     return ArtistPageModel(
@@ -314,9 +312,6 @@ class _ArtistPageState extends State<_ArtistPageStateful> {
   }
 
   Future<ArtistResult> load(String artistId) {
-    return widget.vm.onLoad(artistId).then((value) => value!).catchError((err) {
-      log('GetArtist:error:$artistId', error: err);
-      return Future<ArtistResult>.error(err);
-    });
+    return widget.vm.onLoad(artistId).then((value) => value!);
   }
 }

@@ -484,7 +484,7 @@ class StartupPlayer extends ReduxAction<AppState> {
         scope.setTag("action", "playbackStateStream");
       });
       Sentry.captureException(err, stackTrace: stackTrace);
-      dispatch(DisplayError(err));
+      dispatch(DisplayError("$err"));
     });
     currentMediaStream = audioHandler.mediaItem.listen((MediaItem? item) async {
       log("currentMediaItemStream ${item?.toString()}");

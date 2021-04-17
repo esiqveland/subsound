@@ -149,7 +149,10 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       String name, Map<String, dynamic>? arguments) async {
     switch (name) {
       case 'setVolume':
-        _player.setVolume(arguments?['volume']);
+        final vol = arguments?['volume'];
+        if (vol is double) {
+          unawaited(_player.setVolume(vol));
+        }
         break;
       case 'saveBookmark':
         // app-specific code

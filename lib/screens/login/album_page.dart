@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
@@ -13,7 +11,7 @@ import 'package:subsound/subsonic/requests/get_album.dart';
 import 'myscaffold.dart';
 
 class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
-  _AlbumViewModelFactory(widget) : super(widget);
+  _AlbumViewModelFactory(AlbumScreen widget) : super(widget);
 
   @override
   AlbumViewModel fromStore() {
@@ -335,9 +333,6 @@ class AlbumPageState extends State<AlbumPage> {
   }
 
   Future<AlbumResult> load(String albumId) {
-    return widget.loadAlbum(albumId).then((value) => value!).catchError((err) {
-      log('GetAlbum:error:$albumId', error: err);
-      return Future<AlbumResult>.error(err);
-    });
+    return widget.loadAlbum(albumId).then((value) => value!);
   }
 }
