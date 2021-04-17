@@ -33,11 +33,11 @@ class GetAlbumList2 extends BaseRequest<List<Album>> {
       },
     ));
 
-    final data =
-        jsonDecode(utf8.decode(response.bodyBytes))['subsonic-response'];
-
+    final json =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final data = json['subsonic-response'];
     if (data['status'] != 'ok') {
-      throw StateError(data);
+      throw Exception(data);
     }
 
     var albumListData = data['albumList2']['album'];

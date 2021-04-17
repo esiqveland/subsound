@@ -59,8 +59,9 @@ class StarItem extends BaseRequest<StarResponse> {
       throw StateError("${response.statusCode}: " + response.body);
     }
 
-    final data =
-        jsonDecode(utf8.decode(response.bodyBytes))['subsonic-response'];
+    final json =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final data = json['subsonic-response'];
 
     if (data['status'] != 'ok') {
       throw StateError("${response.statusCode}: " + response.body);
@@ -90,8 +91,9 @@ class UnstarItem extends BaseRequest<UnstarResponse> {
       throw StateError("${response.statusCode}: " + response.body);
     }
 
-    final data =
-        jsonDecode(utf8.decode(response.bodyBytes))['subsonic-response'];
+    final json =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final data = json['subsonic-response'];
 
     if (data['status'] != 'ok') {
       throw StateError("${response.statusCode}: " + response.body);

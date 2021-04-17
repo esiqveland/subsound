@@ -51,7 +51,8 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
   Future<SubsonicResponse<GetStarred2Result>> run(SubsonicContext ctx) async {
     final response = await ctx.client.get(ctx.buildRequestUri('getStarred2'));
 
-    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
     if (data['subsonic-response']['status'] != 'ok') {
       throw Exception(data);

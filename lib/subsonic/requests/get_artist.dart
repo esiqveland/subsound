@@ -98,7 +98,8 @@ class GetArtist extends BaseRequest<ArtistResult> {
       params: {'id': id},
     )));
 
-    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
     if (data['subsonic-response']['status'] != 'ok') {
       throw Exception(data);

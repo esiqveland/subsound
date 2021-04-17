@@ -76,7 +76,8 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
       "Accept": "application/json; charset=utf-8;",
     });
 
-    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
     final status = data['subsonic-response']['status'];
     if (status == 'failed') {

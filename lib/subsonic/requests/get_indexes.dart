@@ -64,7 +64,8 @@ class GetIndexesRequest extends BaseRequest<GetArtistsData> {
     }
     final response = await ctx.client.get(uri);
 
-    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
     final status = data['subsonic-response']['status'];
     if (status == 'failed') {

@@ -44,9 +44,12 @@ class GetAlbumList extends BaseRequest<List<Album>> {
       },
     ));
 
-    final data = jsonDecode(response.body)['subsonic-response'];
-
-    if (data['status'] != 'ok') throw StateError(data);
+    final json =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final data = json['subsonic-response'];
+    if (data['status'] != 'ok') {
+      throw Exception(data);
+    }
 
     return SubsonicResponse(
       ResponseStatus.ok,

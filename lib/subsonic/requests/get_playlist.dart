@@ -55,10 +55,11 @@ class GetPlaylist extends BaseRequest<GetPlaylistResult> {
       },
     ));
 
-    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
     if (data['subsonic-response']['status'] != 'ok') {
-      throw StateError(data);
+      throw Exception(data);
     }
 
     final p = data['subsonic-response']['playlist'] ?? {};

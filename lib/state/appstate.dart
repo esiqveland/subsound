@@ -67,7 +67,7 @@ class StartupAction extends ReduxAction<AppState> {
   @override
   Future<AppState> reduce() async {
     await store.dispatchFuture(RestoreServerState());
-    store.dispatchFuture(RefreshAppState());
+    store.dispatch(RefreshAppState());
     await store.dispatchFuture(StartupPlayer());
     await Future.delayed(Duration(seconds: 1));
     return state.copy(startUpState: StartUpState.done);

@@ -126,10 +126,11 @@ class GetSongRequest extends BaseRequest<SongResult> {
     final response = await ctx.client
         .get(ctx.buildRequestUri('getSong', params: {'id': this.id}));
 
-    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
     if (data['subsonic-response']['status'] != 'ok') {
-      throw StateError(data);
+      throw Exception(data);
     }
 
     final songData = data['subsonic-response']['song'];
@@ -189,10 +190,11 @@ class GetAlbum extends BaseRequest<AlbumResult> {
     final response = await ctx.client
         .get(ctx.buildRequestUri('getAlbum', params: {'id': id}));
 
-    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
     if (data['subsonic-response']['status'] != 'ok') {
-      throw StateError(data);
+      throw Exception(data);
     }
 
     final albumDataNew = data['subsonic-response']['album'];

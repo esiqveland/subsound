@@ -45,10 +45,11 @@ class GetPlaylists extends BaseRequest<GetPlaylistsResult> {
   Future<SubsonicResponse<GetPlaylistsResult>> run(SubsonicContext ctx) async {
     final response = await ctx.client.get(ctx.buildRequestUri('getPlaylists'));
 
-    final data = jsonDecode(utf8.decode(response.bodyBytes));
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
     if (data['subsonic-response']['status'] != 'ok') {
-      throw StateError(data);
+      throw Exception(data);
     }
 
     final rawData =

@@ -29,10 +29,13 @@ class GetRandomSongs extends BaseRequest<List<Song>> {
       },
     ));
 
-    final data =
-        jsonDecode(utf8.decode(response.bodyBytes))['subsonic-response'];
+    final json =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final data = json['subsonic-response'];
 
-    if (data['status'] != 'ok') throw StateError(data);
+    if (data['status'] != 'ok') {
+      throw Exception(data);
+    }
 
     return SubsonicResponse(
       ResponseStatus.ok,
