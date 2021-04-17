@@ -182,7 +182,7 @@ class ArtistView extends StatelessWidget {
             stretch: true,
             centerTitle: false,
             snap: false,
-            floating: true,
+            floating: false,
             pinned: true,
             primary: true,
             flexibleSpace: FlexibleSpaceBar(
