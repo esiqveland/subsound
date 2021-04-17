@@ -167,7 +167,8 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         Sentry.configureScope((scope) {
           scope.setExtra("handled", true);
         });
-        Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+        unawaited(Sentry.captureException(e,
+            stackTrace: st, hint: {"handled": "true"}));
         playbackState.add(playbackState.value!.copyWith(
           processingState: AudioProcessingState.error,
           errorMessage: e.code,
@@ -179,7 +180,8 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         Sentry.configureScope((scope) {
           scope.setExtra("handled", true);
         });
-        Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+        unawaited(Sentry.captureException(e,
+            stackTrace: st, hint: {"handled": "true"}));
         playbackState.add(playbackState.value!.copyWith(
           processingState: AudioProcessingState.error,
           errorMessage: e.code,
@@ -191,7 +193,8 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         Sentry.configureScope((scope) {
           scope.setExtra("handled", true);
         });
-        Sentry.captureException(e, stackTrace: st, hint: {"handled": "true"});
+        unawaited(Sentry.captureException(e,
+            stackTrace: st, hint: {"handled": "true"}));
         playbackState.add(playbackState.value!.copyWith(
           processingState: AudioProcessingState.error,
           errorCode: e.code,
@@ -202,7 +205,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       Sentry.configureScope((scope) {
         scope.setExtra("handled", false);
       });
-      Sentry.captureException(e, stackTrace: st);
+      unawaited(Sentry.captureException(e, stackTrace: st));
     } finally {
       // try stopping the player after a crash, so it hopefully can start
       // playing again when we set a new audiosource next time.
@@ -360,7 +363,7 @@ class PlayQueue {
     _skipState = null;
 
     if (wasPlaying) {
-      player.play();
+      unawaited(player.play());
     }
   }
 }
@@ -446,12 +449,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
     final item = _playQueue.currentMediaItem;
     if (item != null) {
       // ignore: deprecated_member_use
-      AudioServiceBackground.setMediaItem(item);
+      unawaited(AudioServiceBackground.setMediaItem(item));
     }
 
-    _player.setAudioSource(_audioSource, preload: false);
+    unawaited(_player.setAudioSource(_audioSource, preload: false));
 
-    _broadcastState();
+    unawaited(_broadcastState());
   }
 
   List<MediaAction> getActions() {
@@ -644,10 +647,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onStop() async {
     log('Task: onStop called');
     // Stop and dispose of the player.
-    _eventSubscription?.cancel();
-    _streamSubscription?.cancel();
-    _stateSubscription?.cancel();
-    _idxSubscription?.cancel();
+    unawaited(_eventSubscription?.cancel());
+    unawaited(_streamSubscription?.cancel());
+    unawaited(_stateSubscription?.cancel());
+    unawaited(_idxSubscription?.cancel());
     await _player.stop();
     await _player.dispose();
     // Shut down the background task.
