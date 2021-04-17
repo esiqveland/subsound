@@ -29,11 +29,11 @@ class SubsonicContext {
 
   factory SubsonicContext.parse(Map<String, dynamic> row) {
     return SubsonicContext(
-      serverId: row['id'],
-      name: row['name'],
-      endpoint: Uri.parse(row['uri']),
-      user: row['user'],
-      pass: row['pass'],
+      serverId: row['id'] as String,
+      name: row['name'] as String,
+      endpoint: Uri.parse(row['uri'] as String),
+      user: row['user'] as String,
+      pass: row['pass'] as String,
     );
   }
 
@@ -106,7 +106,7 @@ class LoggingClient extends BaseClient {
       final elapsed = DateTime.now().difference(start);
       log('http:client:${start.millisecondsSinceEpoch}:${req.method}:${req.url.toString()}: ${res.statusCode} ${res.reasonPhrase} took ${elapsed.inMilliseconds}ms');
       return res;
-    }).catchError((err) {
+    }).catchError((Object err) {
       final elapsed = DateTime.now().difference(start);
       log('http:client:${start.millisecondsSinceEpoch}:${req.method}:${req.url.toString()}: ERROR took ${elapsed.inMilliseconds}ms',
           error: err);

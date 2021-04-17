@@ -42,7 +42,7 @@ class GetRandomSongs extends BaseRequest<List<Song>> {
       ctx.version,
       (data['randomSongs']['song'] as List)
           .map(
-            (song) => Song.parse(song),
+            (song) => Song.parse(song as Map<String, dynamic>),
           )
           .toList(),
     );

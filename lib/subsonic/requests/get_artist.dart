@@ -108,29 +108,29 @@ class GetArtist extends BaseRequest<ArtistResult> {
     final artistData = data['subsonic-response']['artist'];
 
     final albums = (artistData['album'] as List).map((album) {
-      final coverArtId = album['coverArt'];
+      final coverArtId = album['coverArt'] as String?;
       final coverArtLink = coverArtId != null
           ? GetCoverArt(coverArtId).getImageUrl(ctx)
-          : artistData['artistImageUrl'] ?? FallbackImageUrl;
+          : artistData['artistImageUrl'] as String? ?? FallbackImageUrl;
 
       final duration = getDuration(album['duration']);
 
       return AlbumResultSimple(
-        album['id'],
-        album['parent'],
-        album['title'],
-        album['name'],
-        album['artist'],
-        album['artistId'],
+        album['id'] as String,
+        album['parent'] as String,
+        album['title'] as String,
+        album['name'] as String,
+        album['artist'] as String,
+        album['artistId'] as String,
         coverArtId,
         coverArtLink,
-        album['year'] ?? 0,
+        album['year'] as int? ?? 0,
         duration,
-        album['songCount'] ?? 0,
-        album['playCount'] ?? 0,
-        album['isVideo'] ?? false,
-        DateTime.parse(album['created']),
-        parseDateTime(album['starred']),
+        album['songCount'] as int? ?? 0,
+        album['playCount'] as int? ?? 0,
+        album['isVideo'] as bool? ?? false,
+        DateTime.parse(album['created'] as String),
+        parseDateTime(album['starred'] as String?),
       );
     }).toList()
       ..sort((a, b) => b.year.compareTo(a.year));
@@ -143,24 +143,25 @@ class GetArtist extends BaseRequest<ArtistResult> {
         ? firstAlbumWithCover.coverArtLink
         : FallbackImageUrl;
 
-    final name = artistData['name'];
-    final coverArtLink = artistData['artistImageUrl'] ?? firstAlbumCoverLink;
+    final name = artistData['name'] as String;
+    final coverArtLink =
+        artistData['artistImageUrl'] as String? ?? firstAlbumCoverLink ?? '';
 
     // log('firstAlbumCoverLink=$firstAlbumCoverLink');
     //log('id=$id $name coverArtLink=$coverArtLink');
 
     final artistResult = ArtistResult(
-      artistData['id'],
+      artistData['id'] as String,
       name,
       coverArtLink,
       coverArtLink,
-      artistData['albumCount'],
+      artistData['albumCount'] as int? ?? 0,
       albums,
     );
 
     return SubsonicResponse(
       ResponseStatus.ok,
-      data['subsonic-response']['version'],
+      data['subsonic-response']['version'] as String,
       artistResult,
     );
   }

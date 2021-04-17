@@ -85,18 +85,19 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
     }
 
     final artists = data['subsonic-response']['artists'] ?? {};
-    final String? ignoredArticles = artists['ignoredArticles'];
-    final List<dynamic> artistIndex = artists['index'] ?? [];
+    final String? ignoredArticles = artists['ignoredArticles'] as String?;
+    final List<dynamic> artistIndex = artists['index'] as List<dynamic>? ?? [];
 
     final out = GetArtistsData(
       ignoredArticles ?? '',
       artistIndex.map((entry) {
         return ArtistIndexEntry(
-          entry['name'] ?? '',
-          (entry['artist'] as List)
+          entry['name'] as String? ?? '',
+          (entry['artist'] as List<dynamic>)
               .map((artist) {
-                String artistImageUrl = artist["artistImageUrl"] ?? '';
-                final String coverArt = artist['coverArt'] ?? '';
+                String artistImageUrl =
+                    artist["artistImageUrl"] as String? ?? '';
+                final String coverArt = artist['coverArt'] as String? ?? '';
                 final coverArtLink = artistImageUrl.isNotEmpty
                     ? artistImageUrl
                     : coverArt.isNotEmpty
@@ -105,14 +106,14 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
 
                 final String coverArtId =
                     coverArt.isNotEmpty ? coverArt : coverArtLink;
-                final String artistName = artist['name'] ?? '';
+                final String artistName = artist['name'] as String? ?? '';
 
                 return Artist(
-                  id: artist['id'],
+                  id: artist['id'] as String,
                   name: artistName,
                   coverArtId: coverArtId,
                   coverArtLink: coverArtLink,
-                  albumCount: artist['albumCount'] ?? 0,
+                  albumCount: artist['albumCount'] as int? ?? 0,
                 );
               })
               .map((element) => element)
@@ -122,6 +123,9 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
     );
 
     return SubsonicResponse(
-        ResponseStatus.ok, data['subsonic-response']['version'], out);
+      ResponseStatus.ok,
+      data['subsonic-response']['version'] as String,
+      out,
+    );
   }
 }

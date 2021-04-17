@@ -75,7 +75,7 @@ class Search3 extends BaseRequest<Search3Result> {
       ctx.version,
       Search3Result(
         (data['searchResult3']['song'] as List)
-            .map((song) => Song.parse(song))
+            .map((song) => Song.parse(song as Map<String, dynamic>))
             .toList(),
       ),
     );

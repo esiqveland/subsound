@@ -133,45 +133,45 @@ class GetSongRequest extends BaseRequest<SongResult> {
       throw Exception(data);
     }
 
-    final songData = data['subsonic-response']['song'];
-    final songArtId = songData['coverArt'] ?? FallbackImageUrl;
-    final coverArtLink = (songArtId != null)
+    final songData = data['subsonic-response']['song'] as Map<String, dynamic>;
+    final songArtId = songData['coverArt'] as String? ?? '';
+    final coverArtLink = songArtId.isNotEmpty
         ? GetCoverArt(songArtId).getImageUrl(ctx)
         : FallbackImageUrl;
 
     final duration = getDuration(songData['duration']);
 
-    final id = songData['id'];
+    final id = songData['id'] as String;
     final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
     final songResult = SongResult(
       id: id,
       playUrl: playUrl,
-      parent: songData['parent'],
-      title: songData['title'],
-      artistName: songData['artist'],
-      artistId: songData['artistId'],
-      albumName: songData['album'],
-      albumId: songData['albumId'],
+      parent: songData['parent'] as String,
+      title: songData['title'] as String,
+      artistName: songData['artist'] as String,
+      artistId: songData['artistId'] as String,
+      albumName: songData['album'] as String,
+      albumId: songData['albumId'] as String,
       coverArtId: songArtId,
       coverArtLink: coverArtLink,
-      year: songData['year'] ?? 0,
+      year: songData['year'] as int? ?? 0,
       duration: duration,
-      isVideo: songData['isVideo'] ?? false,
-      createdAt: DateTime.parse(songData['created']),
-      type: songData['type'],
-      bitRate: songData['bitRate'] ?? 0,
-      trackNumber: songData['track'] ?? 0,
-      fileSize: songData['size'] ?? 0,
+      isVideo: songData['isVideo'] as bool? ?? false,
+      createdAt: DateTime.parse(songData['created'] as String),
+      type: songData['type'] as String,
+      bitRate: songData['bitRate'] as int? ?? 0,
+      trackNumber: songData['track'] as int? ?? 0,
+      fileSize: songData['size'] as int? ?? 0,
       starred: parseStarred(songData['starred']),
-      starredAt: parseDateTime(songData['starred']),
-      contentType: songData['contentType'] ?? '',
-      suffix: songData['suffix'] ?? '',
+      starredAt: parseDateTime(songData['starred'] as String?),
+      contentType: songData['contentType'] as String? ?? '',
+      suffix: songData['suffix'] as String? ?? '',
     );
 
     return SubsonicResponse(
       ResponseStatus.ok,
-      data['subsonic-response']['version'],
+      data['subsonic-response']['version'] as String,
       songResult,
     );
   }
@@ -198,10 +198,10 @@ class GetAlbum extends BaseRequest<AlbumResult> {
     }
 
     final albumDataNew = data['subsonic-response']['album'];
-    final String? coverArtId = albumDataNew['coverArt'];
+    final String? coverArtId = albumDataNew['coverArt'] as String?;
 
     final songs = (albumDataNew['song'] as List).map((songData) {
-      final String? songArtId = songData['coverArt'] ?? coverArtId;
+      final String? songArtId = songData['coverArt'] as String? ?? coverArtId;
       final coverArtLink = (songArtId != null && coverArtId != songArtId)
           ? GetCoverArt(songArtId).getImageUrl(ctx)
           : coverArtId != null
@@ -210,32 +210,32 @@ class GetAlbum extends BaseRequest<AlbumResult> {
 
       final duration = getDuration(songData['duration']);
 
-      final id = songData['id'];
+      final id = songData['id'] as String;
       final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
       return SongResult(
         id: id,
         playUrl: playUrl,
-        parent: songData['parent'],
-        title: songData['title'],
-        artistName: songData['artist'],
-        artistId: songData['artistId'],
-        albumName: songData['album'],
-        albumId: songData['albumId'],
+        parent: songData['parent'] as String,
+        title: songData['title'] as String,
+        artistName: songData['artist'] as String,
+        artistId: songData['artistId'] as String,
+        albumName: songData['album'] as String,
+        albumId: songData['albumId'] as String,
         coverArtId: songArtId ?? id,
         coverArtLink: coverArtLink,
-        year: songData['year'] ?? 0,
+        year: songData['year'] as int? ?? 0,
         duration: duration,
-        isVideo: songData['isVideo'] ?? false,
-        createdAt: DateTime.parse(songData['created']),
-        type: songData['type'],
-        bitRate: songData['bitRate'] ?? 0,
-        trackNumber: songData['track'] ?? 0,
-        fileSize: songData['size'] ?? 0,
-        starred: parseStarred(songData['starred']),
-        starredAt: parseDateTime(songData['starred']),
-        contentType: songData['contentType'] ?? '',
-        suffix: songData['suffix'] ?? '',
+        isVideo: songData['isVideo'] as bool? ?? false,
+        createdAt: DateTime.parse(songData['created'] as String),
+        type: songData['type'] as String,
+        bitRate: songData['bitRate'] as int? ?? 0,
+        trackNumber: songData['track'] as int? ?? 0,
+        fileSize: songData['size'] as int? ?? 0,
+        starred: parseStarred(songData['starred'] as String?),
+        starredAt: parseDateTime(songData['starred'] as String?),
+        contentType: songData['contentType'] as String? ?? '',
+        suffix: songData['suffix'] as String? ?? '',
       );
     }).toList();
 
@@ -247,25 +247,25 @@ class GetAlbum extends BaseRequest<AlbumResult> {
 
     final duration = getDuration(albumDataNew['duration']);
 
-    final albumId = albumDataNew['id'];
+    final albumId = albumDataNew['id'] as String;
 
     final albumResult = AlbumResult(
       id: albumId,
-      name: albumDataNew['name'],
-      artistName: albumDataNew['artist'],
-      artistId: albumDataNew['artistId'],
+      name: albumDataNew['name'] as String,
+      artistName: albumDataNew['artist'] as String,
+      artistId: albumDataNew['artistId'] as String,
       coverArtId: coverArtId ?? albumId,
       coverArtLink: coverArtLink,
-      year: albumDataNew['year'] ?? 0,
+      year: albumDataNew['year'] as int? ?? 0,
       duration: duration,
-      songCount: albumDataNew['songCount'] ?? 0,
-      createdAt: DateTime.parse(albumDataNew['created']),
+      songCount: albumDataNew['songCount'] as int? ?? 0,
+      createdAt: DateTime.parse(albumDataNew['created'] as String),
       songs: songs,
     );
 
     return SubsonicResponse(
       ResponseStatus.ok,
-      data['subsonic-response']['version'],
+      data['subsonic-response']['version'] as String,
       albumResult,
     );
   }

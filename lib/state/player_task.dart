@@ -699,12 +699,12 @@ extension SongMeta on MediaItem {
       throw StateError('invalid mediaItem: $this');
     }
     return SongMetadata(
-      songId: extras!["id"],
-      songUrl: extras!["songUrl"],
-      fileExtension: extras!["extension"],
-      fileSize: extras!["size"],
-      contentType: extras!["type"],
-      playNow: extras!["playNow"] ?? false,
+      songId: extras!["id"] as String,
+      songUrl: extras!["songUrl"] as String,
+      fileExtension: extras!["extension"] as String,
+      fileSize: extras!["size"] as int,
+      contentType: extras!["type"] as String,
+      playNow: extras!["playNow"] as bool? ?? false,
     );
   }
 }

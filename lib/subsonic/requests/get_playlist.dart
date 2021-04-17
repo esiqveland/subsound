@@ -64,15 +64,15 @@ class GetPlaylist extends BaseRequest<GetPlaylistResult> {
 
     final p = data['subsonic-response']['playlist'] ?? {};
     final playlist = PlaylistResult(
-      id: p['id'],
-      name: p['name'] ?? '',
-      comment: p['comment'] ?? '',
-      songCount: p['songCount'] ?? 0,
-      duration: Duration(seconds: p['duration'] ?? 0),
-      isPublic: p['public'] ?? false,
-      owner: p['owner'] ?? '',
-      changedAt: parseDateTime(p['changed'])!,
-      createdAt: parseDateTime(p['created'])!,
+      id: p['id'] as String,
+      name: p['name'] as String? ?? '',
+      comment: p['comment'] as String? ?? '',
+      songCount: p['songCount'] as int? ?? 0,
+      duration: Duration(seconds: p['duration'] as int? ?? 0),
+      isPublic: p['public'] as bool? ?? false,
+      owner: p['owner'] as String? ?? '',
+      changedAt: parseDateTime(p['changed'] as String?) ?? DateTime.now(),
+      createdAt: parseDateTime(p['created'] as String?) ?? DateTime.now(),
     );
 
     final rawData =
@@ -85,7 +85,7 @@ class GetPlaylist extends BaseRequest<GetPlaylistResult> {
 
     return SubsonicResponse(
       ResponseStatus.ok,
-      data['subsonic-response']['version'],
+      data['subsonic-response']['version'] as String,
       res,
     );
   }

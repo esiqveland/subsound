@@ -55,7 +55,7 @@ class GetAlbumList extends BaseRequest<List<Album>> {
       ResponseStatus.ok,
       ctx.version,
       (data['albumList']['album'] as List)
-          .map((album) => Album.parse(ctx, album))
+          .map((album) => Album.parse(ctx, album as Map<String, dynamic>))
           .toList(),
     );
   }

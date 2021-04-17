@@ -21,16 +21,16 @@ class Album {
   });
 
   factory Album.parse(SubsonicContext ctx, Map<String, dynamic> data) {
-    final String? coverArtId = data['coverArt'];
+    final coverArtId = data['coverArt'] as String?;
     final coverArtLink =
         coverArtId != null ? GetCoverArt(coverArtId).getImageUrl(ctx) : '';
 
     return Album(
-      id: data['id'],
-      parent: data['parent'],
-      title: data['title'],
-      artist: data['artist'],
-      isDir: data['isDir'],
+      id: data['id'] as String,
+      parent: data['parent'] as String,
+      title: data['title'] as String,
+      artist: data['artist'] as String,
+      isDir: data['isDir'] as bool? ?? false,
       coverArtId: coverArtId ?? '',
       coverArtLink: coverArtLink,
     );
