@@ -106,7 +106,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
       final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
       return SongResult(
-        id: id as String,
+        id: id,
         playUrl: playUrl,
         parent: songData['parent'] as String,
         title: songData['title'] as String,

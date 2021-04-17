@@ -564,7 +564,7 @@ class StartupPlayer extends ReduxAction<AppState> {
     //   //params: DownloadAudioTask.createStartParams(),
     // );
     //log('StartupPlayer: success=$success');
-    connectListeners();
+    await connectListeners();
     return state.copy();
   }
 }

@@ -237,9 +237,11 @@ class PlayQueue {
     } else {
       _currentIndex = idx;
       var item = _queue[_currentIndex];
-      AudioServiceBackground.setMediaItem(item);
+
+      // ignore: deprecated_member_use
+      unawaited(AudioServiceBackground.setMediaItem(item));
       await player.seek(Duration.zero, index: _currentIndex);
-      player.play();
+      unawaited(player.play());
     }
   }
 
@@ -247,6 +249,7 @@ class PlayQueue {
     _queue.add(mediaItem);
     final src = await _toSource(mediaItem);
     await audioSource.add(src);
+    // ignore: deprecated_member_use
     await AudioServiceBackground.setQueue(_queue);
   }
 
@@ -264,19 +267,20 @@ class PlayQueue {
         await audioSource.removeRange(0, length);
       }
 
-      AudioServiceBackground.setQueue(_queue);
+      // ignore: deprecated_member_use
+      unawaited(AudioServiceBackground.setQueue(_queue));
       _currentIndex = 0;
     } else {
-      var item = _queue[idx];
       _currentIndex = idx;
     }
-    AudioServiceBackground.setMediaItem(mediaItem);
+    // ignore: deprecated_member_use
+    unawaited(AudioServiceBackground.setMediaItem(mediaItem));
     await player.seek(Duration.zero, index: _currentIndex);
-    player.play();
+    unawaited(player.play());
   }
 
   Future<void> replaceWith(List<MediaItem> replaceQueue) async {
-    player.pause();
+    await player.pause();
     _queue.clear();
     _queue.addAll(replaceQueue);
 
@@ -295,12 +299,14 @@ class PlayQueue {
     if (playNowIdx != -1) {
       await player.setAudioSource(nextSource, initialIndex: playNowIdx);
       await player.seek(Duration.zero, index: playNowIdx);
-      AudioServiceBackground.setMediaItem(_queue[playNowIdx]);
-      player.play();
+      // ignore: deprecated_member_use
+      unawaited(AudioServiceBackground.setMediaItem(_queue[playNowIdx]));
+      unawaited(player.play());
     } else {
       await player.setAudioSource(nextSource);
     }
-    AudioServiceBackground.setQueue(_queue);
+    // ignore: deprecated_member_use
+    unawaited(AudioServiceBackground.setQueue(_queue));
   }
 
   Future<void> setCurrentIndex(int nextIdx) async {
@@ -315,6 +321,7 @@ class PlayQueue {
       await player.pause();
     } else {
       final item = _queue[nextIdx];
+      // ignore: deprecated_member_use
       await AudioServiceBackground.setMediaItem(item);
     }
   }
@@ -346,7 +353,8 @@ class PlayQueue {
     //     : AudioProcessingState.skippingToPrevious;
 
     _currentIndex = nextPos;
-    AudioServiceBackground.setMediaItem(_queue[nextPos]);
+    // ignore: deprecated_member_use
+    await AudioServiceBackground.setMediaItem(_queue[nextPos]);
 
     await player.seek(Duration.zero, index: nextPos);
     _skipState = null;
