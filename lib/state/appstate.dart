@@ -13,6 +13,7 @@ import 'package:subsound/subsonic/models/album.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_artists.dart';
+import 'package:subsound/subsonic/requests/get_playlist.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/utils/utils.dart';
 import 'package:uuid/uuid.dart';
@@ -224,6 +225,26 @@ class Albums {
 
   AlbumResult? get(String albumId) {
     return this.albumResults[albumId];
+  }
+}
+
+class Playlists {
+  final Map<String, PlaylistResult> data;
+
+  Playlists(this.data);
+
+  Playlists add(PlaylistResult p) {
+    var m = Map.of(data);
+    m[p.id] = p;
+    return Playlists(m);
+  }
+
+  Playlists addAll(List<PlaylistResult> list) {
+    var m = Map.of(data);
+    list.forEach((p) {
+      m[p.id] = p;
+    });
+    return Playlists(m);
   }
 }
 
