@@ -77,7 +77,6 @@ Non-goals:
    - [X] a play queue
    - [ ] view queue
    - [ ] edit queue?
- - [ ] Start up the background play task after a crash (or in general it is not running anymore)
  - [X] cache artwork
  - [X] download files
  - [\] cache files
