@@ -59,7 +59,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
           ProcessingState.buffering: AudioProcessingState.buffering,
           ProcessingState.ready: AudioProcessingState.ready,
           ProcessingState.completed: AudioProcessingState.completed,
-        }[_player.processingState],
+        }[_player.processingState]!,
         playing: _player.playing,
         updatePosition: _player.position,
         bufferedPosition: _player.bufferedPosition,
@@ -127,10 +127,13 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   @override
   Future<void> skipToQueueItem(int index) async {
-    final q = queue.value!;
-    var item = q[index];
+    final q = queue.value ?? [];
+    if (index < 0 || index >= q.length) return;
     await super.skipToQueueItem(index);
+    var item = q[index];
     final source = await _toSource(item);
+    playbackState.add(playbackState.value!.copyWith(queueIndex: index));
+    mediaItem.add(queue.value![index]);
 
     try {
       await _player.setAudioSource(source);
