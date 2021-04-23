@@ -63,7 +63,7 @@ class PlayerPositionChanged extends PlayerActions {
 class PlayerCommandPlay extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
-    audioHandler.play();
+    unawaited(audioHandler.play());
 
     final current = audioHandler.mediaItem.valueWrapper?.value;
     if (current == null) {
@@ -81,7 +81,7 @@ class PlayerCommandPlay extends PlayerActions {
 class PlayerCommandSkipNext extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
-    audioHandler.skipToNext();
+    await audioHandler.skipToNext();
     return null;
   }
 }
@@ -89,18 +89,23 @@ class PlayerCommandSkipNext extends PlayerActions {
 class PlayerCommandSkipPrev extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
-    audioHandler.skipToPrevious();
+    await audioHandler.skipToPrevious();
     return null;
   }
 }
 
 class PlayerCommandPause extends PlayerActions {
   @override
-  Future<AppState> reduce() async {
-    audioHandler.pause();
-    return state.copy(
-      playerState: state.playerState.copy(current: PlayerStates.paused),
-    );
+  Future<AppState?> reduce() async {
+    // optimistic UI update
+    dispatch(PlayerStateChanged(PlayerStates.paused));
+    try {
+      await audioHandler.pause();
+    } on Exception {
+      dispatch(PlayerStateChanged(PlayerStates.stopped));
+      rethrow;
+    }
+    return null;
   }
 }
 
@@ -387,7 +392,7 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
     await audioHandler.updateQueue(mediaQueue);
     await audioHandler.skipToQueueItem(selectedIdx);
     //audioHandler.playFromMediaId(selected.songUrl);
-    audioHandler.play();
+    unawaited(audioHandler.play());
 
     return null;
   }
