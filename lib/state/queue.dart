@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:subsound/components/player.dart';
 
 enum QueuePriority {
@@ -15,8 +16,16 @@ class Queue {
 
   Queue add(QueueItem item) => addAll([item]);
 
-  Queue replaceWith(List<QueueItem> items) => Queue(
-      List.of(items)..sort((a, b) => b.priority.index - a.priority.index));
+  Queue replaceWith(List<QueueItem> items) {
+    List<QueueItem> q = List.of(items);
+    // mergeSort is stable
+    mergeSort<QueueItem>(
+      q,
+      compare: (a, b) => b.priority.index - a.priority.index,
+    );
+
+    return Queue(q);
+  }
 
   Queue addAll(List<QueueItem> items) {
     final q = List.of(_queue);
