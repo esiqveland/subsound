@@ -88,9 +88,9 @@ Non-goals:
    - [X] playlist api
    - [ ] playlist listing
    - [ ] new homescreen with
-     - [ ] recent albums
+     - [X] recent albums
      - [ ] recent playlists
-     - [ ] starred songs
+     - [X] starred songs
  - [ ] Album page: Star button in song list?
  - [ ] Album page: summary in bottom of song list?
  - [ ] Album page: play button?
