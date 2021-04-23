@@ -529,28 +529,28 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPlayFromMediaId(String mediaId) async {
     await _playQueue.playItemInQueue(mediaId);
-    _broadcastState();
-    onPlay();
+    await _broadcastState();
+    unawaited(onPlay());
   }
 
   @override
   Future<void> onAddQueueItemAt(MediaItem mediaItem, int index) async {
     await _playQueue.addItem(mediaItem);
-    _broadcastState();
+    unawaited(_broadcastState());
   }
 
   @override
   Future<void> onUpdateQueue(List<MediaItem> replaceQueue) async {
     log('onUpdateQueue q=${replaceQueue.map((e) => e.title).join(", ")}');
     await _playQueue.replaceWith(replaceQueue);
-    _broadcastState();
+    await _broadcastState();
   }
 
   @override
   Future<void> onAddQueueItem(MediaItem mediaItem) async {
     log('onAddQueueItem item=$mediaItem');
     await _playQueue.addItem(mediaItem);
-    _broadcastState();
+    unawaited(_broadcastState());
   }
 
   @override
@@ -561,40 +561,39 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else {
       await _playQueue.playItem(mediaItem);
     }
-    _broadcastState();
-    onPlay();
+    await _broadcastState();
+    unawaited(onPlay());
   }
 
   @override
   Future<void> onSkipToNext() async {
     if (_playQueue.hasNext) {
-      _skipRelative(1);
+      await _skipRelative(1);
     } else {
-      onPause();
-      _broadcastState();
+      await onPause();
+      await _broadcastState();
     }
   }
 
   @override
   Future<void> onSkipToPrevious() async {
     if (_playQueue.hasPrev) {
-      _skipRelative(-1);
+      await _skipRelative(-1);
     } else {
       await onSeekTo(Duration.zero);
-
-      _broadcastState();
+      await _broadcastState();
     }
   }
 
   @override
   Future<void> onSkipToQueueItem(String mediaId) async {
     await _playQueue.playItemInQueue(mediaId);
-    _broadcastState();
+    await _broadcastState();
   }
 
   Future<void> _skipRelative(int offset) async {
     await _playQueue.skipRelative(offset);
-    _broadcastState();
+    await _broadcastState();
   }
 
   @override
@@ -640,9 +639,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   Future<void> playPause() async {
     if (_player.playing) {
-      onPause();
+      unawaited(onPause());
     } else {
-      onPlay();
+      unawaited(onPlay());
     }
   }
 
