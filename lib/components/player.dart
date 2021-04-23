@@ -13,6 +13,7 @@ import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/player_task.dart';
 import 'package:subsound/state/playerstate.dart';
+import 'package:subsound/state/queue.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/star.dart';
@@ -178,7 +179,7 @@ enum PlayerStates { stopped, playing, paused, buffering }
 class PlayerState {
   final PlayerStates current;
   final PlayerSong? currentSong;
-  final List<PlayerSong> queue;
+  final Queue queue;
   final Duration duration;
   final Duration position;
 
@@ -202,7 +203,7 @@ class PlayerState {
   PlayerState copy({
     PlayerStates? current,
     PlayerSong? currentSong,
-    List<PlayerSong>? queue,
+    Queue? queue,
     Duration? duration,
     Duration? position,
   }) =>
@@ -219,7 +220,7 @@ class PlayerState {
         currentSong: null,
         duration: Duration.zero,
         position: Duration.zero,
-        queue: [],
+        queue: Queue([]),
       );
 
   @override

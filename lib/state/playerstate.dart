@@ -4,12 +4,14 @@ import 'dart:developer';
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:subsound/components/player.dart' hide PlayerState;
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/errors.dart';
 import 'package:subsound/state/player_task.dart';
+import 'package:subsound/state/queue.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
@@ -187,7 +189,7 @@ class PlayerCommandSetCurrentPlaying extends PlayerActions {
   final PlayerSong song;
   final Duration? duration;
   final PlayerStates? playerstate;
-  final List<PlayerSong>? queue;
+  final Queue? queue;
 
   PlayerCommandSetCurrentPlaying(
     this.song, {
@@ -275,9 +277,16 @@ class PlayerCommandEnqueueSong extends PlayerActions {
 
   @override
   Future<AppState?> reduce() async {
-    var mediaItem = PlayerSong.asMediaItem(song);
-    audioHandler.addQueueItem(mediaItem);
-    return state;
+    final q = state.playerState.queue.add(QueueItem(song, QueuePriority.user));
+
+    final items = q.copy.map((e) => e.song.toMediaItem()).toList();
+    await audioHandler.updateQueue(items);
+
+    return state.copy(
+      playerState: state.playerState.copy(
+        queue: q,
+      ),
+    );
   }
 }
 
@@ -317,27 +326,28 @@ class PlayerCommandContextualPlay extends PlayerActions {
 
   @override
   Future<AppState?> reduce() async {
-    List<PlayerSong> queue = playQueue
+    List<QueueItem> queue = playQueue
         .map((SongResult e) => PlayerSong.from(
               e,
               state.dataState.isSongStarred(e.id),
             ))
+        .map((e) => QueueItem(e, QueuePriority.low))
         .toList();
 
-    var selectedIdx = queue.indexWhere((element) => element.id == songId);
-    var selected = queue[selectedIdx];
+    var selectedIdx = queue.indexWhere((element) => element.song.id == songId);
+    var selected = queue[selectedIdx].song;
 
     dispatch(PlayerCommandSetCurrentPlaying(
       selected,
       playerstate: PlayerStates.playing,
-      queue: queue,
+      queue: Queue(queue),
     ));
 
     final mediaQueue = playQueue.map((s) => s.toMediaItem()).toList();
 
     await audioHandler.updateQueue(mediaQueue);
     await audioHandler.skipToQueueItem(selectedIdx);
-    audioHandler.play();
+    unawaited(audioHandler.play());
 
     return null;
   }
@@ -351,20 +361,21 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
 
   @override
   Future<AppState?> reduce() async {
-    List<PlayerSong> queue = album.songs
+    List<QueueItem> queue = album.songs
         .map((SongResult e) => PlayerSong.from(
               e,
               state.dataState.isSongStarred(e.id),
             ))
+        .map((song) => QueueItem(song, QueuePriority.low))
         .toList();
 
-    var selectedIdx = queue.indexWhere((element) => element.id == songId);
-    var selected = queue[selectedIdx];
+    var selectedIdx = queue.indexWhere((element) => element.song.id == songId);
+    var selected = queue[selectedIdx].song;
 
     dispatch(PlayerCommandSetCurrentPlaying(
       selected,
       playerstate: PlayerStates.playing,
-      queue: queue,
+      queue: Queue(queue),
     ));
 
     final mediaQueue = album.songs
@@ -403,13 +414,13 @@ class PlayerCommandPlaySong extends PlayerActions {
 
     final mediaItem = next.toMediaItem();
     final queue = state.playerState.queue;
-    final idx = queue.indexWhere((element) => element.id == song.id);
+    final idx = queue.copy.indexWhere((element) => element.song.id == song.id);
     if (idx == -1) {
-      audioHandler.playMediaItem(mediaItem);
+      await audioHandler.playMediaItem(mediaItem);
     } else {
-      audioHandler.playFromMediaId(mediaItem.id);
+      await audioHandler.playFromMediaId(mediaItem.id);
     }
-    audioHandler.play();
+    unawaited(audioHandler.play());
 
     return state.copy(
       playerState: state.playerState.copy(
