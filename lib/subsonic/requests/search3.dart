@@ -17,7 +17,7 @@ class CountOffset {
   });
 }
 
-class Search3 extends BaseRequest<Search3Result> {
+class Search3Request extends BaseRequest<Search3Result> {
   @override
   String get sinceVersion => '1.8.0';
 
@@ -26,7 +26,7 @@ class Search3 extends BaseRequest<Search3Result> {
   final CountOffset? artist, album, song;
   final String? musicFolderId;
 
-  Search3(
+  Search3Request(
     this.query, {
     this.artist,
     this.album,
