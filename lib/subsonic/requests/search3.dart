@@ -70,14 +70,14 @@ class Search3Request extends BaseRequest<Search3Result> {
       throw Exception(data);
     }
 
+    final List<Song> songs = (data['searchResult3']['song'] as List)
+        .map((song) => Song.parse(song as Map<String, dynamic>))
+        .toList();
+
     return SubsonicResponse(
       ResponseStatus.ok,
       ctx.version,
-      Search3Result(
-        (data['searchResult3']['song'] as List)
-            .map((song) => Song.parse(song as Map<String, dynamic>))
-            .toList(),
-      ),
+      Search3Result(songs),
     );
   }
 }
