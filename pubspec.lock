@@ -48,7 +48,7 @@ packages:
     description:
       path: audio_service
       ref: one-isolate
-      resolved-ref: "56a3525877ef20aa882627b9eb133aa00413a0f3"
+      resolved-ref: "7a840c538937aec5b46d3bbc651fe8f35f5630c4"
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "0.16.2"
@@ -57,7 +57,7 @@ packages:
     description:
       path: audio_service_platform_interface
       ref: one-isolate
-      resolved-ref: "56a3525877ef20aa882627b9eb133aa00413a0f3"
+      resolved-ref: "7a840c538937aec5b46d3bbc651fe8f35f5630c4"
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "1.0.0"
@@ -66,7 +66,7 @@ packages:
     description:
       path: audio_service_web
       ref: one-isolate
-      resolved-ref: "56a3525877ef20aa882627b9eb133aa00413a0f3"
+      resolved-ref: "7a840c538937aec5b46d3bbc651fe8f35f5630c4"
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "0.16.2"
@@ -582,7 +582,7 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   shelf_packages_handler:
     dependency: transitive
     description:
@@ -657,7 +657,7 @@ packages:
       name: sqlite3
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   stack_trace:
     dependency: transitive
     description:
