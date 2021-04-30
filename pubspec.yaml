@@ -30,8 +30,8 @@ dependencies:
 #  audio_service: ^0.17.0-nullsafety.0
   audio_service:
     git:
-      url: https://github.com/ryanheise/audio_service.git
-      ref: one-isolate
+      url: https://github.com/nt4f04uNd/audio_service.git
+      ref: control_center
       path: audio_service
   just_audio: ^0.7.3
   cached_network_image: ^3.0.0-nullsafety
