@@ -17,14 +17,13 @@ A subsonic music player.
 ## Release todo
 
 - [ ] fix random breakage of player sometimes. seems like onStart is not working after background player task crashes
-- [X] fix crash on cover artwork in albums listing
- - [ ] this was due to flutter engine crashing on a broken GIF file
 - [ ] enqueue next track
 - [X] fix blinking in album when selecting different song
 - [X] fix intermediate render with blank coverart on artist page
 - [X] sort starred by most recently added
 - [X] fix package naming
 - [X] crash reporting
+- [ ] search functionality
 - [ ] pull-to-refresh on starred/artists/albums?
 - [ ] find an app icon
   - [ ] android
