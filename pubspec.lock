@@ -47,9 +47,9 @@ packages:
     dependency: "direct main"
     description:
       path: audio_service
-      ref: control_center
-      resolved-ref: "449080323827ab28563e25f535734bb7b14b04fb"
-      url: "https://github.com/nt4f04uNd/audio_service.git"
+      ref: one-isolate
+      resolved-ref: "9f9747461a9ecd043ab3e122c98b78752f6abba4"
+      url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "0.16.2"
   audio_service_platform_interface:
@@ -57,7 +57,7 @@ packages:
     description:
       path: audio_service_platform_interface
       ref: one-isolate
-      resolved-ref: "58661497f0a72b4804ecbc7d699c6b7357e610ce"
+      resolved-ref: "9f9747461a9ecd043ab3e122c98b78752f6abba4"
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "1.0.0"
@@ -66,7 +66,7 @@ packages:
     description:
       path: audio_service_web
       ref: one-isolate
-      resolved-ref: "58661497f0a72b4804ecbc7d699c6b7357e610ce"
+      resolved-ref: "9f9747461a9ecd043ab3e122c98b78752f6abba4"
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "0.16.2"
