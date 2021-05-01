@@ -66,7 +66,7 @@ class PlayerSong {
         fileExtension: s.suffix,
         fileSize: s.fileSize,
         duration: s.duration,
-        isStarred: isStarred ?? false,
+        isStarred: isStarred ?? s.starred,
       );
 
   @override

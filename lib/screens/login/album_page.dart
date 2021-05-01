@@ -1,5 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/artist_page.dart';
 import 'package:subsound/state/appcommands.dart';
@@ -25,6 +26,9 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
       onPlay: (String songId, AlbumResult album) {
         dispatch(PlayerCommandPlaySongInAlbum(songId: songId, album: album));
       },
+      onEnqueue: (SongResult song) {
+        dispatch(PlayerCommandEnqueueSong(song));
+      },
     );
   }
 }
@@ -34,12 +38,14 @@ class AlbumViewModel extends Vm {
   final String? currentSongId;
   final Future<AlbumResult?> Function(String albumId) loadAlbum;
   final Function(String songId, AlbumResult album) onPlay;
+  final Function(SongResult song) onEnqueue;
 
   AlbumViewModel({
     required this.serverData,
     required this.currentSongId,
     required this.loadAlbum,
     required this.onPlay,
+    required this.onEnqueue,
   }) : super(equals: [
           serverData,
           currentSongId ?? '',
@@ -66,6 +72,7 @@ class AlbumScreen extends StatelessWidget {
             albumId: albumId,
             loadAlbum: state.loadAlbum,
             onPlay: state.onPlay,
+            onEnqueue: state.onEnqueue,
           ),
         ),
       ),
@@ -79,6 +86,7 @@ class AlbumPage extends StatefulWidget {
   final String? currentSongId;
   final Future<AlbumResult?> Function(String albumId) loadAlbum;
   final Function(String songId, AlbumResult album) onPlay;
+  final Function(SongResult song) onEnqueue;
 
   const AlbumPage({
     Key? key,
@@ -86,6 +94,7 @@ class AlbumPage extends StatefulWidget {
     required this.albumId,
     required this.currentSongId,
     required this.onPlay,
+    required this.onEnqueue,
     required this.loadAlbum,
   }) : super(key: key);
 
@@ -99,48 +108,80 @@ class SongRow extends StatelessWidget {
   final SongResult song;
   final bool isPlaying;
   final Function(SongResult) onPlay;
+  final Function(SongResult) onEnqueue;
+  final SlidableController slidableController;
 
   const SongRow({
     Key? key,
     required this.song,
     required this.isPlaying,
     required this.onPlay,
+    required this.onEnqueue,
+    required this.slidableController,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    return ListTile(
-      onTap: () {
-        this.onPlay(this.song);
-      },
-      leading: Column(
-        //mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "${song.trackNumber}",
-            style: TextStyle(
-                // color: isPlaying
-                //     ? theme.accentColor
-                //     : theme.colorScheme.onPrimary.withOpacity(0.7),
-                ),
-          ),
-        ],
+    return Slidable(
+      key: Key(song.id),
+      actionPane: SlidableDrawerActionPane(),
+      direction: Axis.horizontal,
+      controller: slidableController,
+      dismissal: SlidableDismissal(
+        child: SlidableDrawerDismissal(),
+        onDismissed: (actionType) {},
+        onWillDismiss: (actionType) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Added to queue')));
+          onEnqueue(this.song);
+          return false;
+        },
+        closeOnCanceled: true,
       ),
-      dense: true,
-      minLeadingWidth: 15,
-      title: Text(
-        song.title,
-        style: TextStyle(
-          color: isPlaying ? theme.accentColor : theme.colorScheme.onPrimary,
-          fontWeight: FontWeight.bold,
+      actions: [
+        IconSlideAction(
+          caption: 'Enqueue',
+          color: Colors.green,
+          icon: Icons.playlist_add,
+          onTap: () {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("Added to queue")));
+            onEnqueue(this.song);
+          },
         ),
-        textAlign: TextAlign.left,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+      ],
+      child: ListTile(
+        onTap: () {
+          this.onPlay(this.song);
+        },
+        leading: Column(
+          //mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "${song.trackNumber}",
+              style: TextStyle(
+                  // color: isPlaying
+                  //     ? theme.accentColor
+                  //     : theme.colorScheme.onPrimary.withOpacity(0.7),
+                  ),
+            ),
+          ],
+        ),
+        dense: true,
+        minLeadingWidth: 15,
+        title: Text(
+          song.title,
+          style: TextStyle(
+            color: isPlaying ? theme.accentColor : theme.colorScheme.onPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.left,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(song.artistName),
       ),
-      subtitle: Text(song.artistName),
     );
   }
 }
@@ -149,12 +190,15 @@ class AlbumView extends StatelessWidget {
   final AlbumResult album;
   final String? currentSongId;
   final Function(String songId, AlbumResult album) onPlay;
+  final Function(SongResult song) onEnqueue;
+  final SlidableController _slidableController = SlidableController();
 
-  const AlbumView({
+  AlbumView({
     Key? key,
     required this.album,
     required this.currentSongId,
     required this.onPlay,
+    required this.onEnqueue,
   }) : super(key: key);
 
   @override
@@ -283,9 +327,15 @@ class AlbumView extends StatelessWidget {
                 return SongRow(
                   isPlaying: isPlaying,
                   song: song,
+                  onEnqueue: (song) {
+                    _slidableController.activeState?.close();
+                    this.onEnqueue(song);
+                  },
                   onPlay: (song) {
+                    _slidableController.activeState?.close();
                     this.onPlay(song.id, this.album);
                   },
+                  slidableController: _slidableController,
                 );
               },
               childCount: album.songs.length,
@@ -321,6 +371,7 @@ class AlbumPageState extends State<AlbumPage> {
                   currentSongId: widget.currentSongId,
                   album: snapshot.data!,
                   onPlay: widget.onPlay,
+                  onEnqueue: widget.onEnqueue,
                 );
               } else {
                 return Center(child: Text("${snapshot.error}"));

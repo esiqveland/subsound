@@ -276,13 +276,14 @@ class PlayerStartListenPlayerPosition extends ReduxAction<AppState> {
 }
 
 class PlayerCommandEnqueueSong extends PlayerActions {
-  final PlayerSong song;
+  final SongResult song;
 
   PlayerCommandEnqueueSong(this.song);
 
   @override
   Future<AppState?> reduce() async {
-    final q = state.playerState.queue.add(QueueItem(song, QueuePriority.user));
+    final PlayerSong s = PlayerSong.from(song);
+    final q = state.playerState.queue.add(QueueItem(s, QueuePriority.user));
 
     final items = q.copy.map((e) => e.song.toMediaItem()).toList();
     await audioHandler.updateQueue(items);
@@ -369,7 +370,7 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
     List<QueueItem> queue = album.songs
         .map((SongResult e) => PlayerSong.from(
               e,
-              state.dataState.isSongStarred(e.id),
+              e.starred || state.dataState.isSongStarred(e.id),
             ))
         .map((song) => QueueItem(song, QueuePriority.low))
         .toList();
