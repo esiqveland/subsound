@@ -349,7 +349,7 @@ class PlayPauseIcon extends StatelessWidget {
       case PlayerStates.paused:
         return Icon(Icons.play_circle_fill);
       case PlayerStates.buffering:
-        return Icon(Icons.download_for_offline);
+        return Icon(Icons.refresh);
       default:
         return Icon(Icons.play_circle_fill);
     }
