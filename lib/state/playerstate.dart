@@ -599,7 +599,7 @@ PlayerStates getNextPlayerState(
       }
     case AudioProcessingState.buffering:
       if (playing) {
-        return PlayerStates.playing;
+        return PlayerStates.buffering;
       } else {
         return PlayerStates.buffering;
       }
@@ -610,6 +610,6 @@ PlayerStates getNextPlayerState(
     case AudioProcessingState.idle:
       return PlayerStates.stopped;
     case AudioProcessingState.loading:
-      return PlayerStates.playing;
+      return PlayerStates.buffering;
   }
 }
