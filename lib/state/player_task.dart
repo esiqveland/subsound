@@ -676,23 +676,35 @@ Future<AudioSource> _toSource(MediaItem mediaItem) async {
 }
 
 Future<AudioSource> _toAudioSource(
-    MediaItem mediaItem, SongMetadata meta) async {
+  MediaItem mediaItem,
+  SongMetadata meta,
+) async {
   var uri = Uri.parse(meta.songUrl);
-  var cacheFile = await DownloadCacheManager().getCachedSongFile(CachedSong(
+
+  var cacheFile = await DownloadCacheManager().loadSong(CachedSong(
     songId: meta.songId,
+    songUri: uri,
     fileSize: meta.fileSize,
     fileExtension: meta.fileExtension,
   ));
 
-  var source = LockCachingAudioSource(
-    uri,
-    cacheFile: cacheFile,
-    //tag: ,
-    headers: {
-      "X-Request-ID": uuid.v1().toString(),
-      "Host": uri.host,
-    },
-  );
+  var source = AudioSource.uri(cacheFile.uri);
+
+  // var cacheFile = await DownloadCacheManager().getCachedSongFile(CachedSong(
+  //   songId: meta.songId,
+  //   songUri: uri,
+  //   fileSize: meta.fileSize,
+  //   fileExtension: meta.fileExtension,
+  // ));
+  // var source = LockCachingAudioSource(
+  //   uri,
+  //   cacheFile: cacheFile,
+  //   //tag: ,
+  //   headers: {
+  //     "X-Request-ID": uuid.v1().toString(),
+  //     "Host": uri.host,
+  //   },
+  // );
   return source;
 }
 

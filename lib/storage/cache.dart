@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -70,11 +71,13 @@ class PathInfo {
 
 class CachedSong {
   final String songId;
+  final Uri songUri;
   final String fileExtension;
   final int fileSize;
 
   CachedSong({
     required this.songId,
+    required this.songUri,
     required this.fileExtension,
     required this.fileSize,
   });
@@ -83,11 +86,34 @@ class CachedSong {
 class DownloadCacheManager extends CacheManager {
   static const key = 'downloadCacheKey';
 
+  static BaseClient _httpClient = LoggingClient(Client());
   static DownloadCacheManager? _instance;
 
   factory DownloadCacheManager() {
     _instance ??= DownloadCacheManager._();
     return _instance!;
+  }
+
+  Future<File> loadSong(CachedSong meta) async {
+    var cachedFile = await getCachedSongFile(meta);
+    if (cachedFile.existsSync() && await cachedFile.length() == meta.fileSize) {
+      return cachedFile;
+    }
+    var req = Request("GET", meta.songUri);
+    final res = await _httpClient.send(req);
+    if (res.statusCode == 200) {
+      var sink = cachedFile.openWrite();
+      await res.stream.pipe(sink);
+      await sink.close();
+      return cachedFile;
+    } else {
+      String body = "";
+      try {
+        body = await utf8.decodeStream(res.stream);
+        // ignore: empty_catches
+      } catch (e) {}
+      throw Exception("[${meta.songUri}] status=${res.statusCode}: $body");
+    }
   }
 
   Future<Directory> _getCacheDir() async {
@@ -147,7 +173,7 @@ class DownloadCacheManager extends CacheManager {
             maxNrOfCacheObjects: 20000,
             repo: JsonCacheInfoRepository(databaseName: key),
             fileService: HttpFileService(
-              httpClient: LoggingClient(Client()),
+              httpClient: _httpClient,
             ),
             fileSystem: fsio.IOFileSystem(key),
           ),
