@@ -98,21 +98,23 @@ class DownloadCacheManager extends CacheManager {
     var cachedFile = await getCachedSongFile(meta);
     if (cachedFile.existsSync() && await cachedFile.length() == meta.fileSize) {
       return cachedFile;
-    }
-    var req = Request("GET", meta.songUri);
-    final res = await _httpClient.send(req);
-    if (res.statusCode == 200) {
-      var sink = cachedFile.openWrite();
-      await res.stream.pipe(sink);
-      await sink.close();
-      return cachedFile;
     } else {
-      String body = "";
-      try {
-        body = await utf8.decodeStream(res.stream);
-        // ignore: empty_catches
-      } catch (e) {}
-      throw Exception("[${meta.songUri}] status=${res.statusCode}: $body");
+      cachedFile.createSync(recursive: true);
+      var req = Request("GET", meta.songUri);
+      final res = await _httpClient.send(req);
+      if (res.statusCode == 200) {
+        var sink = cachedFile.openWrite();
+        await res.stream.pipe(sink);
+        await sink.close();
+        return cachedFile;
+      } else {
+        String body = "";
+        try {
+          body = await utf8.decodeStream(res.stream);
+          // ignore: empty_catches
+        } catch (e) {}
+        throw Exception("[${meta.songUri}] status=${res.statusCode}: $body");
+      }
     }
   }
 

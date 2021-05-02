@@ -131,12 +131,23 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     if (index < 0 || index >= q.length) return;
     await super.skipToQueueItem(index);
     var item = q[index];
-    final source = await _toSource(item);
-    playbackState.add(playbackState.value!.copyWith(queueIndex: index));
+    var wasPlaying = _player.playing;
+    if (wasPlaying) {
+      await _player.pause();
+    }
+    playbackState.add(playbackState.value!.copyWith(
+      processingState: AudioProcessingState.loading,
+      queueIndex: index,
+      updatePosition: Duration.zero,
+    ));
     mediaItem.add(queue.value![index]);
 
     try {
+      final source = await _loadSource(item);
       await _player.setAudioSource(source);
+      if (wasPlaying) {
+        unawaited(_player.play());
+      }
     } on PlayerInterruptedException catch (_) {
       // ignore interrupts to load()
     } on Exception catch (e, st) {
@@ -675,10 +686,8 @@ Future<AudioSource> _toSource(MediaItem mediaItem) async {
   return _toAudioSource(mediaItem, mediaItem.getSongMetadata());
 }
 
-Future<AudioSource> _toAudioSource(
-  MediaItem mediaItem,
-  SongMetadata meta,
-) async {
+Future<AudioSource> _loadSource(MediaItem mediaItem) async {
+  SongMetadata meta = mediaItem.getSongMetadata();
   var uri = Uri.parse(meta.songUrl);
 
   var cacheFile = await DownloadCacheManager().loadSong(CachedSong(
@@ -689,22 +698,30 @@ Future<AudioSource> _toAudioSource(
   ));
 
   var source = AudioSource.uri(cacheFile.uri);
+  return source;
+}
 
-  // var cacheFile = await DownloadCacheManager().getCachedSongFile(CachedSong(
-  //   songId: meta.songId,
-  //   songUri: uri,
-  //   fileSize: meta.fileSize,
-  //   fileExtension: meta.fileExtension,
-  // ));
-  // var source = LockCachingAudioSource(
-  //   uri,
-  //   cacheFile: cacheFile,
-  //   //tag: ,
-  //   headers: {
-  //     "X-Request-ID": uuid.v1().toString(),
-  //     "Host": uri.host,
-  //   },
-  // );
+Future<AudioSource> _toAudioSource(
+  MediaItem mediaItem,
+  SongMetadata meta,
+) async {
+  var uri = Uri.parse(meta.songUrl);
+
+  var cacheFile = await DownloadCacheManager().getCachedSongFile(CachedSong(
+    songId: meta.songId,
+    songUri: uri,
+    fileSize: meta.fileSize,
+    fileExtension: meta.fileExtension,
+  ));
+  var source = LockCachingAudioSource(
+    uri,
+    cacheFile: cacheFile,
+    //tag: ,
+    headers: {
+      "X-Request-ID": uuid.v1().toString(),
+      "Host": uri.host,
+    },
+  );
   return source;
 }
 
