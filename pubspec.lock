@@ -48,7 +48,7 @@ packages:
     description:
       path: audio_service
       ref: one-isolate
-      resolved-ref: "9f9747461a9ecd043ab3e122c98b78752f6abba4"
+      resolved-ref: d83855dd6eee73a5e86ba6e2794bc8045cda2235
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "0.16.2"
@@ -57,7 +57,7 @@ packages:
     description:
       path: audio_service_platform_interface
       ref: one-isolate
-      resolved-ref: "9f9747461a9ecd043ab3e122c98b78752f6abba4"
+      resolved-ref: d83855dd6eee73a5e86ba6e2794bc8045cda2235
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "1.0.0"
@@ -66,7 +66,7 @@ packages:
     description:
       path: audio_service_web
       ref: one-isolate
-      resolved-ref: "9f9747461a9ecd043ab3e122c98b78752f6abba4"
+      resolved-ref: d83855dd6eee73a5e86ba6e2794bc8045cda2235
       url: "https://github.com/ryanheise/audio_service.git"
     source: git
     version: "0.16.2"
@@ -320,9 +320,11 @@ packages:
   just_audio:
     dependency: "direct main"
     description:
-      name: just_audio
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: just_audio
+      ref: delete-proxy-on-disposal
+      resolved-ref: "22c65a80716e634a5138ad35a80686ab5a760cf6"
+      url: "https://github.com/esiqveland/just_audio.git"
+    source: git
     version: "0.7.4"
   just_audio_platform_interface:
     dependency: transitive
@@ -664,7 +666,7 @@ packages:
       name: sqlite3
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   stack_trace:
     dependency: transitive
     description:

@@ -143,7 +143,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     mediaItem.add(queue.value![index]);
 
     try {
-      final source = await _loadSource(item);
+      final source = await _toStreamSource(item);
       await _player.setAudioSource(source);
       if (wasPlaying) {
         unawaited(_player.play());
@@ -264,7 +264,7 @@ class PlayQueue {
 
   Future<void> addItem(MediaItem mediaItem) async {
     _queue.add(mediaItem);
-    final src = await _toSource(mediaItem);
+    final src = await _toStreamSource(mediaItem);
     await audioSource.add(src);
     // ignore: deprecated_member_use
     await AudioServiceBackground.setQueue(_queue);
@@ -278,7 +278,7 @@ class PlayQueue {
       _queue.add(mediaItem);
       final length = audioSource.length;
 
-      await audioSource.add(await _toSource(mediaItem));
+      await audioSource.add(await _toStreamSource(mediaItem));
 
       if (length > 0) {
         await audioSource.removeRange(0, length);
@@ -682,11 +682,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 }
 
-Future<AudioSource> _toSource(MediaItem mediaItem) async {
+Future<AudioSource> _toStreamSource(MediaItem mediaItem) async {
   return _toAudioSource(mediaItem, mediaItem.getSongMetadata());
 }
 
-Future<AudioSource> _loadSource(MediaItem mediaItem) async {
+Future<AudioSource> _preloadedSource(MediaItem mediaItem) async {
   SongMetadata meta = mediaItem.getSongMetadata();
   var uri = Uri.parse(meta.songUrl);
 

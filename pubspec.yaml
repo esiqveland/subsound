@@ -33,7 +33,11 @@ dependencies:
       url: https://github.com/ryanheise/audio_service.git
       ref: one-isolate
       path: audio_service
-  just_audio: ^0.7.4
+  just_audio:
+    git:
+      url: https://github.com/esiqveland/just_audio.git
+      ref: delete-proxy-on-disposal
+      path: just_audio
   cached_network_image: ^3.0.0-nullsafety
   flutter_sticky_header: ^0.6.0
   flutter_cache_manager: ^3.0.0-nullsafety.1

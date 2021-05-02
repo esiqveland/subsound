@@ -86,7 +86,7 @@ class CachedSong {
 class DownloadCacheManager extends CacheManager {
   static const key = 'downloadCacheKey';
 
-  static BaseClient _httpClient = LoggingClient(Client());
+  static final BaseClient _httpClient = LoggingClient(Client());
   static DownloadCacheManager? _instance;
 
   factory DownloadCacheManager() {
