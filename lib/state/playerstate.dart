@@ -155,6 +155,27 @@ class PlayerDurationChanged extends PlayerActions {
   }
 }
 
+class PlayerSetQueueIndex extends PlayerActions {
+  final int? queuePosition;
+
+  PlayerSetQueueIndex(this.queuePosition);
+
+  @override
+  AppState? reduce() {
+    final q = state.playerState.queue;
+    if (q.position == queuePosition) {
+      return null;
+    }
+    return state.copy(
+      playerState: state.playerState.copy(
+        queue: q.copy(
+          nextPosition: queuePosition,
+        ),
+      ),
+    );
+  }
+}
+
 class PlayerStateChanged extends PlayerActions {
   final PlayerStates nextState;
 
@@ -285,7 +306,7 @@ class PlayerCommandEnqueueSong extends PlayerActions {
     final PlayerSong s = PlayerSong.from(song);
     final q = state.playerState.queue.add(QueueItem(s, QueuePriority.user));
 
-    final items = q.copy.map((e) => e.song.toMediaItem()).toList();
+    final items = q.toList.map((e) => e.song.toMediaItem()).toList();
     await audioHandler.updateQueue(items);
 
     return state.copy(
@@ -346,7 +367,7 @@ class PlayerCommandContextualPlay extends PlayerActions {
     dispatch(PlayerCommandSetCurrentPlaying(
       selected,
       playerstate: PlayerStates.playing,
-      queue: Queue(queue),
+      queue: Queue(queue, selectedIdx),
     ));
 
     final mediaQueue = playQueue.map((s) => s.toMediaItem()).toList();
@@ -381,7 +402,7 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
     dispatch(PlayerCommandSetCurrentPlaying(
       selected,
       playerstate: PlayerStates.playing,
-      queue: Queue(queue),
+      queue: Queue(queue, selectedIdx),
     ));
 
     final mediaQueue = album.songs
@@ -392,7 +413,6 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
 
     await audioHandler.updateQueue(mediaQueue);
     await audioHandler.skipToQueueItem(selectedIdx);
-    //audioHandler.playFromMediaId(selected.songUrl);
     unawaited(audioHandler.play());
 
     return null;
@@ -420,7 +440,8 @@ class PlayerCommandPlaySong extends PlayerActions {
 
     final mediaItem = next.toMediaItem();
     final queue = state.playerState.queue;
-    final idx = queue.copy.indexWhere((element) => element.song.id == song.id);
+    final idx =
+        queue.toList.indexWhere((element) => element.song.id == song.id);
     if (idx == -1) {
       await audioHandler.playMediaItem(mediaItem);
     } else {
@@ -481,6 +502,9 @@ class StartupPlayer extends ReduxAction<AppState> {
       if (event.processingState == AudioProcessingState.error) {
         dispatch(DisplayError(
             "${event.errorCode ?? -1}: ${event.errorMessage ?? ''}"));
+      }
+      if (state.playerState.queue.position != event.queueIndex) {
+        dispatch(PlayerSetQueueIndex(event.queueIndex));
       }
       PlayerStates nextState =
           getNextPlayerState(event.processingState, event.playing);
