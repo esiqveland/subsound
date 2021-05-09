@@ -63,6 +63,18 @@ void main() {
         [item1Low, item2Low, item1High, item3High],
       );
       expect(
+        Queue([item1Low, item2Low, item1High, item2Low, item1Low], 3)
+            .add(item3High)
+            .toList,
+        [item1Low, item2Low, item1High, item2Low, item3High, item1Low],
+      );
+      expect(
+        Queue([item1Low, item2Low, item1High, item2Low, item1Low], 2)
+            .add(item3High)
+            .toList,
+        [item1Low, item2Low, item1High, item3High, item2Low, item1Low],
+      );
+      expect(
         Queue([]).add(item1High).add(item1High).toList,
         [item1High, item1High],
       );
