@@ -54,6 +54,7 @@ class GetScrobbleBatchDatabaseAction
         .map((map) => ScrobbleData(
               id: map['id'] as String,
               songId: map['song_id'] as String,
+              attempts: map['attempts'] as int,
               playedAt:
                   DateTime.fromMillisecondsSinceEpoch(map['played_at'] as int),
               state: ScrobbleStates.parse(map['state'] as String),
@@ -85,12 +86,14 @@ class ScrobbleData {
 
   final String id;
   final String songId;
+  final int attempts;
   final DateTime playedAt;
   final ScrobbleState state;
 
   ScrobbleData({
     required this.id,
     required this.songId,
+    required this.attempts,
     required this.playedAt,
     required this.state,
   });
@@ -100,6 +103,7 @@ class ScrobbleData {
         CREATE TABLE scrobbles (
           id TEXT PRIMARY KEY,
           song_id TEXT NOT NULL,
+          attempts INT NOT NULL,
           played_at BIGINT NOT NULL,
           state TEXT NOT NULL
         )
@@ -112,6 +116,7 @@ class ScrobbleData {
     return {
       'id': id,
       'song_id': songId,
+      'attempts': attempts,
       'played_at': playedAt.millisecondsSinceEpoch,
       'state': state.asString(),
     };
