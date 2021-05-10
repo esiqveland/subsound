@@ -2,6 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
+abstract class DatabaseAction<T> {
+  Future<T> run(DB db);
+}
+
 /// Enable FOREIGN KEY constraints
 Future<void> onConfigure(Database db) async {
   await db.execute('PRAGMA foreign_keys = ON');
@@ -68,13 +72,13 @@ class DBServer {
 }
 
 class DB {
-  final Database _database;
+  final Database database;
 
   DB({
     required Database database,
-  }) : this._database = database;
+  }) : this.database = database;
 
   Future<void> close() async {
-    await _database.close();
+    await database.close();
   }
 }
