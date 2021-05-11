@@ -5,6 +5,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/database/scrobbles_db.dart';
 import 'package:subsound/state/errors.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
@@ -203,6 +204,28 @@ class GetArtistCommand extends RunRequest {
         albums: albums,
       ),
     );
+  }
+}
+
+class StoreScrobbleAction extends ReduxAction<AppState> {
+  final String songId;
+  final DateTime playedAt;
+
+  StoreScrobbleAction(
+    this.songId, {
+    DateTime? playedAt,
+  }) : this.playedAt = playedAt ?? DateTime.now();
+
+  @override
+  Future<AppState?> reduce() async {
+    await PutScrobbleDatabaseAction(ScrobbleData(
+      id: uuid.v1().toString(),
+      songId: songId,
+      attempts: 0,
+      playedAt: playedAt,
+      state: ScrobbleState.added,
+    )).run(database);
+    return null;
   }
 }
 

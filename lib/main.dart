@@ -13,6 +13,7 @@ import 'package:subsound/screens/login/homescreen.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/database/database.dart';
 import 'package:subsound/state/player_task.dart';
 import 'package:subsound/storage/cache.dart';
 
@@ -64,13 +65,14 @@ void runMain() async {
 
   // save handler as singleton
   audioHandler = h;
+  final DB db = await openDB();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   NavigateAction.setNavigatorKey(navigatorKey);
 
   final Store<AppState> store = createStore();
-  unawaited(store.dispatchFuture(StartupAction()));
+  unawaited(store.dispatchFuture(StartupAction(db)));
 
   runApp(MyApp(
     store: store,

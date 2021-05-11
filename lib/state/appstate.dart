@@ -6,6 +6,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appcommands.dart';
+import 'package:subsound/state/database/database.dart';
 import 'package:subsound/state/networkstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
@@ -63,9 +64,19 @@ class MyErrorObserver<St> implements ErrorObserver<St> {
   }
 }
 
+DB? _db;
+
+DB get database {
+  return _db!;
+}
+
 class StartupAction extends ReduxAction<AppState> {
+  final DB db;
+  StartupAction(this.db);
+
   @override
   Future<AppState> reduce() async {
+    _db = db;
     await store.dispatchFuture(RestoreServerState());
     store.dispatch(RefreshAppState());
     await store.dispatchFuture(StartupPlayer());
