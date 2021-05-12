@@ -113,7 +113,7 @@ class ScrobbleData {
     required this.state,
   });
 
-  void createTableV1(Batch tx) {
+  static void createTableV1(Batch tx) {
     tx.execute('''
         CREATE TABLE scrobbles (
           id TEXT PRIMARY KEY,

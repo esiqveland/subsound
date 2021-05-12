@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
+import 'package:subsound/state/database/scrobbles_db.dart';
 
 abstract class DatabaseAction<T> {
   Future<T> run(DB db);
@@ -19,13 +22,20 @@ Future<DB> openDB() async {
   // `path` package is best practice to ensure the path is correctly
   // constructed for each platform.
   var path = p.join(await getDatabasesPath(), 'app.db');
+  log('opening sqlite db path=$path');
 
   var db = await openDatabase(
     path,
-    version: 1,
+    version: 2,
     onConfigure: onConfigure,
     onCreate: (db, version) {},
-    onUpgrade: (db, oldVersion, newVersion) {},
+    onUpgrade: (db, oldVersion, newVersion) async {
+      var batch = db.batch();
+      if (oldVersion < 2) {
+        ScrobbleData.createTableV1(batch);
+      }
+      await batch.commit();
+    },
   );
   return DB(database: db);
 }

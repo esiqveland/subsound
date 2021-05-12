@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -462,7 +461,8 @@ class PlayerCommandPlaySong extends PlayerActions {
 
 extension Formatter on PlaybackState {
   String format() {
-    return "PlaybackState={playing=$playing, processingState=${describeEnum(processingState)}, queueIndex=$queueIndex, errorMessage=$errorMessage, updateTime=$updateTime,}";
+    return this.toString();
+    //return "PlaybackState={playing=$playing, processingState=${describeEnum(processingState)}, queueIndex=$queueIndex, errorMessage=$errorMessage, updateTime=$updateTime,}";
   }
 }
 
@@ -476,7 +476,9 @@ class CleanupPlayer extends ReduxAction<AppState> {
 
 // How much of the song to play before we scrobble.
 // 0.7 == 70% of the song.
-const ScrobbleThreshold = 0.7;
+const ScrobbleThreshold = 0.5;
+const ScrobbleMinimumDuration = Duration(seconds: 30);
+const ScrobbleAlwaysPlaytime = Duration(minutes: 4);
 
 class PlayerScrobbleState {
   final bool playing;
@@ -602,13 +604,30 @@ class StartupPlayer extends ReduxAction<AppState> {
           var continuousPlayTime = DateTime.now().difference(prev.startedAt);
           var playedPortion =
               continuousPlayTime.inMilliseconds / duration.inMilliseconds;
-          if (playedPortion >= ScrobbleThreshold) {
+          log('playedPortion=${playedPortion} prev.startedAt=${prev.startedAt}');
+
+          // https://www.last.fm/api/scrobbling#when-is-a-scrobble-a-scrobble
+          // Send scrobble when:
+          // 1. the song has been played for more than 4 minutes OR
+          // 2. the song is longer than 30 seconds AND the song played for at least 50% of it's duration
+          //
+          // TODO(scrobble): handle scrobbling when the last track of a playqueue finishes
+          // ie. player goes to the completed state and stops playing.
+          if (continuousPlayTime > ScrobbleAlwaysPlaytime ||
+              duration > ScrobbleMinimumDuration &&
+                  playedPortion >= ScrobbleThreshold) {
             unawaited(dispatchFuture(StoreScrobbleAction(
               id,
               playedAt: prev.startedAt,
             )));
           }
+        } else {
+          log('prev.item?.duration${prev.item?.duration} prev.item=${prev.item}');
         }
+      } else {
+        log('prev.playing=${prev.playing}');
+      }
+
       }
 
       var song = state.dataState.songs.getSongId(id);
