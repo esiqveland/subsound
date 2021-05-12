@@ -314,7 +314,7 @@ class AlbumsScrollView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             HomePageTitle(
-              "Recent albums",
+              "Recently played",
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
