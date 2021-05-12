@@ -7,11 +7,11 @@ enum GetAlbumListType {
   alphabeticalByName,
   alphabeticalByArtist,
   random,
-  newest,
+  newest, // newly added albums?
   highest,
   starred,
-  frequent,
-  recent,
+  frequent, // frequently played albums?
+  recent, // recently played albums
   byYear,
   byGenre,
 }
