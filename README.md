@@ -17,14 +17,18 @@ A subsonic music player.
 ## Release todo
 
 - [ ] fix random breakage of player sometimes. seems like onStart is not working after background player task crashes
-- [ ] enqueue next track
+- [X] enqueue next track
+ - [ ] enqueue row in starred list
+ - [ ] enqueue row in playlist
 - [X] fix blinking in album when selecting different song
 - [X] fix intermediate render with blank coverart on artist page
 - [X] sort starred by most recently added
 - [X] fix package naming
 - [X] crash reporting
 - [ ] search functionality
-- [ ] pull-to-refresh on starred/artists/albums?
+- [ ] pull-to-refresh on playlist view
+- [ ] pull-to-refresh on starred list
+  - [X] artists/albums? no, don't need that because they don't really mutate/update.
 - [ ] find an app icon
   - [ ] android
   - [ ] ios
@@ -46,6 +50,7 @@ A subsonic music player.
 - [X] Make play queue actually work in all contexts
   - [X] Play a song in album with queue
   - [X] Play a song from starred with queue
+- [X] Scrobble plays to Subsonic api
 - [ ] Airplay
 - [ ] Shuffle modes
 - [ ] Loop modes
@@ -56,6 +61,7 @@ A subsonic music player.
   - [ ] Sync content for local access in database
   - [ ] Store metadata persistently for offline mode
   - [ ] Selective caching
+  - [X] Store scrobbles offline and submit at a later time
 
 Possible goals:
  - Chromecast
