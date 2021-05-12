@@ -5,6 +5,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:subsound/components/player.dart' hide PlayerState;
 import 'package:subsound/state/appcommands.dart';
@@ -473,6 +474,43 @@ class CleanupPlayer extends ReduxAction<AppState> {
   }
 }
 
+// How much of the song to play before we scrobble.
+// 0.7 == 70% of the song.
+const ScrobbleThreshold = 0.7;
+
+class PlayerScrobbleState {
+  final bool playing;
+  final MediaItem? item;
+  final Duration? position;
+  final DateTime startedAt;
+
+  PlayerScrobbleState({
+    required this.playing,
+    this.item,
+    this.position,
+    required this.startedAt,
+  });
+
+  PlayerScrobbleState copyWith({
+    bool? playing,
+    MediaItem? item,
+    Duration? position,
+    DateTime? startedAt,
+  }) =>
+      PlayerScrobbleState(
+        playing: playing ?? this.playing,
+        item: item ?? this.item,
+        position: position ?? this.position,
+        startedAt: startedAt ?? this.startedAt,
+      );
+}
+
+final BehaviorSubject<PlayerScrobbleState> playerScrobbles =
+    BehaviorSubject.seeded(PlayerScrobbleState(
+  playing: false,
+  startedAt: DateTime.now(),
+));
+
 class StartupPlayer extends ReduxAction<AppState> {
   static StreamSubscription<Duration>? positionStream;
   static StreamSubscription<bool>? runningStream;
@@ -505,6 +543,14 @@ class StartupPlayer extends ReduxAction<AppState> {
       }
       if (state.playerState.queue.position != event.queueIndex) {
         dispatch(PlayerSetQueueIndex(event.queueIndex));
+      }
+      bool wasPlaying = state.playerState.isPlaying;
+      if (wasPlaying != event.playing) {
+        playerScrobbles.add(playerScrobbles.value!.copyWith(
+          playing: event.playing,
+          startedAt: DateTime.now(),
+          position: event.position,
+        ));
       }
       PlayerStates nextState =
           getNextPlayerState(event.processingState, event.playing);
@@ -540,6 +586,29 @@ class StartupPlayer extends ReduxAction<AppState> {
       var id = songMetadata.songId;
       if (id == state.playerState.currentSong?.id) {
         return;
+      }
+
+      var prev = playerScrobbles.value!;
+      playerScrobbles.add(prev.copyWith(
+        playing: audioHandler.playbackState.value!.playing,
+        position: Duration.zero,
+        item: item,
+        startedAt: DateTime.now(),
+      ));
+
+      if (prev.playing) {
+        var duration = prev.item?.duration;
+        if (duration != null) {
+          var continuousPlayTime = DateTime.now().difference(prev.startedAt);
+          var playedPortion =
+              continuousPlayTime.inMilliseconds / duration.inMilliseconds;
+          if (playedPortion >= ScrobbleThreshold) {
+            unawaited(dispatchFuture(StoreScrobbleAction(
+              id,
+              playedAt: prev.startedAt,
+            )));
+          }
+        }
       }
 
       var song = state.dataState.songs.getSongId(id);
