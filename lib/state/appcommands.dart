@@ -15,6 +15,7 @@ import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_artists.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/ping.dart';
+import 'package:subsound/subsonic/requests/post_scrobble.dart';
 import 'package:subsound/subsonic/requests/star.dart';
 import 'package:subsound/subsonic/response.dart';
 
@@ -207,6 +208,36 @@ class GetArtistCommand extends RunRequest {
   }
 }
 
+class RunScrobbleBatchAction extends ReduxAction<AppState> {
+  @override
+  Future<AppState?> reduce() async {
+    // run a batch of scrobbles
+    var tasks = await GetScrobbleBatchDatabaseAction().run(database);
+    List<Future<ScrobbleData>> futures = tasks.map((task) async {
+      try {
+        var res = await PostScrobbleRequest(
+          task.songId,
+          playedAt: task.playedAt,
+        ).run(state.loginState.toClient());
+        if (res.status != ResponseStatus.ok) {
+          throw Exception('error with scrobble got status: ${res.status}');
+        } else {
+          await DeleteScrobbleDatabaseAction(task.id).run(database);
+        }
+        return task;
+      } catch (e) {
+        log('error submitting scrobble: ', error: e);
+        // put the task back as an attempted task:
+        var attempted = task.attempted();
+        await PutScrobbleDatabaseAction(attempted);
+        return attempted;
+      }
+    }).toList();
+    await Future.wait(futures);
+    return null;
+  }
+}
+
 class StoreScrobbleAction extends ReduxAction<AppState> {
   final String songId;
   final DateTime playedAt;
@@ -225,6 +256,10 @@ class StoreScrobbleAction extends ReduxAction<AppState> {
       playedAt: playedAt,
       state: ScrobbleState.added,
     )).run(database);
+
+    // run a batch of scrobbles
+    unawaited(dispatchFuture(RunScrobbleBatchAction()));
+
     return null;
   }
 }
