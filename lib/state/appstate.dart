@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
@@ -81,6 +82,8 @@ class StartupAction extends ReduxAction<AppState> {
     store.dispatch(RefreshAppState());
     await store.dispatchFuture(StartupPlayer());
     await Future.delayed(Duration(seconds: 1));
+    // run a batch of scrobbles in the background on startup:
+    unawaited(dispatchFuture(RunScrobbleBatchAction()));
     return state.copy(startUpState: StartUpState.done);
   }
 }
