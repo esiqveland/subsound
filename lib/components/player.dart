@@ -191,12 +191,12 @@ class PlayerState {
     required this.position,
   });
 
-  get isPlaying => current == PlayerStates.playing;
+  bool get isPlaying => current == PlayerStates.playing;
 
-  get isPaused =>
+  bool get isPaused =>
       current == PlayerStates.paused || current == PlayerStates.buffering;
 
-  get isStopped => current == PlayerStates.stopped;
+  bool get isStopped => current == PlayerStates.stopped;
 
   void pause() {}
 
