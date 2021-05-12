@@ -28,6 +28,21 @@ extension ScrobbleStates on ScrobbleState {
   }
 }
 
+class DeleteScrobbleDatabaseAction extends DatabaseAction<int> {
+  final String id;
+
+  DeleteScrobbleDatabaseAction(this.id);
+
+  @override
+  Future<int> run(DB db) async {
+    return await db.database.delete(
+      ScrobbleData.TABLE_NAME,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+}
+
 class CleanScrobbleDatabaseAction extends DatabaseAction<int> {
   @override
   Future<int> run(DB db) async {
@@ -109,6 +124,14 @@ class ScrobbleData {
         )
         ''');
   }
+
+  ScrobbleData attempted() => ScrobbleData(
+        id: id,
+        songId: songId,
+        playedAt: playedAt,
+        attempts: attempts + 1,
+        state: state,
+      );
 
   // The keys in the map must correspond to the names of the
   // columns in the database.
