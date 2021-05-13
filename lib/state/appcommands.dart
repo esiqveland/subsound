@@ -211,6 +211,11 @@ class GetArtistCommand extends RunRequest {
 class RunScrobbleBatchAction extends ReduxAction<AppState> {
   @override
   Future<AppState?> reduce() async {
+    if (state.networkState.isOfflineMode) {
+      log('RunScrobbleBatchAction: skip any update in offline mode');
+      return null;
+    }
+
     // run a batch of scrobbles
     var tasks = await GetScrobbleBatchDatabaseAction().run(database);
     List<Future<ScrobbleData>> futures = tasks.map((task) async {
