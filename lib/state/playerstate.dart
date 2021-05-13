@@ -586,9 +586,6 @@ class StartupPlayer extends ReduxAction<AppState> {
       }
       var songMetadata = item.getSongMetadata();
       var id = songMetadata.songId;
-      if (id == state.playerState.currentSong?.id) {
-        return;
-      }
 
       var prev = playerScrobbles.value!;
       playerScrobbles.add(prev.copyWith(
@@ -628,6 +625,8 @@ class StartupPlayer extends ReduxAction<AppState> {
         log('prev.playing=${prev.playing}');
       }
 
+      if (id == state.playerState.currentSong?.id) {
+        return;
       }
 
       var song = state.dataState.songs.getSongId(id);
