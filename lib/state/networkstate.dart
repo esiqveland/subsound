@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:subsound/state/appstate.dart';
@@ -22,6 +24,11 @@ class NetworkState {
         status: status ?? this.status,
         appMode: appMode ?? this.appMode,
       );
+
+  bool get hasNetwork =>
+      this.status == NetworkStatus.wifi || this.status == NetworkStatus.mobile;
+
+  bool get isOfflineMode => this.appMode == NetworkAppMode.offline;
 
   static NetworkState initialState() => NetworkState(
         status: NetworkStatus.wifi,
@@ -74,16 +81,19 @@ class CheckInternetCommand extends ReduxAction<AppState> {
 }
 
 class SetupCheckInternetCommand extends ReduxAction<AppState> {
+  static StreamSubscription<ConnectivityResult>? subscription;
+
   @override
   Future<AppState?> reduce() async {
     final status = await Connectivity().checkConnectivity();
     dispatch(SetInternetStatusCommand(status.toNetworkStatus()));
 
-    // TODO: find a way to cancel stream...
-    var _ = Connectivity().onConnectivityChanged.listen((result) {
+    await subscription?.cancel();
+    subscription = null;
+
+    subscription = Connectivity().onConnectivityChanged.listen((result) {
       dispatch(SetInternetStatusCommand(result.toNetworkStatus()));
     });
-    //stream.cancel();
 
     return null;
   }
