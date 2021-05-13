@@ -198,8 +198,6 @@ class PlayerState {
 
   bool get isStopped => current == PlayerStates.stopped;
 
-  void pause() {}
-
   PlayerState copy({
     PlayerStates? current,
     PlayerSong? currentSong,
