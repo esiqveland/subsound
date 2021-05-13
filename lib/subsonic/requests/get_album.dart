@@ -111,6 +111,44 @@ class SongResult {
       return '${twoDigits(minutes)}:${twoDigits(seconds)}';
     }
   }
+
+  static SongResult fromJson(
+    Map<String, dynamic> songData,
+    SubsonicContext ctx,
+  ) {
+    final songArtId = songData['coverArt'] as String?;
+    final coverArtLink =
+        songArtId != null ? GetCoverArt(songArtId).getImageUrl(ctx) : '';
+    final duration = getDuration(songData['duration']);
+
+    final id = songData['id'] as String;
+    final playUrl = StreamItem(id).getDownloadUrl(ctx);
+
+    return SongResult(
+      id: id,
+      playUrl: playUrl,
+      parent: songData['parent'] as String,
+      title: songData['title'] as String,
+      artistName: songData['artist'] as String,
+      artistId: songData['artistId'] as String,
+      albumName: songData['album'] as String,
+      albumId: songData['albumId'] as String,
+      coverArtId: songArtId ?? '',
+      coverArtLink: coverArtLink,
+      year: songData['year'] as int? ?? 0,
+      duration: duration,
+      isVideo: songData['isVideo'] as bool? ?? false,
+      createdAt: DateTime.parse(songData['created'] as String),
+      type: songData['type'] as String,
+      bitRate: songData['bitRate'] as int? ?? 0,
+      trackNumber: songData['track'] as int? ?? 0,
+      fileSize: songData['size'] as int? ?? 0,
+      starred: parseStarred(songData['starred'] as String?),
+      starredAt: parseDateTime(songData['starred'] as String?),
+      contentType: songData['contentType'] as String? ?? '',
+      suffix: songData['suffix'] as String? ?? '',
+    );
+  }
 }
 
 class GetSongRequest extends BaseRequest<SongResult> {
@@ -144,6 +182,7 @@ class GetSongRequest extends BaseRequest<SongResult> {
     final id = songData['id'] as String;
     final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
+    final songResult = SongResult.fromJson(songData, ctx);
     final songResult = SongResult(
       id: id,
       playUrl: playUrl,
