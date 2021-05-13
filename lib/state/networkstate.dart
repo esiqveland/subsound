@@ -57,9 +57,14 @@ class SetInternetStatusCommand extends ReduxAction<AppState> {
     if (state.networkState.status == next) {
       return null;
     } else {
+      var appMode = state.networkState.appMode;
+      if (next == NetworkStatus.none) {
+        appMode = NetworkAppMode.offline;
+      }
       return state.copy(
         networkState: state.networkState.copy(
           status: next,
+          appMode: appMode,
         ),
       );
     }
