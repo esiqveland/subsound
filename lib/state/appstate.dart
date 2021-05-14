@@ -127,10 +127,11 @@ class RestoreServerState extends ReduxAction<AppState> {
 }
 
 class Starred {
+  final DateTime? _lastUpdatedAt;
   final Map<String, SongResult> songs;
   final Map<String, AlbumResultSimple> albums;
 
-  Starred(this.songs, this.albums);
+  Starred(this.songs, this.albums, this._lastUpdatedAt);
 
   @override
   bool operator ==(Object other) =>
@@ -146,7 +147,7 @@ class Starred {
   static Starred of(GetStarred2Result r) {
     var songs = r.songs.toMap((s) => MapEntry(s.id, s));
     var albums = r.albums.toMap((a) => MapEntry(a.id, a));
-    return Starred(songs, albums);
+    return Starred(songs, albums, DateTime.now());
   }
 
   Starred remove(String itemId) {
@@ -154,19 +155,19 @@ class Starred {
     songs.remove(itemId);
     var albums = Map.of(this.albums);
     albums.remove(itemId);
-    return Starred(songs, albums);
+    return Starred(songs, albums, _lastUpdatedAt);
   }
 
   Starred addSong(SongResult s) {
     var songs = Map.of(this.songs);
     songs[s.id] = s;
-    return Starred(songs, albums);
+    return Starred(songs, albums, _lastUpdatedAt);
   }
 
   Starred addAlbum(AlbumResultSimple r) {
     var albums = Map.of(this.albums);
     albums[r.id] = r;
-    return Starred(songs, albums);
+    return Starred(songs, albums, _lastUpdatedAt);
   }
 }
 
@@ -308,12 +309,14 @@ class DataState {
   final Albums albums;
   final Songs songs;
   final Artists artists;
+  final Playlists playlists;
 
   DataState({
     required this.stars,
     required this.albums,
     required this.songs,
     required this.artists,
+    required this.playlists,
   });
 
   DataState copy({
@@ -321,19 +324,22 @@ class DataState {
     Albums? albums,
     Songs? songs,
     Artists? artists,
+    Playlists? playlists,
   }) =>
       DataState(
         stars: stars ?? this.stars,
         albums: albums ?? this.albums,
         songs: songs ?? this.songs,
         artists: artists ?? this.artists,
+        playlists: playlists ?? this.playlists,
       );
 
   static DataState initialState() => DataState(
-        stars: Starred({}, {}),
+        stars: Starred({}, {}, null),
         albums: Albums({}, {}),
         songs: Songs({}),
         artists: Artists({}, [], {}),
+        playlists: Playlists({}),
       );
 
   bool isStarred(SongResult s) => stars.songs.containsKey(s.id);
