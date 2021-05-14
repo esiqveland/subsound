@@ -251,6 +251,14 @@ class Playlists {
 
   Playlists(this.playlistList, this.playlistCache);
 
+  Playlists addPlaylist(GetPlaylistResult p) {
+    var m = Map.of(playlistList);
+    m[p.playlist.id] = p.playlist;
+    var cache = Map.of(playlistCache);
+    cache[p.playlist.id] = p;
+    return Playlists(m, cache);
+  }
+
   Playlists add(PlaylistResult p) {
     var m = Map.of(playlistList);
     m[p.id] = p;

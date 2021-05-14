@@ -13,6 +13,7 @@ import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_album_list2.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_artists.dart';
+import 'package:subsound/subsonic/requests/get_playlist.dart';
 import 'package:subsound/subsonic/requests/get_playlists.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/ping.dart';
@@ -116,6 +117,32 @@ class UnstarIdCommand extends RunRequest {
       rethrow;
     }
     return null;
+  }
+}
+
+class GetPlaylistCommand extends RunRequest {
+  final String playlistId;
+  final bool refresh;
+
+  GetPlaylistCommand(this.playlistId, [this.refresh = false]);
+
+  @override
+  Future<AppState?> reduce() async {
+    if (!refresh &&
+        state.dataState.playlists.playlistCache.containsKey(playlistId)) {
+      return null;
+    }
+    if (state.networkState.isOfflineMode) {}
+
+    final res =
+        await GetPlaylistRequest(playlistId).run(state.loginState.toClient());
+    final next = state.dataState.playlists.addPlaylist(res.data);
+
+    return state.copy(
+      dataState: state.dataState.copy(
+        playlists: next,
+      ),
+    );
   }
 }
 

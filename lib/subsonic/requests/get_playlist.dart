@@ -37,9 +37,9 @@ class PlaylistResult {
   });
 }
 
-class GetPlaylist extends BaseRequest<GetPlaylistResult> {
+class GetPlaylistRequest extends BaseRequest<GetPlaylistResult> {
   final String id;
-  GetPlaylist(this.id);
+  GetPlaylistRequest(this.id);
 
   @override
   String get sinceVersion => '1.0.0';
