@@ -23,11 +23,6 @@ Future<DB> openDB() async {
   // `path` package is best practice to ensure the path is correctly
   // constructed for each platform.
   var path = p.join(await getDatabasesPath(), 'app.db');
-  var fd = File(path);
-  if (fd.existsSync()) {
-    log('deleting existing db at path=$path');
-    fd.deleteSync();
-  }
 
   log('opening sqlite db path=$path');
 
