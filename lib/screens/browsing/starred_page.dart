@@ -77,11 +77,14 @@ class StarredSongRow extends StatelessWidget {
       ),
       title: Text(
         song.title,
+        maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: isPlaying ? TextStyle(color: theme.accentColor) : null,
       ),
       subtitle: Text(
         subtitle,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: isPlaying ? TextStyle(color: theme.selectedRowColor) : null,
       ),
     );
