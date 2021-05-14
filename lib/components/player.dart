@@ -175,6 +175,7 @@ class PlayerSong {
 }
 
 enum PlayerStates { stopped, playing, paused, buffering }
+enum ShuffleMode { none, shuffle }
 
 class PlayerState {
   final PlayerStates current;
@@ -182,6 +183,7 @@ class PlayerState {
   final Queue queue;
   final Duration duration;
   final Duration position;
+  final ShuffleMode shuffleMode;
 
   PlayerState({
     required this.current,
@@ -189,6 +191,7 @@ class PlayerState {
     required this.queue,
     required this.duration,
     required this.position,
+    required this.shuffleMode,
   });
 
   bool get isPlaying => current == PlayerStates.playing;
@@ -204,6 +207,7 @@ class PlayerState {
     Queue? queue,
     Duration? duration,
     Duration? position,
+    ShuffleMode? shuffleMode,
   }) =>
       PlayerState(
         current: current ?? this.current,
@@ -211,6 +215,7 @@ class PlayerState {
         queue: queue ?? this.queue,
         duration: duration ?? this.duration,
         position: position ?? this.position,
+        shuffleMode: shuffleMode ?? this.shuffleMode,
       );
 
   static PlayerState initialState() => PlayerState(
@@ -219,6 +224,7 @@ class PlayerState {
         duration: Duration.zero,
         position: Duration.zero,
         queue: Queue([]),
+        shuffleMode: ShuffleMode.none,
       );
 
   @override
@@ -229,6 +235,7 @@ class PlayerState {
           current == other.current &&
           currentSong == other.currentSong &&
           queue == other.queue &&
+          shuffleMode == other.shuffleMode &&
           duration == other.duration &&
           position == other.position;
 
@@ -238,11 +245,12 @@ class PlayerState {
       currentSong.hashCode ^
       queue.hashCode ^
       duration.hashCode ^
-      position.hashCode;
+      position.hashCode ^
+      shuffleMode.hashCode;
 
   @override
   String toString() {
-    return 'PlayerState{current: $current, currentSong: $currentSong, queue: ${queue.length}, duration: $duration, position: $position}';
+    return 'PlayerState{current: $current, currentSong: $currentSong, queue: ${queue.length}, duration: $duration, position: $position, shuffleMode: ${describeEnum(shuffleMode)}';
   }
 }
 
