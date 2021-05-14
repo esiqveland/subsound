@@ -603,6 +603,7 @@ class StartupPlayer extends ReduxAction<AppState> {
               continuousPlayTime.inMilliseconds / duration.inMilliseconds;
           log('playedPortion=${playedPortion} prev.startedAt=${prev.startedAt}');
 
+          final prevId = prev.item?.getSongMetadata().songId;
           // https://www.last.fm/api/scrobbling#when-is-a-scrobble-a-scrobble
           // Send scrobble when:
           // 1. the song has been played for more than 4 minutes OR
@@ -610,11 +611,11 @@ class StartupPlayer extends ReduxAction<AppState> {
           //
           // TODO(scrobble): handle scrobbling when the last track of a playqueue finishes
           // ie. player goes to the completed state and stops playing.
-          if (continuousPlayTime > ScrobbleAlwaysPlaytime ||
+          if (prevId != null && continuousPlayTime > ScrobbleAlwaysPlaytime ||
               duration > ScrobbleMinimumDuration &&
                   playedPortion >= ScrobbleThreshold) {
             unawaited(dispatchFuture(StoreScrobbleAction(
-              id,
+              prevId!,
               playedAt: prev.startedAt,
             )));
           }
