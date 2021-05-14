@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:subsound/subsonic/base_request.dart';
 import 'package:subsound/subsonic/context.dart';
+import 'package:subsound/subsonic/requests/get_playlist.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/response.dart';
 
@@ -9,30 +10,6 @@ class GetPlaylistsResult {
   final List<PlaylistResult> playlists;
 
   GetPlaylistsResult(this.playlists);
-}
-
-class PlaylistResult {
-  final String id;
-  final String name;
-  final String comment;
-  final int songCount;
-  final Duration duration;
-  final bool isPublic;
-  final String owner;
-  final DateTime createdAt;
-  final DateTime changedAt;
-
-  PlaylistResult({
-    required this.id,
-    required this.name,
-    required this.comment,
-    required this.songCount,
-    required this.duration,
-    required this.isPublic,
-    required this.owner,
-    required this.createdAt,
-    required this.changedAt,
-  });
 }
 
 class GetPlaylists extends BaseRequest<GetPlaylistsResult> {
