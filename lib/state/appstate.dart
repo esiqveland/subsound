@@ -246,22 +246,23 @@ class Albums {
 }
 
 class Playlists {
-  final Map<String, PlaylistResult> data;
+  final Map<String, PlaylistResult> playlistList;
+  final Map<String, GetPlaylistResult> playlistCache;
 
-  Playlists(this.data);
+  Playlists(this.playlistList, this.playlistCache);
 
   Playlists add(PlaylistResult p) {
-    var m = Map.of(data);
+    var m = Map.of(playlistList);
     m[p.id] = p;
-    return Playlists(m);
+    return Playlists(m, playlistCache);
   }
 
   Playlists addAll(List<PlaylistResult> list) {
-    var m = Map.of(data);
+    var m = Map.of(playlistList);
     list.forEach((p) {
       m[p.id] = p;
     });
-    return Playlists(m);
+    return Playlists(m, playlistCache);
   }
 }
 
@@ -339,7 +340,7 @@ class DataState {
         albums: Albums({}, {}),
         songs: Songs({}),
         artists: Artists({}, [], {}),
-        playlists: Playlists({}),
+        playlists: Playlists({}, {}),
       );
 
   bool isStarred(SongResult s) => stars.songs.containsKey(s.id);

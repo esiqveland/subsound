@@ -13,6 +13,7 @@ import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_album_list2.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_artists.dart';
+import 'package:subsound/subsonic/requests/get_playlists.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/ping.dart';
 import 'package:subsound/subsonic/requests/post_scrobble.dart';
@@ -118,6 +119,26 @@ class UnstarIdCommand extends RunRequest {
   }
 }
 
+class RefreshPlaylistsCommand extends RunRequest {
+  final bool forceRefresh;
+
+  RefreshPlaylistsCommand({this.forceRefresh = true});
+
+  @override
+  Future<AppState?> reduce() async {
+    if (!forceRefresh) {}
+    if (!state.networkState.hasNetwork) {}
+
+    final resp = await GetPlaylists().run(state.loginState.toClient());
+
+    return state.copy(
+      dataState: state.dataState.copy(
+        playlists: state.dataState.playlists.addAll(resp.data.playlists),
+      ),
+    );
+  }
+}
+
 class RefreshStarredCommand extends RunRequest {
   final bool forceRefresh;
 
@@ -126,6 +147,8 @@ class RefreshStarredCommand extends RunRequest {
   @override
   Future<AppState> reduce() async {
     if (!forceRefresh) {}
+    if (!state.networkState.hasNetwork) {}
+
     final subsonicResponse =
         await GetStarred2().run(state.loginState.toClient());
 
