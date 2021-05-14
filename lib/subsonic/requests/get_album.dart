@@ -116,9 +116,11 @@ class SongResult {
     Map<String, dynamic> songData,
     SubsonicContext ctx,
   ) {
-    final songArtId = songData['coverArt'] as String?;
-    final coverArtLink =
-        songArtId != null ? GetCoverArt(songArtId).getImageUrl(ctx) : '';
+    final songArtId = songData['coverArt'] as String? ?? '';
+    final coverArtLink = songArtId.isNotEmpty
+        ? GetCoverArt(songArtId).getImageUrl(ctx)
+        : FallbackImageUrl;
+
     final duration = getDuration(songData['duration']);
 
     final id = songData['id'] as String;
@@ -172,41 +174,8 @@ class GetSongRequest extends BaseRequest<SongResult> {
     }
 
     final songData = data['subsonic-response']['song'] as Map<String, dynamic>;
-    final songArtId = songData['coverArt'] as String? ?? '';
-    final coverArtLink = songArtId.isNotEmpty
-        ? GetCoverArt(songArtId).getImageUrl(ctx)
-        : FallbackImageUrl;
-
-    final duration = getDuration(songData['duration']);
-
-    final id = songData['id'] as String;
-    final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
     final songResult = SongResult.fromJson(songData, ctx);
-    final songResult = SongResult(
-      id: id,
-      playUrl: playUrl,
-      parent: songData['parent'] as String,
-      title: songData['title'] as String,
-      artistName: songData['artist'] as String,
-      artistId: songData['artistId'] as String,
-      albumName: songData['album'] as String,
-      albumId: songData['albumId'] as String,
-      coverArtId: songArtId,
-      coverArtLink: coverArtLink,
-      year: songData['year'] as int? ?? 0,
-      duration: duration,
-      isVideo: songData['isVideo'] as bool? ?? false,
-      createdAt: DateTime.parse(songData['created'] as String),
-      type: songData['type'] as String,
-      bitRate: songData['bitRate'] as int? ?? 0,
-      trackNumber: songData['track'] as int? ?? 0,
-      fileSize: songData['size'] as int? ?? 0,
-      starred: parseStarred(songData['starred']),
-      starredAt: parseDateTime(songData['starred'] as String?),
-      contentType: songData['contentType'] as String? ?? '',
-      suffix: songData['suffix'] as String? ?? '',
-    );
 
     return SubsonicResponse(
       ResponseStatus.ok,
@@ -246,11 +215,6 @@ class GetAlbum extends BaseRequest<AlbumResult> {
           : coverArtId != null
               ? GetCoverArt(coverArtId).getImageUrl(ctx)
               : FallbackImageUrl;
-
-      final duration = getDuration(songData['duration']);
-
-      final id = songData['id'] as String;
-      final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
       return SongResult(
         id: id,

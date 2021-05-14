@@ -2,15 +2,13 @@ import 'dart:convert';
 
 import 'package:subsound/subsonic/base_request.dart';
 import 'package:subsound/subsonic/context.dart';
+import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/response.dart';
 
-class PlaylistEntry {}
-
 class GetPlaylistResult {
   PlaylistResult playlist;
-  //final List<SongResult> entries;
-  final List<PlaylistEntry> entries;
+  final List<SongResult> entries;
 
   GetPlaylistResult(this.playlist, this.entries);
 }
@@ -49,7 +47,7 @@ class GetPlaylist extends BaseRequest<GetPlaylistResult> {
   @override
   Future<SubsonicResponse<GetPlaylistResult>> run(SubsonicContext ctx) async {
     final response = await ctx.client.get(ctx.buildRequestUri(
-      'getPlaylists',
+      'getPlaylist',
       params: {
         'id': this.id,
       },
@@ -75,13 +73,13 @@ class GetPlaylist extends BaseRequest<GetPlaylistResult> {
       createdAt: parseDateTime(p['created'] as String?) ?? DateTime.now(),
     );
 
-    final rawData =
-        (data['subsonic-response']['playlist']['entry'] ?? []) as List;
+    final rawData = (data['subsonic-response']['playlist']['entry'] ?? [])
+        as List<Map<String, dynamic>>;
 
-    final List<PlaylistEntry> playlists =
-        rawData.map((e) => PlaylistEntry()).toList();
+    final List<SongResult> songs =
+        rawData.map((songData) => SongResult.fromJson(songData, ctx)).toList();
 
-    final res = GetPlaylistResult(playlist, playlists);
+    final res = GetPlaylistResult(playlist, songs);
 
     return SubsonicResponse(
       ResponseStatus.ok,

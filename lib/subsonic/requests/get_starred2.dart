@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_cover_art.dart';
-import 'package:subsound/subsonic/requests/stream_id.dart';
 import 'package:subsound/utils/duration.dart';
 
 import '../base_request.dart';
@@ -58,9 +57,12 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
       throw Exception(data);
     }
 
-    final starred2Field = data['subsonic-response']['starred2'];
-    final albumField = (starred2Field["album"] ?? []) as List;
-    final songField = (starred2Field["song"] ?? []) as List;
+    final starred2Field =
+        data['subsonic-response']['starred2'] as Map<String, dynamic>;
+    final albumField =
+        (starred2Field["album"] ?? []) as List<Map<String, dynamic>>;
+    final songField =
+        (starred2Field["song"] ?? []) as List<Map<String, dynamic>>;
 
     final lastModifiedField =
         data['subsonic-response']['starred2']['lastModified'] as int? ?? 0;
@@ -97,38 +99,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
     }).toList();
 
     final songs = songField.map((songData) {
-      final songArtId = songData['coverArt'] as String?;
-      final coverArtLink =
-          songArtId != null ? GetCoverArt(songArtId).getImageUrl(ctx) : '';
-      final duration = getDuration(songData['duration']);
-
-      final id = songData['id'] as String;
-      final playUrl = StreamItem(id).getDownloadUrl(ctx);
-
-      return SongResult(
-        id: id,
-        playUrl: playUrl,
-        parent: songData['parent'] as String,
-        title: songData['title'] as String,
-        artistName: songData['artist'] as String,
-        artistId: songData['artistId'] as String,
-        albumName: songData['album'] as String,
-        albumId: songData['albumId'] as String,
-        coverArtId: songArtId ?? '',
-        coverArtLink: coverArtLink,
-        year: songData['year'] as int? ?? 0,
-        duration: duration,
-        isVideo: songData['isVideo'] as bool? ?? false,
-        createdAt: DateTime.parse(songData['created'] as String),
-        type: songData['type'] as String,
-        bitRate: songData['bitRate'] as int? ?? 0,
-        trackNumber: songData['track'] as int? ?? 0,
-        fileSize: songData['size'] as int? ?? 0,
-        starred: parseStarred(songData['starred'] as String?),
-        starredAt: parseDateTime(songData['starred'] as String?),
-        contentType: songData['contentType'] as String? ?? '',
-        suffix: songData['suffix'] as String? ?? '',
-      );
+      return SongResult.fromJson(songData, ctx);
     }).toList()
       ..sort((a, b) => a.starredAt!.compareTo(b.starredAt!));
 
