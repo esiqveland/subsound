@@ -25,6 +25,7 @@ Future<DB> openDB() async {
   var path = p.join(await getDatabasesPath(), 'app.db');
   var fd = File(path);
   if (fd.existsSync()) {
+    log('deleting existing db at path=$path');
     fd.deleteSync();
   }
 
