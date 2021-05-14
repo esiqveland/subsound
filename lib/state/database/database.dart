@@ -34,6 +34,8 @@ Future<DB> openDB() async {
     path,
     version: 2,
     onConfigure: onConfigure,
+    //onCreate and onUpdate is mutually exclusive.
+    // we use onUpgrade to do all migrations, from v0 to vCurrent
     //onCreate: (db, version) {},
     onUpgrade: (db, oldVersion, newVersion) async {
       log('db: onUpgrade: oldVersion=$oldVersion newVersion=$newVersion');
