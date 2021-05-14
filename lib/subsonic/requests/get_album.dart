@@ -135,7 +135,7 @@ class SongResult {
       artistId: songData['artistId'] as String,
       albumName: songData['album'] as String,
       albumId: songData['albumId'] as String,
-      coverArtId: songArtId ?? '',
+      coverArtId: songArtId,
       coverArtLink: coverArtLink,
       year: songData['year'] as int? ?? 0,
       duration: duration,
@@ -208,7 +208,10 @@ class GetAlbum extends BaseRequest<AlbumResult> {
     final albumDataNew = data['subsonic-response']['album'];
     final String? coverArtId = albumDataNew['coverArt'] as String?;
 
-    final songs = (albumDataNew['song'] as List).map((songData) {
+    final List<Map<String, dynamic>>? songList =
+        albumDataNew['song'] as List<Map<String, dynamic>>;
+
+    final songs = (songList ?? []).map((songData) {
       final String? songArtId = songData['coverArt'] as String? ?? coverArtId;
       final coverArtLink = (songArtId != null && coverArtId != songArtId)
           ? GetCoverArt(songArtId).getImageUrl(ctx)
@@ -216,30 +219,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
               ? GetCoverArt(coverArtId).getImageUrl(ctx)
               : FallbackImageUrl;
 
-      return SongResult(
-        id: id,
-        playUrl: playUrl,
-        parent: songData['parent'] as String,
-        title: songData['title'] as String,
-        artistName: songData['artist'] as String,
-        artistId: songData['artistId'] as String,
-        albumName: songData['album'] as String,
-        albumId: songData['albumId'] as String,
-        coverArtId: songArtId ?? id,
-        coverArtLink: coverArtLink,
-        year: songData['year'] as int? ?? 0,
-        duration: duration,
-        isVideo: songData['isVideo'] as bool? ?? false,
-        createdAt: DateTime.parse(songData['created'] as String),
-        type: songData['type'] as String,
-        bitRate: songData['bitRate'] as int? ?? 0,
-        trackNumber: songData['track'] as int? ?? 0,
-        fileSize: songData['size'] as int? ?? 0,
-        starred: parseStarred(songData['starred'] as String?),
-        starredAt: parseDateTime(songData['starred'] as String?),
-        contentType: songData['contentType'] as String? ?? '',
-        suffix: songData['suffix'] as String? ?? '',
-      );
+      return SongResult.fromJson(songData, ctx);
     }).toList();
 
     final coverArtLink = coverArtId != null
