@@ -59,10 +59,8 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
 
     final starred2Field =
         data['subsonic-response']['starred2'] as Map<String, dynamic>;
-    final albumField =
-        (starred2Field["album"] ?? []) as List<Map<String, dynamic>>;
-    final songField =
-        (starred2Field["song"] ?? []) as List<Map<String, dynamic>>;
+    final albumField = (starred2Field["album"] ?? []) as List<dynamic>;
+    final songField = (starred2Field["song"] ?? []) as List<dynamic>;
 
     final lastModifiedField =
         data['subsonic-response']['starred2']['lastModified'] as int? ?? 0;
@@ -98,7 +96,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
       return albumResult;
     }).toList();
 
-    final songs = songField.map((songData) {
+    final songs = List<Map<String, dynamic>>.from(songField).map((songData) {
       return SongResult.fromJson(songData, ctx);
     }).toList()
       ..sort((a, b) => a.starredAt!.compareTo(b.starredAt!));

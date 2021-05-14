@@ -208,10 +208,10 @@ class GetAlbum extends BaseRequest<AlbumResult> {
     final albumDataNew = data['subsonic-response']['album'];
     final String? coverArtId = albumDataNew['coverArt'] as String?;
 
-    final List<Map<String, dynamic>>? songList =
-        albumDataNew['song'] as List<Map<String, dynamic>>;
+    final List<dynamic>? songList = albumDataNew['song'] as List<dynamic>;
 
-    final songs = (songList ?? []).map((songData) {
+    final songs =
+        List<Map<String, dynamic>>.from(songList ?? []).map((songData) {
       final String? songArtId = songData['coverArt'] as String? ?? coverArtId;
       final coverArtLink = (songArtId != null && coverArtId != songArtId)
           ? GetCoverArt(songArtId).getImageUrl(ctx)
