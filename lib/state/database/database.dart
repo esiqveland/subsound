@@ -28,8 +28,9 @@ Future<DB> openDB() async {
     path,
     version: 2,
     onConfigure: onConfigure,
-    onCreate: (db, version) {},
+    //onCreate: (db, version) {},
     onUpgrade: (db, oldVersion, newVersion) async {
+      log('db: onUpgrade: oldVersion=$oldVersion newVersion=$newVersion');
       var batch = db.batch();
       if (oldVersion < 2) {
         ScrobbleData.createTableV1(batch);
