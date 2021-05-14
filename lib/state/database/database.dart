@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as p;
@@ -24,7 +23,7 @@ Future<DB> openDB() async {
   // constructed for each platform.
   var path = p.join(await getDatabasesPath(), 'app.db');
 
-  log('opening sqlite db path=$path');
+  log('db: opening sqlite db path=$path');
 
   var db = await openDatabase(
     path,
