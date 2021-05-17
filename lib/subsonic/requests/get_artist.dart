@@ -116,7 +116,7 @@ class GetArtist extends BaseRequest<ArtistResult> {
       final duration = getDuration(album['duration']);
 
       return AlbumResultSimple(
-        album['id'] as String,
+        album['id'].toString() as String,
         album['parent'] as String,
         album['title'] as String,
         album['name'] as String,

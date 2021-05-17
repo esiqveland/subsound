@@ -26,10 +26,10 @@ class Album {
         coverArtId != null ? GetCoverArt(coverArtId).getImageUrl(ctx) : '';
 
     return Album(
-      id: data['id'] as String,
-      parent: data['parent'] as String,
-      title: data['title'] as String,
-      artist: data['artist'] as String,
+      id: data['id'].toString(),
+      parent: data['parent'] as String? ?? '',
+      title: data['title'] as String? ?? '',
+      artist: data['artist'] as String? ?? '',
       isDir: data['isDir'] as bool? ?? false,
       coverArtId: coverArtId ?? '',
       coverArtLink: coverArtLink,

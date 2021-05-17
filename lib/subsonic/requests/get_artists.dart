@@ -109,7 +109,7 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
                 final String artistName = artist['name'] as String? ?? '';
 
                 return Artist(
-                  id: artist['id'] as String,
+                  id: artist['id'].toString(),
                   name: artistName,
                   coverArtId: coverArtId,
                   coverArtLink: coverArtLink,
