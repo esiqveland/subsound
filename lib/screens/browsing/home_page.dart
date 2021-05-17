@@ -299,14 +299,16 @@ class StarredListView extends StatelessWidget {
 
 class HomePageTitle extends StatelessWidget {
   final String text;
-  const HomePageTitle(this.text, {Key? key}) : super(key: key);
+  final double? bottomPadding;
+  const HomePageTitle(this.text, {Key? key, this.bottomPadding})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(
+        padding: EdgeInsets.only(
           left: homePaddingLeft,
-          bottom: homePaddingBottom,
+          bottom: this.bottomPadding ?? homePaddingBottom,
         ),
         child: Text(
           text,
@@ -447,6 +449,7 @@ class PlaylistsScrollView extends StatelessWidget {
       children: [
         HomePageTitle(
           title,
+          bottomPadding: 0.0,
         ),
         ListView.builder(
             shrinkWrap: true,
