@@ -100,7 +100,7 @@ Non-goals:
  - [ ] Album page: summary in bottom of song list?
  - [ ] Album page: play button?
  - [X] Album page: play on click
- - [ ] Album page: Slide to enqueue
+ - [X] Album page: Slide to enqueue
  - [ ] Artist page: play button
  - [ ] Search
    - [ ] search page

@@ -8,9 +8,11 @@ import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
+import 'package:subsound/subsonic/models/album.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
+import 'package:subsound/subsonic/requests/get_playlist.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -26,11 +28,22 @@ class HomePage extends StatelessWidget {
         onLoadStarred: () async {
           final load1 = st.dispatchFuture(RefreshStarredCommand());
           final load2 = st.dispatchFuture(
-              GetAlbumsCommand(type: GetAlbumListType.recent, pageSize: 20));
+            GetAlbumsCommand(type: GetAlbumListType.recent, pageSize: 20),
+          );
+          final load3 = st.dispatchFuture(
+            GetAlbumsCommand(type: GetAlbumListType.newest, pageSize: 20),
+          );
+          final load4 = st.dispatchFuture(RefreshPlaylistsCommand());
 
-          await Future.wait([load1, load2]);
+          await Future.wait([load1, load2, load3, load4]);
 
           final starred = st.state.dataState.stars;
+          final recentAlbums =
+              st.state.dataState.albums.albumLists[GetAlbumListType.recent] ??
+                  [];
+          final newAlbums =
+              st.state.dataState.albums.albumLists[GetAlbumListType.newest] ??
+                  [];
 
           final data = [
             ...starred.albums.entries
@@ -75,7 +88,9 @@ class HomePage extends StatelessWidget {
 
           return HomeData(
             data,
-            st.state.dataState.albums,
+            recentAlbums,
+            newAlbums,
+            st.state.dataState.playlists.playlistList.values.toList(),
           );
         },
       ),
@@ -199,9 +214,11 @@ class StarredItem {
 
 class HomeData {
   final List<StarredItem> starred;
-  final Albums albums;
+  final List<Album> recentAlbums;
+  final List<Album> newAlbums;
+  final List<PlaylistResult> playlists;
 
-  HomeData(this.starred, this.albums);
+  HomeData(this.starred, this.recentAlbums, this.newAlbums, this.playlists);
 }
 
 class _HomePageViewModel extends Vm {
@@ -232,7 +249,7 @@ class StarredListView extends StatelessWidget {
   Widget build(BuildContext context) {
     var starred = data.starred;
 
-    final itemCount = starred.length + 1;
+    final itemCount = starred.length + 4;
 
     return ListView.builder(
       physics: BouncingScrollPhysics(),
@@ -240,11 +257,24 @@ class StarredListView extends StatelessWidget {
       padding: EdgeInsets.zero,
       itemBuilder: (context, listIndex) {
         if (listIndex == 0) {
-          return AlbumsScrollView(data: data);
+          return AlbumsScrollView(
+            title: "Recently played",
+            data: data.recentAlbums,
+          );
         } else if (listIndex == 1) {
+          return AlbumsScrollView(
+            title: "New albums",
+            data: data.newAlbums,
+          );
+        } else if (listIndex == 2) {
+          return PlaylistsScrollView(
+            title: "Playlists",
+            data: data.playlists,
+          );
+        } else if (listIndex == 3) {
           return HomePageTitle("Starred");
         } else {
-          final idx = listIndex - 2;
+          final idx = listIndex - 4;
           return StarredRow(
             item: starred[idx],
             isPlaying: starred[idx].isPlaying(model.currentSongId),
@@ -289,11 +319,13 @@ const homePaddingLeft = 8.0;
 const homePaddingBottom = 8.0;
 
 class AlbumsScrollView extends StatelessWidget {
-  final HomeData data;
+  final List<Album> data;
+  final String title;
 
   AlbumsScrollView({
     Key? key,
     required this.data,
+    required this.title,
   }) : super(key: key);
 
   @override
@@ -303,9 +335,8 @@ class AlbumsScrollView extends StatelessWidget {
     const albumHeight = 120.0;
     const albumPaddingTop = 8.0;
 
-    final totalCount = data.albums.albums.length;
-    final albums =
-        data.albums.albums.values.toList().sublist(0, min(10, totalCount));
+    final totalCount = data.length;
+    final albums = data.sublist(0, min(10, totalCount));
 
     return Container(
       child: Padding(
@@ -314,7 +345,7 @@ class AlbumsScrollView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             HomePageTitle(
-              "Recently played",
+              title,
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -393,6 +424,68 @@ class AlbumsScrollView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class PlaylistsScrollView extends StatelessWidget {
+  final List<PlaylistResult> data;
+  final String title;
+
+  PlaylistsScrollView({
+    Key? key,
+    required this.data,
+    required this.title,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HomePageTitle(
+          title,
+        ),
+        ListView.builder(
+            shrinkWrap: true,
+            physics: ScrollPhysics(),
+            itemCount: data.length,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (ctx, idx) {
+              var a = data[idx];
+
+              return ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: homePaddingLeft),
+                dense: true,
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AlbumScreen(albumId: a.id),
+                  ));
+                },
+                leading: CoverArtImage(
+                  FallbackImageUrl,
+                  id: FallbackImageUrl,
+                  width: 48.0,
+                  height: 48.0,
+                ),
+                title: Text(
+                  a.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.subtitle1,
+                ),
+                subtitle: Text(
+                  a.comment,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.subtitle1,
+                ),
+              );
+            }),
+      ],
     );
   }
 }

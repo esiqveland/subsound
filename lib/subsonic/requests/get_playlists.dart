@@ -12,6 +12,16 @@ class GetPlaylistsResult {
   GetPlaylistsResult(this.playlists);
 }
 
+bool? parseBool(dynamic val) {
+  if (val == null) {
+    return null;
+  } else if (val is bool) {
+    return val;
+  } else if (val is String) {
+    return "true" == val.toLowerCase();
+  }
+}
+
 class GetPlaylists extends BaseRequest<GetPlaylistsResult> {
   GetPlaylists();
 
@@ -39,7 +49,7 @@ class GetPlaylists extends BaseRequest<GetPlaylistsResult> {
               comment: p['comment'] as String? ?? '',
               songCount: p['songCount'] as int? ?? 0,
               duration: Duration(seconds: p['duration'] as int? ?? 0),
-              isPublic: p['public'] as bool? ?? false,
+              isPublic: parseBool(p['public']) ?? false,
               owner: p['owner'] as String? ?? '',
               changedAt:
                   parseDateTime(p['changed'] as String?) ?? DateTime.now(),

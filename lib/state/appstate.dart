@@ -13,6 +13,7 @@ import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/models/album.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
+import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_artists.dart';
 import 'package:subsound/subsonic/requests/get_playlist.dart';
@@ -197,9 +198,10 @@ class Songs {
 
 class Albums {
   final Map<String, Album> albums;
+  final Map<GetAlbumListType, List<Album>> albumLists;
   final Map<String, AlbumResult> albumResults;
 
-  Albums(this.albums, this.albumResults);
+  Albums(this.albums, this.albumResults, this.albumLists);
 
   Albums add(AlbumResult a) {
     final next2 = Map.of(albumResults);
@@ -214,7 +216,7 @@ class Albums {
       coverArtLink: a.coverArtLink,
       isDir: false,
     );
-    return Albums(next, next2);
+    return Albums(next, next2, albumLists);
   }
 
   Albums addAllSimple(List<AlbumResultSimple> data) {
@@ -229,7 +231,17 @@ class Albums {
         isDir: false,
       );
     });
-    return Albums(next, albumResults);
+    return Albums(next, albumResults, albumLists);
+  }
+
+  Albums addSet(GetAlbumListType type, List<Album> data) {
+    final next = Map.of(albums);
+    data.forEach((a) {
+      next[a.id] = a;
+    });
+    final l = Map.of(albumLists);
+    l[type] = data;
+    return Albums(next, albumResults, l);
   }
 
   Albums addAll(List<Album> data) {
@@ -237,7 +249,7 @@ class Albums {
     data.forEach((a) {
       next[a.id] = a;
     });
-    return Albums(next, albumResults);
+    return Albums(next, albumResults, albumLists);
   }
 
   AlbumResult? get(String albumId) {
@@ -345,7 +357,7 @@ class DataState {
 
   static DataState initialState() => DataState(
         stars: Starred({}, {}, null),
-        albums: Albums({}, {}),
+        albums: Albums({}, {}, {}),
         songs: Songs({}),
         artists: Artists({}, [], {}),
         playlists: Playlists({}, {}),

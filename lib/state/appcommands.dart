@@ -359,7 +359,7 @@ class GetAlbumsCommand extends RunRequest {
       offset: this.offset,
     ).run(state.loginState.toClient());
 
-    final albums = state.dataState.albums.addAll(subsonicResponse.data);
+    final albums = state.dataState.albums.addSet(type, subsonicResponse.data);
 
     return state.copy(
       dataState: state.dataState.copy(
