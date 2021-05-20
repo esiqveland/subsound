@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
+import 'package:subsound/screens/login/playlist_page.dart';
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
@@ -465,7 +466,7 @@ class PlaylistsScrollView extends StatelessWidget {
                 dense: true,
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AlbumScreen(albumId: a.id),
+                    builder: (context) => PlaylistScreen(playlistId: a.id),
                   ));
                 },
                 leading: CoverArtImage(
