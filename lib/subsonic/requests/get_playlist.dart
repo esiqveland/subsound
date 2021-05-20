@@ -21,6 +21,7 @@ class PlaylistResult {
   final Duration duration;
   final bool isPublic;
   final String owner;
+  final String? coverArt;
   final DateTime createdAt;
   final DateTime changedAt;
 
@@ -32,6 +33,7 @@ class PlaylistResult {
     required this.duration,
     required this.isPublic,
     required this.owner,
+    this.coverArt,
     required this.createdAt,
     required this.changedAt,
   });
@@ -69,15 +71,17 @@ class GetPlaylistRequest extends BaseRequest<GetPlaylistResult> {
       duration: Duration(seconds: p['duration'] as int? ?? 0),
       isPublic: p['public'] as bool? ?? false,
       owner: p['owner'] as String? ?? '',
+      coverArt: p['coverArt'] as String?,
       changedAt: parseDateTime(p['changed'] as String?) ?? DateTime.now(),
       createdAt: parseDateTime(p['created'] as String?) ?? DateTime.now(),
     );
 
-    final rawData = (data['subsonic-response']['playlist']['entry'] ?? [])
-        as List<Map<String, dynamic>>;
+    final rawData =
+        (data['subsonic-response']['playlist']['entry'] ?? []) as List<dynamic>;
 
-    final List<SongResult> songs =
-        rawData.map((songData) => SongResult.fromJson(songData, ctx)).toList();
+    final List<SongResult> songs = List<Map<String, dynamic>>.from(rawData)
+        .map((songData) => SongResult.fromJson(songData, ctx))
+        .toList();
 
     final res = GetPlaylistResult(playlist, songs);
 
