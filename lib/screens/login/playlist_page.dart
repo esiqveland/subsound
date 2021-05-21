@@ -100,6 +100,7 @@ class _PlaylistPageState extends State<_PlaylistPage> {
         if (snapshot.hasData) {
           var playlist = snapshot.data!;
           return PlaylistPage(
+            currentSongId: widget.model.currentSongId,
             playlist: playlist,
             onPlay: (song) => widget.model.onPlay(song, playlist.entries),
           );
@@ -118,11 +119,13 @@ class _PlaylistPageState extends State<_PlaylistPage> {
 }
 
 class PlaylistPage extends StatelessWidget {
+  final String currentSongId;
   final GetPlaylistResult playlist;
   final Function(SongResult) onPlay;
 
   PlaylistPage({
     Key? key,
+    required this.currentSongId,
     required this.playlist,
     required this.onPlay,
   }) : super(key: key);
@@ -136,7 +139,7 @@ class PlaylistPage extends StatelessWidget {
           var song = playlist.entries[idx];
           return StarredSongRow(
             song: song,
-            isPlaying: false,
+            isPlaying: currentSongId.isNotEmpty && song.id == currentSongId,
             onTapRow: onPlay,
             onTapCover: (song) {
               Navigator.of(context).push(MaterialPageRoute(
