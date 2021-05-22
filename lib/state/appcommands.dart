@@ -21,6 +21,7 @@ import 'package:subsound/subsonic/requests/get_playlists.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/ping.dart';
 import 'package:subsound/subsonic/requests/post_scrobble.dart';
+import 'package:subsound/subsonic/requests/requests.dart';
 import 'package:subsound/subsonic/requests/star.dart';
 import 'package:subsound/subsonic/response.dart';
 
@@ -389,6 +390,30 @@ class GetAlbumsCommand extends RunRequest {
     return state.copy(
       dataState: state.dataState.copy(
         albums: albums,
+      ),
+    );
+  }
+}
+
+class SearchCommand extends RunRequest {
+  final String searchQuery;
+
+  SearchCommand(this.searchQuery);
+
+  @override
+  Future<AppState?> reduce() async {
+    Search3Result resp = await Search3Request(searchQuery)
+        .run(state.loginState.toClient())
+        .then((value) => value.data);
+
+    var result = SearchResult(
+      DateTime.now(),
+      resp,
+    );
+
+    return state.copy(
+      dataState: state.dataState.copy(
+        searches: state.dataState.searches.addResult(searchQuery, result),
       ),
     );
   }

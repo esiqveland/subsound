@@ -18,6 +18,7 @@ import 'package:subsound/subsonic/requests/get_artist.dart';
 import 'package:subsound/subsonic/requests/get_artists.dart';
 import 'package:subsound/subsonic/requests/get_playlist.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
+import 'package:subsound/subsonic/requests/requests.dart';
 import 'package:subsound/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
@@ -338,12 +339,33 @@ class Artists {
   }
 }
 
+class SearchResult {
+  final DateTime timestamp;
+  final Search3Result data;
+
+  SearchResult(this.timestamp, this.data);
+}
+
+class Searches {
+  final Map<String, SearchResult> cache;
+
+  Searches(this.cache);
+
+  Searches addResult(String searchTerm, SearchResult r) {
+    var map = Map.of(this.cache);
+    map[searchTerm] = r;
+
+    return Searches(map);
+  }
+}
+
 class DataState {
   final Starred stars;
   final Albums albums;
   final Songs songs;
   final Artists artists;
   final Playlists playlists;
+  final Searches searches;
 
   DataState({
     required this.stars,
@@ -351,6 +373,7 @@ class DataState {
     required this.songs,
     required this.artists,
     required this.playlists,
+    required this.searches,
   });
 
   DataState copy({
@@ -359,6 +382,7 @@ class DataState {
     Songs? songs,
     Artists? artists,
     Playlists? playlists,
+    Searches? searches,
   }) =>
       DataState(
         stars: stars ?? this.stars,
@@ -366,6 +390,7 @@ class DataState {
         songs: songs ?? this.songs,
         artists: artists ?? this.artists,
         playlists: playlists ?? this.playlists,
+        searches: searches ?? this.searches,
       );
 
   static DataState initialState() => DataState(
@@ -374,6 +399,7 @@ class DataState {
         songs: Songs({}),
         artists: Artists({}, [], {}),
         playlists: Playlists({}, {}),
+        searches: Searches(),
       );
 
   bool isStarred(SongResult s) => stars.songs.containsKey(s.id);
