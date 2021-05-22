@@ -5,6 +5,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/database/database.dart';
 import 'package:subsound/state/database/scrobbles_db.dart';
 import 'package:subsound/state/errors.dart';
 import 'package:subsound/state/playerstate.dart';
@@ -163,6 +164,15 @@ class RefreshPlaylistsCommand extends RunRequest {
         playlists: state.dataState.playlists.addAll(resp.data.playlists),
       ),
     );
+  }
+}
+
+// logout user from server and reset local state such as database and cache.
+class LogoutCommand extends ReduxAction<AppState> {
+  @override
+  Future<AppState?> reduce() async {
+    DB db = await ResetDatabaseAction().run(database);
+    dispatch(SetDBAction(db));
   }
 }
 

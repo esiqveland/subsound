@@ -72,13 +72,24 @@ DB get database {
   return _db!;
 }
 
+class SetDBAction extends ReduxAction<AppState> {
+  final DB db;
+
+  SetDBAction(this.db);
+
+  @override
+  AppState? reduce() {
+    _db = this.db;
+  }
+}
+
 class StartupAction extends ReduxAction<AppState> {
   final DB db;
   StartupAction(this.db);
 
   @override
   Future<AppState> reduce() async {
-    _db = db;
+    dispatch(SetDBAction(db));
     await store.dispatchFuture(RestoreServerState());
     store.dispatch(RefreshAppState());
     await store.dispatchFuture(SetupCheckInternetCommand());

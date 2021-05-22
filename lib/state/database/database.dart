@@ -85,6 +85,20 @@ class DBServer {
   }
 }
 
+// Deletes existing database and returns a new DB instance setup with the newly
+// created database.
+class ResetDatabaseAction extends DatabaseAction<DB> {
+  @override
+  Future<DB> run(DB db) async {
+    if (db.database.isOpen) {
+      await db.database.close();
+    }
+    await deleteDatabase(await getDatabasesPath());
+    DB newDB = await openDB();
+    return newDB;
+  }
+}
+
 class DB {
   final Database database;
 
