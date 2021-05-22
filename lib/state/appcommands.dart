@@ -3,12 +3,14 @@ import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/database/database.dart';
 import 'package:subsound/state/database/scrobbles_db.dart';
 import 'package:subsound/state/errors.dart';
 import 'package:subsound/state/playerstate.dart';
+import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_album_list2.dart';
@@ -171,8 +173,14 @@ class RefreshPlaylistsCommand extends RunRequest {
 class LogoutCommand extends ReduxAction<AppState> {
   @override
   Future<AppState?> reduce() async {
+    await ArtworkCacheManager().emptyCache();
+    await DownloadCacheManager().emptyCache();
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
     DB db = await ResetDatabaseAction().run(database);
     dispatch(SetDBAction(db));
+    await dispatchFuture(StartupAction(db));
   }
 }
 

@@ -90,8 +90,8 @@ class DBServer {
 class ResetDatabaseAction extends DatabaseAction<DB> {
   @override
   Future<DB> run(DB db) async {
-    if (db.database.isOpen) {
-      await db.database.close();
+    if (db.isOpen) {
+      await db.close();
     }
     await deleteDatabase(await getDatabasesPath());
     DB newDB = await openDB();
@@ -105,6 +105,8 @@ class DB {
   DB({
     required Database database,
   }) : this.database = database;
+
+  bool get isOpen => database.isOpen;
 
   Future<void> close() async {
     await database.close();

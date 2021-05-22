@@ -94,6 +94,13 @@ class DownloadCacheManager extends CacheManager {
     return _instance!;
   }
 
+  @override
+  Future<void> emptyCache() async {
+    await super.emptyCache();
+    final dir = await _getCacheDir();
+    await dir.delete(recursive: true);
+  }
+
   Future<File> loadSong(CachedSong meta) async {
     var cachedFile = await getCachedSongFile(meta);
     if (cachedFile.existsSync() && await cachedFile.length() == meta.fileSize) {
