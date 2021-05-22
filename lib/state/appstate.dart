@@ -134,6 +134,8 @@ class Starred {
 
   Starred(this.songs, this.albums, this._lastUpdatedAt);
 
+  DateTime? get lastUpdated => _lastUpdatedAt;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

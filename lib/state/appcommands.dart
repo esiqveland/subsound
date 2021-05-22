@@ -167,13 +167,20 @@ class RefreshPlaylistsCommand extends RunRequest {
 }
 
 class RefreshStarredCommand extends RunRequest {
+  static Duration cacheTime = Duration(hours: 1);
   final bool forceRefresh;
 
   RefreshStarredCommand({this.forceRefresh = true});
 
   @override
-  Future<AppState> reduce() async {
-    if (!forceRefresh) {}
+  Future<AppState?> reduce() async {
+    DateTime lastUpdated = state.dataState.stars.lastUpdated ??
+        DateTime.fromMillisecondsSinceEpoch(0);
+    if (!forceRefresh &&
+        lastUpdated.isBefore(DateTime.now().subtract(cacheTime))) {
+      log('RefreshStarredCommand: using cache from ${lastUpdated}');
+      return null;
+    }
     if (!state.networkState.hasNetwork) {}
 
     final subsonicResponse =
