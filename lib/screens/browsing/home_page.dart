@@ -209,7 +209,7 @@ class StarredItem {
   }
 
   bool isPlaying(String currentSongId) {
-    return song?.id == currentSongId;
+    return currentSongId.isNotEmpty && song?.id == currentSongId;
   }
 }
 
@@ -234,6 +234,35 @@ class _HomePageViewModel extends Vm {
     required this.onPlayAlbum,
     required this.onLoadStarred,
   }) : super(equals: [currentSongId]);
+}
+
+class StarredScrollView extends StatelessWidget {
+  final List<StarredItem> starred;
+  final String currentPlayingId;
+  final Function(StarredItem) onPlay;
+
+  StarredScrollView({
+    Key? key,
+    required this.starred,
+    required this.currentPlayingId,
+    required this.onPlay,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: starred.length,
+      shrinkWrap: true,
+      itemBuilder: (context, idx) {
+        return StarredRow(
+          item: starred[idx],
+          isPlaying: currentPlayingId.isNotEmpty &&
+              starred[idx].isPlaying(currentPlayingId),
+          onPlay: onPlay,
+        );
+      },
+    );
+  }
 }
 
 class StarredListView extends StatelessWidget {
@@ -282,7 +311,6 @@ class StarredListView extends StatelessWidget {
             onPlay: (item) {
               if (item.getSong() != null) {
                 var queue = starred
-                    //.sublist(idx)
                     .where((element) => element.getSong() != null)
                     .map((e) => e.getSong()!)
                     .toList();
