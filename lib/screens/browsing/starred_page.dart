@@ -177,7 +177,6 @@ class StarredListView extends StatelessWidget {
         onPlay: (item) {
           if (item.getSong() != null) {
             var queue = data
-                //.sublist(idx)
                 .where((element) => element.getSong() != null)
                 .map((e) => e.getSong()!)
                 .toList();
