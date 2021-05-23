@@ -354,8 +354,11 @@ class Searches {
   Searches addResult(String searchTerm, SearchResult r) {
     var map = Map.of(this.cache);
     map[searchTerm] = r;
-
     return Searches(map);
+  }
+
+  SearchResult get(String query) {
+    return cache[query]!;
   }
 }
 
@@ -399,7 +402,7 @@ class DataState {
         songs: Songs({}),
         artists: Artists({}, [], {}),
         playlists: Playlists({}, {}),
-        searches: Searches(),
+        searches: Searches({}),
       );
 
   bool isStarred(SongResult s) => stars.songs.containsKey(s.id);
