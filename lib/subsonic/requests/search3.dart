@@ -1,9 +1,10 @@
 import 'dart:convert';
 
+import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/subsonic.dart';
 
 class Search3Result {
-  final List<Song> songs;
+  final List<SongResult> songs;
 
   Search3Result(this.songs);
 }
@@ -70,8 +71,10 @@ class Search3Request extends BaseRequest<Search3Result> {
       throw Exception(data);
     }
 
-    final List<Song> songs = (data['searchResult3']['song'] as List)
-        .map((song) => Song.parse(song as Map<String, dynamic>))
+    var list = data['searchResult3']['song'] as List<dynamic>;
+
+    final List<SongResult> songs = List<Map<String, dynamic>>.from(list)
+        .map((song) => SongResult.fromJson(song, ctx))
         .toList();
 
     return SubsonicResponse(
