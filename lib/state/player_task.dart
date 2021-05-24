@@ -665,7 +665,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     unawaited(_stateSubscription?.cancel());
     unawaited(_idxSubscription?.cancel());
     await _player.stop();
-    await _player.dispose();
+    //await _player.dispose();
     // Shut down the background task.
     await super.onStop();
   }
