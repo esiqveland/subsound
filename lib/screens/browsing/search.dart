@@ -89,6 +89,7 @@ class _SearchMusicState extends State<_SearchMusic> {
         result?.songs.map((e) => StarredItem(song: e)).toList() ?? [];
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CupertinoSearchTextField(
           // onChanged: ,
@@ -108,12 +109,9 @@ class _SearchMusicState extends State<_SearchMusic> {
                     }));
           },
         ),
-        SizedBox(height: 10),
-        Text("Artists"),
-        SizedBox(height: 10),
-        Text("Albums"),
-        SizedBox(height: 10),
-        Text("Songs"),
+        HomePageTitle("Artists"),
+        HomePageTitle("Albums"),
+        HomePageTitle("Songs"),
         if (!loading)
           StarredScrollView(
             starred: songResults,
