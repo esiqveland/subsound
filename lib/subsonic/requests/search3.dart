@@ -1,12 +1,16 @@
 import 'dart:convert';
 
 import 'package:subsound/subsonic/requests/get_album.dart';
+import 'package:subsound/subsonic/requests/get_artist.dart';
+import 'package:subsound/subsonic/requests/get_artists.dart';
 import 'package:subsound/subsonic/subsonic.dart';
 
 class Search3Result {
   final List<SongResult> songs;
+  final List<AlbumResultSimple> albums;
+  final List<Artist> artists;
 
-  Search3Result(this.songs);
+  Search3Result(this.songs, this.albums, this.artists);
 }
 
 class CountOffset {
@@ -71,8 +75,18 @@ class Search3Request extends BaseRequest<Search3Result> {
       throw Exception(data);
     }
 
-    var list = data['searchResult3']['song'] as List<dynamic>;
+    var listArtist = data['searchResult3']['artist'] as List<dynamic>;
+    final List<Artist> artists = List<Map<String, dynamic>>.from(listArtist)
+        .map((artistData) => Artist.fromJson(artistData, ctx))
+        .toList();
 
+    var listAlbum = data['searchResult3']['album'] as List<dynamic>;
+    final List<AlbumResultSimple> albums =
+        List<Map<String, dynamic>>.from(listAlbum)
+            .map((song) => AlbumResultSimple.fromJson(song, ctx))
+            .toList();
+
+    var list = data['searchResult3']['song'] as List<dynamic>;
     final List<SongResult> songs = List<Map<String, dynamic>>.from(list)
         .map((song) => SongResult.fromJson(song, ctx))
         .toList();
@@ -80,7 +94,7 @@ class Search3Request extends BaseRequest<Search3Result> {
     return SubsonicResponse(
       ResponseStatus.ok,
       ctx.version,
-      Search3Result(songs),
+      Search3Result(songs, albums, artists),
     );
   }
 }
