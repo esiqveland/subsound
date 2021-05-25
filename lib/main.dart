@@ -4,6 +4,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
@@ -25,9 +26,13 @@ final Map<String, WidgetBuilder> appRoutes = {
   PlayerScreen.routeName: (context) => PlayerScreen(),
 };
 
+final Logger logger = Logger("AppLogger");
+
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
+  logger.level = Level.ALL;
+  Logger.root.level = Level.ALL; // defaults to Level.INFO
   if (Platform.isWindows || Platform.isLinux) {
     // Initialize FFI
     sqfliteFfiInit();
