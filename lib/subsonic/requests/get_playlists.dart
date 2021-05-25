@@ -44,7 +44,7 @@ class GetPlaylists extends BaseRequest<GetPlaylistsResult> {
 
     final List<PlaylistResult> playlists = rawData
         .map((p) => PlaylistResult(
-              id: p['id'].toString() as String,
+              id: p['id'].toString(),
               name: p['name'] as String? ?? '',
               comment: p['comment'] as String? ?? '',
               songCount: p['songCount'] as int? ?? 0,
