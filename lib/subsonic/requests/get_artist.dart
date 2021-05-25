@@ -65,6 +65,35 @@ class AlbumResultSimple {
   String durationNice() {
     return formatDuration(duration);
   }
+
+  static AlbumResultSimple fromJson(
+    Map<String, dynamic> albumData,
+    SubsonicContext ctx,
+  ) {
+    final songArtId = albumData['coverArt'] as String? ?? '';
+    final coverArtLink = songArtId.isNotEmpty
+        ? GetCoverArt(songArtId).getImageUrl(ctx)
+        : FallbackImageUrl;
+
+    final duration = getDuration(albumData['duration']);
+
+    final id = albumData['id'] as String;
+
+    return AlbumResultSimple.named(
+      id: id,
+      title: albumData['title'] as String? ?? '',
+      name: albumData['name'] as String? ?? '',
+      artistName: albumData['artist'] as String? ?? '',
+      artistId: albumData['artistId'] as String? ?? '',
+      coverArtId: songArtId.isEmpty ? coverArtLink : songArtId,
+      coverArtLink: coverArtLink,
+      year: albumData['year'] as int? ?? 0,
+      duration: duration,
+      songCount: albumData['songCount'] as int? ?? 0,
+      createdAt: DateTime.parse(albumData['created'] as String),
+      starredAt: parseDateTime(albumData['starred'] as String?),
+    );
+  }
 }
 
 class ArtistResult {
