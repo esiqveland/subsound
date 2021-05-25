@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:subsound/subsonic/requests/get_cover_art.dart';
+import 'package:subsound/subsonic/subsonic.dart';
 
 import '../base_request.dart';
 import '../context.dart';
@@ -51,6 +52,27 @@ class Artist {
   String toString() {
     return 'Artist{id: $id, name: $name, coverArt: $coverArtId, albumCount: $albumCount}';
   }
+
+  static Artist fromJson(Map<String, dynamic> artist, SubsonicContext ctx) {
+    String artistImageUrl = artist["artistImageUrl"] as String? ?? '';
+    final String coverArt = artist['coverArt'] as String? ?? '';
+    final coverArtLink = artistImageUrl.isNotEmpty
+        ? artistImageUrl
+        : coverArt.isNotEmpty
+            ? GetCoverArt(coverArt).getImageUrl(ctx)
+            : FallbackImageUrl;
+
+    final String coverArtId = coverArt.isNotEmpty ? coverArt : coverArtLink;
+    final String artistName = artist['name'] as String? ?? '';
+
+    return Artist(
+      id: artist['id'].toString(),
+      name: artistName,
+      coverArtId: coverArtId,
+      coverArtLink: coverArtLink,
+      albumCount: artist['albumCount'] as int? ?? 0,
+    );
+  }
 }
 
 class GetArtistsRequest extends BaseRequest<GetArtistsData> {
@@ -91,31 +113,12 @@ class GetArtistsRequest extends BaseRequest<GetArtistsData> {
     final out = GetArtistsData(
       ignoredArticles ?? '',
       artistIndex.map((entry) {
+        var aList = entry['artist'] as List<dynamic>;
+
         return ArtistIndexEntry(
           entry['name'] as String? ?? '',
-          (entry['artist'] as List<dynamic>)
-              .map((artist) {
-                String artistImageUrl =
-                    artist["artistImageUrl"] as String? ?? '';
-                final String coverArt = artist['coverArt'] as String? ?? '';
-                final coverArtLink = artistImageUrl.isNotEmpty
-                    ? artistImageUrl
-                    : coverArt.isNotEmpty
-                        ? GetCoverArt(coverArt).getImageUrl(ctx)
-                        : "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png";
-
-                final String coverArtId =
-                    coverArt.isNotEmpty ? coverArt : coverArtLink;
-                final String artistName = artist['name'] as String? ?? '';
-
-                return Artist(
-                  id: artist['id'].toString(),
-                  name: artistName,
-                  coverArtId: coverArtId,
-                  coverArtLink: coverArtLink,
-                  albumCount: artist['albumCount'] as int? ?? 0,
-                );
-              })
+          List<Map<String, dynamic>>.from(aList)
+              .map((artist) => Artist.fromJson(artist, ctx))
               .map((element) => element)
               .toList(),
         );
