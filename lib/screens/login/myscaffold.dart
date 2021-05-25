@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
+import 'package:subsound/screens/browsing/search.dart';
 import 'package:subsound/screens/login/bottomnavbar.dart';
 import 'package:subsound/screens/login/drawer.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
@@ -40,10 +41,12 @@ final navBarItems = [
   ),
   NavItems(
       BottomNavigationBarItem(
-        label: 'Player',
-        icon: Icon(Icons.play_circle_outline_outlined),
+        label: 'Search',
+        icon: Icon(Icons.search),
       ), (context) {
-    Navigator.of(context).pushNamed(PlayerScreen.routeName);
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => SearchScreen(),
+    ));
   }),
   // NavItems(
   //     BottomNavigationBarItem(
