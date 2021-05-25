@@ -212,13 +212,6 @@ class GetAlbum extends BaseRequest<AlbumResult> {
 
     final songs =
         List<Map<String, dynamic>>.from(songList ?? []).map((songData) {
-      final String? songArtId = songData['coverArt'] as String? ?? coverArtId;
-      final coverArtLink = (songArtId != null && coverArtId != songArtId)
-          ? GetCoverArt(songArtId).getImageUrl(ctx)
-          : coverArtId != null
-              ? GetCoverArt(coverArtId).getImageUrl(ctx)
-              : FallbackImageUrl;
-
       return SongResult.fromJson(songData, ctx);
     }).toList();
 
