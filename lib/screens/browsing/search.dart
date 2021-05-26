@@ -72,7 +72,7 @@ class _SearchModel extends Vm {
     required this.onPlaySong,
     required this.onPlayAlbum,
     required this.currentPlayingId,
-  });
+  }) : super(equals: [currentPlayingId]);
 }
 
 class _SearchMusic extends StatefulWidget {
