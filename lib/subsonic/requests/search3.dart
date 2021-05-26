@@ -75,19 +75,20 @@ class Search3Request extends BaseRequest<Search3Result> {
       throw Exception(data);
     }
 
-    var listArtist = data['searchResult3']['artist'] as List<dynamic>;
-    final List<Artist> artists = List<Map<String, dynamic>>.from(listArtist)
-        .map((artistData) => Artist.fromJson(artistData, ctx))
-        .toList();
+    var listArtist = data['searchResult3']['artist'] as List<dynamic>?;
+    final List<Artist> artists =
+        List<Map<String, dynamic>>.from(listArtist ?? [])
+            .map((artistData) => Artist.fromJson(artistData, ctx))
+            .toList();
 
-    var listAlbum = data['searchResult3']['album'] as List<dynamic>;
+    var listAlbum = data['searchResult3']['album'] as List<dynamic>?;
     final List<AlbumResultSimple> albums =
-        List<Map<String, dynamic>>.from(listAlbum)
+        List<Map<String, dynamic>>.from(listAlbum ?? [])
             .map((song) => AlbumResultSimple.fromJson(song, ctx))
             .toList();
 
-    var list = data['searchResult3']['song'] as List<dynamic>;
-    final List<SongResult> songs = List<Map<String, dynamic>>.from(list)
+    var list = data['searchResult3']['song'] as List<dynamic>?;
+    final List<SongResult> songs = List<Map<String, dynamic>>.from(list ?? [])
         .map((song) => SongResult.fromJson(song, ctx))
         .toList();
 

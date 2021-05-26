@@ -1,5 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:subsound/screens/browsing/home_page.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
 import 'package:subsound/state/appcommands.dart';
@@ -14,7 +15,16 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MyScaffold(
       appBar: AppBarSettings(disableAppBar: true),
-      body: (context) => Center(child: SearchField()),
+      body: (context) => CustomScrollView(
+        primary: true,
+        physics: BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        slivers: [
+          SliverAppBar(),
+          SliverToBoxAdapter(child: SearchField()),
+        ],
+      ),
     );
   }
 }
@@ -85,48 +95,93 @@ class _SearchMusicState extends State<_SearchMusic> {
 
   @override
   Widget build(BuildContext context) {
+    // List<StarredItem> artistResults =
+    //     result?.artists.map((e) => StarredItem(album: e)).toList() ?? [];
+
+    List<StarredItem> albumResults =
+        result?.albums.map((e) => StarredItem(album: e)).toList() ?? [];
+
     List<StarredItem> songResults =
         result?.songs.map((e) => StarredItem(song: e)).toList() ?? [];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CupertinoSearchTextField(
-          // onChanged: ,
-          onSubmitted: (val) {
-            this.setState(() {
-              result = null;
-              loading = true;
-            });
-            widget.model
-                .onSearch(val)
-                .then((response) => this.setState(() {
-                      result = response;
-                      response.songs.map((e) => StarredItem(song: e)).toList();
-                    }))
-                .whenComplete(() => this.setState(() {
-                      loading = false;
-                    }));
-          },
-        ),
-        HomePageTitle("Artists"),
-        HomePageTitle("Albums"),
-        HomePageTitle("Songs"),
-        if (!loading)
-          StarredScrollView(
-            starred: songResults,
-            currentPlayingId: widget.model.currentPlayingId,
-            onPlay: (starredItem) {
-              if (starredItem.getSong() != null) {
-                var queue = songResults
-                    .where((element) => element.getSong() != null)
-                    .map((e) => e.getSong()!)
-                    .toList();
-                widget.model.onPlaySong(starredItem.getSong()!, queue);
-              } else if (starredItem.getAlbum() != null) {
-                widget.model.onPlayAlbum(starredItem.getAlbum()!);
-              } else {}
+    return CustomScrollView(
+      primary: false,
+      shrinkWrap: true,
+      // crossAxisAlignment: CrossAxisAlignment.start,
+      // children: [
+      slivers: [
+        SliverToBoxAdapter(
+          child: CupertinoSearchTextField(
+            // onChanged: ,
+            onSubmitted: (val) {
+              this.setState(() {
+                result = null;
+                loading = true;
+              });
+              widget.model
+                  .onSearch(val)
+                  .then((response) => this.setState(() {
+                        result = response;
+                        response.songs
+                            .map((e) => StarredItem(song: e))
+                            .toList();
+                      }))
+                  .whenComplete(() => this.setState(() {
+                        loading = false;
+                      }));
             },
+          ),
+        ),
+        SliverToBoxAdapter(child: HomePageTitle("Artists")),
+        SliverToBoxAdapter(child: HomePageTitle("Albums")),
+        if (!loading)
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (ctx, idx) {
+                return StarredRow(
+                  item: albumResults[idx],
+                  isPlaying: albumResults[idx]
+                      .isPlaying(widget.model.currentPlayingId),
+                  onPlay: (starredItem) {
+                    if (starredItem.getSong() != null) {
+                      var queue = songResults
+                          .where((element) => element.getSong() != null)
+                          .map((e) => e.getSong()!)
+                          .toList();
+                      widget.model.onPlaySong(starredItem.getSong()!, queue);
+                    } else if (starredItem.getAlbum() != null) {
+                      widget.model.onPlayAlbum(starredItem.getAlbum()!);
+                    } else {}
+                  },
+                );
+              },
+              childCount: albumResults.length,
+            ),
+          ),
+        SliverToBoxAdapter(child: HomePageTitle("Songs")),
+        if (!loading)
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (ctx, idx) {
+                return StarredRow(
+                  item: songResults[idx],
+                  isPlaying:
+                      songResults[idx].isPlaying(widget.model.currentPlayingId),
+                  onPlay: (starredItem) {
+                    if (starredItem.getSong() != null) {
+                      var queue = songResults
+                          .where((element) => element.getSong() != null)
+                          .map((e) => e.getSong()!)
+                          .toList();
+                      widget.model.onPlaySong(starredItem.getSong()!, queue);
+                    } else if (starredItem.getAlbum() != null) {
+                      widget.model.onPlayAlbum(starredItem.getAlbum()!);
+                    } else {}
+                  },
+                );
+              },
+              childCount: songResults.length,
+            ),
           ),
       ],
     );
