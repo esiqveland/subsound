@@ -107,11 +107,16 @@ class _SearchMusicState extends State<_SearchMusic> {
     return CustomScrollView(
       primary: false,
       shrinkWrap: true,
-      // crossAxisAlignment: CrossAxisAlignment.start,
-      // children: [
       slivers: [
         SliverToBoxAdapter(
           child: CupertinoSearchTextField(
+            onChanged: (val) {
+              if (val.isEmpty) {
+                this.setState(() {
+                  result = null;
+                });
+              }
+            },
             // onChanged: ,
             onSubmitted: (val) {
               this.setState(() {
@@ -122,9 +127,6 @@ class _SearchMusicState extends State<_SearchMusic> {
                   .onSearch(val)
                   .then((response) => this.setState(() {
                         result = response;
-                        response.songs
-                            .map((e) => StarredItem(song: e))
-                            .toList();
                       }))
                   .whenComplete(() => this.setState(() {
                         loading = false;
