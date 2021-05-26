@@ -31,8 +31,8 @@ final Logger logger = Logger("AppLogger");
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  logger.level = Level.ALL;
-  Logger.root.level = Level.ALL; // defaults to Level.INFO
+  // logger.level = Level.ALL;
+  // Logger.root.level = Level.ALL; // defaults to Level.INFO
   if (Platform.isWindows || Platform.isLinux) {
     // Initialize FFI
     sqfliteFfiInit();
