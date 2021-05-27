@@ -1,20 +1,28 @@
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:subsound/storage/cache.dart';
 
 import '../subsonic.dart';
+
+enum StreamFormat {
+  raw,
+  mp3,
+}
 
 /// Downloads a given media file. Similar to stream,
 /// but this method returns the original media data without transcoding or downsampling.
 class StreamItem extends BaseRequest<Uint8List> {
   final String id;
   final int? maxBitRate;
+  final StreamFormat? streamFormat;
 
   StreamItem(
     this.id, {
     this.maxBitRate,
+    this.streamFormat = StreamFormat.mp3,
   });
 
   @override
@@ -27,6 +35,7 @@ class StreamItem extends BaseRequest<Uint8List> {
       params: {
         'id': '$id',
         if (maxBitRate != null) 'maxBitRate': '$maxBitRate',
+        if (streamFormat != null) 'format': '${describeEnum(streamFormat!)}'
       },
     );
 
