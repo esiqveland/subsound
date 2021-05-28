@@ -117,12 +117,14 @@ class _SearchMusicState extends State<_SearchMusic> {
                 });
               }
             },
-            // onChanged: ,
             onSubmitted: (val) {
               this.setState(() {
                 result = null;
                 loading = true;
               });
+              if (val.isEmpty) {
+                return;
+              }
               widget.model
                   .onSearch(val)
                   .then((response) => this.setState(() {
