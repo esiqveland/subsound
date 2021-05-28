@@ -158,6 +158,7 @@ class _AppScaffold extends StatelessWidget {
     final double _panelMaxSize = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: WeSlide(
         controller: _controller,
         panelMinSize: _panelMinSize,
