@@ -126,17 +126,7 @@ class SongResult {
     final duration = getDuration(songData['duration']);
 
     final id = songData['id'] as String;
-
-    StreamFormat streamFormat = StreamFormat.mp3;
-    final playUrl = StreamItem(
-      id,
-      streamFormat: streamFormat,
-    ).getDownloadUrl(ctx);
-
-    String suffix = songData['suffix'] as String? ?? '';
-    String contentType = songData['contentType'] as String? ?? '';
-    suffix = streamFormat.toSuffix() ?? suffix;
-    contentType = streamFormat.toContentType() ?? contentType;
+    final playUrl = StreamItem(id).getDownloadUrl(ctx);
 
     final artistId = songData['artistId'];
     if (artistId == null) {
@@ -164,8 +154,8 @@ class SongResult {
       fileSize: songData['size'] as int? ?? 0,
       starred: parseStarred(songData['starred'] as String?),
       starredAt: parseDateTime(songData['starred'] as String?),
-      contentType: contentType,
-      suffix: suffix,
+      contentType: songData['contentType'] as String? ?? '',
+      suffix: songData['suffix'] as String? ?? '',
       playCount: songData['playCount'] as int? ?? 0,
     );
   }

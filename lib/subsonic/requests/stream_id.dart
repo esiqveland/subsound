@@ -12,26 +12,6 @@ enum StreamFormat {
   mp3,
 }
 
-extension MediaFormat on StreamFormat {
-  String? toSuffix() {
-    switch (this) {
-      case StreamFormat.raw:
-        return null;
-      case StreamFormat.mp3:
-        return "mp3";
-    }
-  }
-
-  String? toContentType() {
-    switch (this) {
-      case StreamFormat.raw:
-        return null;
-      case StreamFormat.mp3:
-        return "audio/mpeg";
-    }
-  }
-}
-
 /// Downloads a given media file. Similar to stream,
 /// but this method returns the original media data without transcoding or downsampling.
 class StreamItem extends BaseRequest<Uint8List> {
