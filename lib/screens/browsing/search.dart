@@ -162,7 +162,9 @@ class _SearchMusicState extends State<_SearchMusic> {
               childCount: albumResults.length,
             ),
           ),
-        SliverToBoxAdapter(child: HomePageTitle("Songs")),
+        SliverToBoxAdapter(
+          child: HomePageTitle("Songs"),
+        ),
         if (!loading)
           SliverList(
             delegate: SliverChildBuilderDelegate(

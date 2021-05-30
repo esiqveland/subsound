@@ -1,6 +1,8 @@
 import 'package:async_redux/async_redux.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
+import 'package:subsound/screens/browsing/home_page.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
@@ -109,11 +111,17 @@ class StarredAlbumRow extends StatelessWidget {
       onTap: () {
         this.onTap(album);
       },
-      leading: CoverArtImage(
-        album.coverArtLink,
-        id: album.coverArtId,
-        width: 72.0,
-        height: 72.0,
+      contentPadding: const EdgeInsets.only(left: homePaddingLeft),
+      leading: GestureDetector(
+        onTap: () {
+          this.onTapCover(album);
+        },
+        child: CoverArtImage(
+          album.coverArtLink,
+          id: album.coverArtId,
+          width: 72.0,
+          height: 72.0,
+        ),
       ),
       title: Text(album.title),
       subtitle: Text(album.artistName),

@@ -4,6 +4,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:subsound/components/covert_art.dart';
+import 'package:subsound/screens/browsing/starred_page.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/screens/login/playlist_page.dart';
 import 'package:subsound/state/appcommands.dart';
@@ -107,90 +108,6 @@ class _StarredPageStateful extends StatefulWidget {
   @override
   State<_StarredPageStateful> createState() {
     return _StarredPageState();
-  }
-}
-
-class StarredSongRow extends StatelessWidget {
-  final SongResult song;
-  final bool isPlaying;
-  final Function(SongResult) onTapRow;
-  final Function(SongResult) onTapCover;
-
-  StarredSongRow({
-    Key? key,
-    required this.song,
-    required this.isPlaying,
-    required this.onTapRow,
-    required this.onTapCover,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = Theme.of(context);
-    var subtitle = song.artistName;
-    if (song.albumName.isNotEmpty) {
-      subtitle = subtitle + "  -  ${song.albumName}";
-    }
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: homePaddingLeft),
-      dense: true,
-      onTap: () {
-        this.onTapRow(song);
-      },
-      leading: GestureDetector(
-        onTap: () {
-          this.onTapCover(song);
-        },
-        child: CoverArtImage(
-          song.coverArtLink,
-          id: song.coverArtId,
-          width: 48.0,
-          height: 48.0,
-        ),
-      ),
-      title: Text(
-        song.title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: isPlaying ? TextStyle(color: theme.accentColor) : null,
-      ),
-      subtitle: Text(
-        subtitle,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: isPlaying ? TextStyle(color: theme.selectedRowColor) : null,
-      ),
-    );
-  }
-}
-
-class StarredAlbumRow extends StatelessWidget {
-  final AlbumResultSimple album;
-  final Function(AlbumResultSimple) onTap;
-  final Function(AlbumResultSimple) onTapCover;
-
-  const StarredAlbumRow({
-    Key? key,
-    required this.album,
-    required this.onTap,
-    required this.onTapCover,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: () {
-        this.onTap(album);
-      },
-      leading: CoverArtImage(
-        album.coverArtLink,
-        id: album.coverArtId,
-        width: 72.0,
-        height: 72.0,
-      ),
-      title: Text(album.title),
-      subtitle: Text(album.artistName),
-    );
   }
 }
 
@@ -526,12 +443,14 @@ class StarredRow extends StatelessWidget {
   final StarredItem item;
   final bool isPlaying;
   final Function(StarredItem) onPlay;
+  final EdgeInsets? padding;
 
   const StarredRow({
     Key? key,
     required this.item,
     required this.isPlaying,
     required this.onPlay,
+    this.padding,
   }) : super(key: key);
 
   @override
