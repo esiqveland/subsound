@@ -25,6 +25,7 @@ A subsonic music player.
 - [X] sort starred by most recently added
 - [X] fix package naming
 - [X] crash reporting
+- [ ] shuffle mode
 - [ ] search functionality
 - [ ] pull-to-refresh on playlist view
 - [ ] pull-to-refresh on starred list
@@ -57,7 +58,7 @@ A subsonic music player.
 - [ ] Offline support
   - [X] Play music from cache
   - [X] Browse data without loading live from API only
-  - [ ] deliver artwork to system notification from cache
+  - [ ] deliver artwork to system notification from cache (file)
   - [ ] Sync content for local access in database
   - [ ] Store metadata persistently for offline mode
   - [ ] Selective caching
@@ -91,7 +92,7 @@ Non-goals:
  - [X] link from album back to artist
  - [ ] playlists
    - [X] playlist api
-   - [ ] playlist listing
+   - [X] playlist listing
    - [ ] new homescreen with
      - [X] recent albums
      - [ ] recent playlists
@@ -104,14 +105,16 @@ Non-goals:
  - [ ] Artist page: play button
  - [ ] Search
    - [ ] search page
-   - [ ] search button in bottom bar
+   - [X] search query
+   - [X] search button in bottom bar
  - [ ] Song meta: add information about cache state (whether we have the file already downloaded)
  - [ ] local cache:
      - [X] artist data
      - [X] album data
      - [X] song data
      - [X] starred data
-     - [ ] playlist data
+     - [X] playlist data
+     - [X] search query results
  - [ ] Setup sqlite database + migrations
     - [ ] Store artist index in sqlite db for offline use
  - [ ] persistent cache (offline mode):
