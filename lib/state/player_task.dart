@@ -154,8 +154,8 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     }
   }
 
-  Future<void> customAction(
-      String name, Map<String, dynamic>? arguments) async {
+  Future<dynamic> customAction(String name,
+      [Map<String, dynamic>? arguments]) async {
     switch (name) {
       case 'setVolume':
         final vol = arguments?['volume'];
