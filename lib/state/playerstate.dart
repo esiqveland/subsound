@@ -65,7 +65,7 @@ class PlayerCommandPlay extends PlayerActions {
   Future<AppState?> reduce() async {
     unawaited(audioHandler.play());
 
-    final current = audioHandler.mediaItem.valueWrapper?.value;
+    final current = audioHandler.mediaItem.value;
     if (current == null) {
       return null;
     }
@@ -548,7 +548,7 @@ class StartupPlayer extends ReduxAction<AppState> {
       }
       bool wasPlaying = state.playerState.isPlaying;
       if (wasPlaying != event.playing) {
-        playerScrobbles.add(playerScrobbles.value!.copyWith(
+        playerScrobbles.add(playerScrobbles.value.copyWith(
           playing: event.playing,
           startedAt: DateTime.now(),
           position: event.position,
@@ -587,9 +587,9 @@ class StartupPlayer extends ReduxAction<AppState> {
       var songMetadata = item.getSongMetadata();
       var id = songMetadata.songId;
 
-      var prev = playerScrobbles.value!;
+      var prev = playerScrobbles.value;
       playerScrobbles.add(prev.copyWith(
-        playing: audioHandler.playbackState.value!.playing,
+        playing: audioHandler.playbackState.value.playing,
         position: Duration.zero,
         item: item,
         startedAt: DateTime.now(),
