@@ -27,18 +27,14 @@ dependencies:
   shared_preferences: ^2.0.5
   path_provider: ^2.0.0
   logging: ^1.0.1
-  async_redux: ^9.0.2
+  async_redux: ^10.0.1
 #  audio_service: ^0.17.0-nullsafety.0
   audio_service:
     git:
       url: https://github.com/ryanheise/audio_service.git
       ref: one-isolate
       path: audio_service
-  just_audio:
-    git:
-      url: https://github.com/esiqveland/just_audio.git
-      ref: delete-proxy-on-disposal
-      path: just_audio
+  just_audio: ^0.8.0
   cached_network_image: ^3.0.0-nullsafety
   flutter_sticky_header: ^0.6.0
   flutter_cache_manager: ^3.0.0-nullsafety.1
@@ -48,7 +44,7 @@ dependencies:
   sqflite: ^2.0.0+3
   we_slide: ^2.0.1
   flutter_slidable: ^0.6.0
-  rxdart: ^0.26.0
+  rxdart: ^0.27.0
   sentry_flutter: ^5.0.0
   pedantic: ^1.0.0
   # The following adds the Cupertino Icons font to your application.
