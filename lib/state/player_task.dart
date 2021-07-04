@@ -4,7 +4,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:pedantic/pedantic.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/storage/cache.dart';
@@ -37,7 +36,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     // Broadcast the current playback state and what controls should currently
     // be visible in the media notification
     _player.playbackEventStream.listen((event) {
-      playbackState.add(playbackState.value!.copyWith(
+      playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,
           _player.playing ? MediaControl.pause : MediaControl.play,
@@ -93,13 +92,13 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   bool get hasNext {
     final queue = this.queue.value!;
-    final index = playbackState.value!.queueIndex!;
+    final index = playbackState.value.queueIndex!;
     return queue.length > index + 1;
   }
 
   Future<void> _skip(int offset) async {
     final queue = this.queue.value!;
-    final index = playbackState.value!.queueIndex!;
+    final index = playbackState.value.queueIndex!;
     if (index >= queue.length) {
       return;
     }
@@ -131,7 +130,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     if (wasPlaying) {
       await _player.pause();
     }
-    playbackState.add(playbackState.value!.copyWith(
+    playbackState.add(playbackState.value.copyWith(
       processingState: AudioProcessingState.loading,
       queueIndex: index,
       updatePosition: Duration.zero,
@@ -179,7 +178,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         });
         unawaited(Sentry.captureException(e,
             stackTrace: st, hint: {"handled": "true"}));
-        playbackState.add(playbackState.value!.copyWith(
+        playbackState.add(playbackState.value.copyWith(
           processingState: AudioProcessingState.error,
           errorMessage: e.code,
         ));
@@ -192,7 +191,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         });
         unawaited(Sentry.captureException(e,
             stackTrace: st, hint: {"handled": "true"}));
-        playbackState.add(playbackState.value!.copyWith(
+        playbackState.add(playbackState.value.copyWith(
           processingState: AudioProcessingState.error,
           errorMessage: e.code,
         ));
@@ -205,7 +204,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         });
         unawaited(Sentry.captureException(e,
             stackTrace: st, hint: {"handled": "true"}));
-        playbackState.add(playbackState.value!.copyWith(
+        playbackState.add(playbackState.value.copyWith(
           processingState: AudioProcessingState.error,
           errorCode: e.code,
           errorMessage: e.message,
