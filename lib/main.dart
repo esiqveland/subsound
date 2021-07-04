@@ -58,7 +58,7 @@ void runMain() async {
     cacheManager: ArtworkCacheManager(),
     config: AudioServiceConfig(
       androidNotificationChannelName: 'SubSound',
-      androidEnableQueue: true,
+      androidResumeOnClick: true,
       // Enable this if you want the Android service to exit the foreground state on pause.
       androidStopForegroundOnPause: false,
       androidNotificationClickStartsActivity: true,
