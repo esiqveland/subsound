@@ -227,6 +227,7 @@ Future<AudioSource> _toStreamSource(MediaItem mediaItem) async {
   return _toAudioSource(mediaItem, mediaItem.getSongMetadata());
 }
 
+// ignore: unused_element
 Future<AudioSource> _preloadedSource(MediaItem mediaItem) async {
   SongMetadata meta = mediaItem.getSongMetadata();
   var uri = Uri.parse(meta.songUrl);
