@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:subsound/state/appstate.dart';
 
 enum NetworkStatus { wifi, mobile, none }
@@ -80,7 +81,7 @@ class CheckInternetCommand extends ReduxAction<AppState> {
   @override
   Future<AppState?> reduce() async {
     final status = await Connectivity().checkConnectivity();
-    dispatch(SetInternetStatusCommand(status.toNetworkStatus()));
+    await dispatch(SetInternetStatusCommand(status.toNetworkStatus()));
     return null;
   }
 }
@@ -91,13 +92,13 @@ class SetupCheckInternetCommand extends ReduxAction<AppState> {
   @override
   Future<AppState?> reduce() async {
     final status = await Connectivity().checkConnectivity();
-    dispatch(SetInternetStatusCommand(status.toNetworkStatus()));
+    await dispatch(SetInternetStatusCommand(status.toNetworkStatus()));
 
     await subscription?.cancel();
     subscription = null;
 
     subscription = Connectivity().onConnectivityChanged.listen((result) {
-      dispatch(SetInternetStatusCommand(result.toNetworkStatus()));
+      unawaited(dispatch(SetInternetStatusCommand(result.toNetworkStatus())));
     });
 
     return null;
