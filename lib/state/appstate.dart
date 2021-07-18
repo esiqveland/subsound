@@ -86,6 +86,7 @@ class SetDBAction extends ReduxAction<AppState> {
 
 class StartupAction extends ReduxAction<AppState> {
   final DB db;
+
   StartupAction(this.db);
 
   @override
