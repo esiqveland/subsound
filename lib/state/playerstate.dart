@@ -98,11 +98,11 @@ class PlayerCommandPause extends PlayerActions {
   @override
   Future<AppState?> reduce() async {
     // optimistic UI update
-    dispatch(PlayerStateChanged(PlayerStates.paused));
+    await dispatch(PlayerStateChanged(PlayerStates.paused));
     try {
       await audioHandler.pause();
     } on Exception {
-      dispatch(PlayerStateChanged(PlayerStates.stopped));
+      await dispatch(PlayerStateChanged(PlayerStates.stopped));
       rethrow;
     }
     return null;
@@ -202,7 +202,7 @@ class PlayerCommandPlayAlbum extends PlayerActions {
     final albumData = await GetAlbum(album.id).run(state.loginState.toClient());
     final song = albumData.data.songs.first;
 
-    dispatch(PlayerCommandPlaySongInAlbum(
+    await dispatch(PlayerCommandPlaySongInAlbum(
       songId: song.id,
       album: albumData.data,
     ));
@@ -364,7 +364,7 @@ class PlayerCommandContextualPlay extends PlayerActions {
     var selectedIdx = queue.indexWhere((element) => element.song.id == songId);
     var selected = queue[selectedIdx].song;
 
-    dispatch(PlayerCommandSetCurrentPlaying(
+    await dispatch(PlayerCommandSetCurrentPlaying(
       selected,
       playerstate: PlayerStates.playing,
       queue: Queue(queue, selectedIdx),
@@ -399,7 +399,7 @@ class PlayerCommandPlaySongInAlbum extends PlayerActions {
     var selectedIdx = queue.indexWhere((element) => element.song.id == songId);
     var selected = queue[selectedIdx].song;
 
-    dispatch(PlayerCommandSetCurrentPlaying(
+    await dispatch(PlayerCommandSetCurrentPlaying(
       selected,
       playerstate: PlayerStates.playing,
       queue: Queue(queue, selectedIdx),
@@ -431,7 +431,7 @@ class PlayerCommandPlaySong extends PlayerActions {
     );
     final songUrl = next.songUrl;
 
-    dispatch(PlayerCommandSetCurrentPlaying(
+    await dispatch(PlayerCommandSetCurrentPlaying(
       next,
       playerstate: PlayerStates.stopped,
     ));
@@ -583,7 +583,7 @@ class StartupPlayer extends ReduxAction<AppState> {
       }
       if (item.duration != null &&
           item.duration != state.playerState.duration) {
-        dispatch(PlayerDurationChanged(item.duration!));
+        await dispatch(PlayerDurationChanged(item.duration!));
       }
       var songMetadata = item.getSongMetadata();
       var id = songMetadata.songId;
@@ -642,11 +642,11 @@ class StartupPlayer extends ReduxAction<AppState> {
           log('got API unknown song from mediaItem: $id');
         } else {
           var ps = PlayerSong.from(song);
-          dispatch(PlayerCommandSetCurrentPlaying(ps));
+          await dispatch(PlayerCommandSetCurrentPlaying(ps));
         }
       } else {
         var ps = PlayerSong.from(song);
-        dispatch(PlayerCommandSetCurrentPlaying(ps));
+        await dispatch(PlayerCommandSetCurrentPlaying(ps));
       }
     });
   }
