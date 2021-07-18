@@ -91,13 +91,13 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   }
 
   bool get hasNext {
-    final queue = this.queue.value!;
+    final queue = this.queue.value;
     final index = playbackState.value.queueIndex!;
     return queue.length > index + 1;
   }
 
   Future<void> _skip(int offset) async {
-    final queue = this.queue.value!;
+    final queue = this.queue.value;
     final index = playbackState.value.queueIndex!;
     if (index >= queue.length) {
       return;
@@ -122,7 +122,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   @override
   Future<void> skipToQueueItem(int index) async {
-    final q = queue.value ?? [];
+    final q = queue.value;
     if (index < 0 || index >= q.length) return;
     await super.skipToQueueItem(index);
     var item = q[index];
@@ -135,7 +135,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       queueIndex: index,
       updatePosition: Duration.zero,
     ));
-    mediaItem.add(queue.value![index]);
+    mediaItem.add(queue.value[index]);
 
     try {
       final source = await _toStreamSource(item);

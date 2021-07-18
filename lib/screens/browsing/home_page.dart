@@ -28,14 +28,14 @@ class HomePage extends StatelessWidget {
           playQueue: queue,
         )),
         onLoadStarred: () async {
-          final load1 = st.dispatchFuture(RefreshStarredCommand());
-          final load2 = st.dispatchFuture(
+          final load1 = st.dispatch(RefreshStarredCommand());
+          final load2 = st.dispatch(
             GetAlbumsCommand(type: GetAlbumListType.recent, pageSize: 20),
           );
-          final load3 = st.dispatchFuture(
+          final load3 = st.dispatch(
             GetAlbumsCommand(type: GetAlbumListType.newest, pageSize: 20),
           );
-          final load4 = st.dispatchFuture(RefreshPlaylistsCommand());
+          final load4 = st.dispatch(RefreshPlaylistsCommand());
 
           await Future.wait([load1, load2, load3, load4]);
 

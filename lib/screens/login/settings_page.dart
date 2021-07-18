@@ -136,7 +136,7 @@ class ServerSetupForm extends StatelessWidget {
     return StoreConnector<AppState, ServerSetupModel>(
         converter: (store) => ServerSetupModel(
             inititalData: store.state.loginState,
-            onSave: (next) => store.dispatchFuture(SaveServerState(
+            onSave: (next) => store.dispatch(SaveServerState(
                   next.uri,
                   next.username,
                   next.password,
@@ -156,7 +156,7 @@ class _ServerSetupForm extends StatefulWidget {
     Key? key,
     ServerData? inital,
     required this.onSave,
-  })   : this.initialData =
+  })  : this.initialData =
             inital ?? const ServerData(uri: '', username: '', password: ''),
         super(key: key);
 

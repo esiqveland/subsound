@@ -90,15 +90,15 @@ class StartupAction extends ReduxAction<AppState> {
 
   @override
   Future<AppState> reduce() async {
-    dispatch(SetDBAction(db));
-    await store.dispatchFuture(RestoreServerState());
-    await store.dispatchFuture(SetupCheckInternetCommand());
-    await store.dispatchFuture(CheckInternetCommand());
-    store.dispatch(RefreshAppState());
-    await store.dispatchFuture(StartupPlayer());
+    await dispatch(SetDBAction(db));
+    await store.dispatch(RestoreServerState());
+    await store.dispatch(SetupCheckInternetCommand());
+    await store.dispatch(CheckInternetCommand());
+    unawaited(store.dispatch(RefreshAppState()));
+    await store.dispatch(StartupPlayer());
     await Future.delayed(Duration(seconds: 1));
     // run a batch of scrobbles in the background on startup:
-    unawaited(dispatchFuture(RunScrobbleBatchAction()));
+    unawaited(dispatch(RunScrobbleBatchAction()));
     return state.copy(startUpState: StartUpState.done);
   }
 }

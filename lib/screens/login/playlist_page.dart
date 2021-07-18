@@ -36,8 +36,8 @@ class _PlaylistViewModelFactory extends VmFactory<AppState, PlaylistScreen> {
         songId: song.id,
         playQueue: songs,
       )),
-      onLoadPlaylist: (playlistId) =>
-          dispatchFuture(GetPlaylistCommand(playlistId)).then((value) =>
+      onLoadPlaylist: (playlistId) => dispatch(GetPlaylistCommand(playlistId))
+          .then((value) =>
               currentState().dataState.playlists.playlistCache[playlistId]!),
     );
   }

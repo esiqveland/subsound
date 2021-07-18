@@ -10,6 +10,8 @@ import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/storage/cache.dart';
 
+import './player_task.dart';
+
 class AudioWidgetModel extends Vm {
   final Function onConnect;
   final Function onDisconnect;
@@ -99,6 +101,34 @@ class _AudioServiceWidgetState extends State<_MyAudioWidgetStateful>
   Widget build(BuildContext context) {
     return widget.child;
   }
+}
+
+Future<AudioSource> _toStreamSource(MediaItem mediaItem) async {
+  return _toAudioSource(mediaItem, mediaItem.getSongMetadata());
+}
+
+Future<AudioSource> _toAudioSource(
+  MediaItem mediaItem,
+  SongMetadata meta,
+) async {
+  var uri = Uri.parse(meta.songUrl);
+
+  var cacheFile = await DownloadCacheManager().getCachedSongFile(CachedSong(
+    songId: meta.songId,
+    songUri: uri,
+    fileSize: meta.fileSize,
+    fileExtension: meta.fileExtension,
+  ));
+  var source = LockCachingAudioSource(
+    uri,
+    cacheFile: cacheFile,
+    //tag: ,
+    headers: {
+      "X-Request-ID": uuid.v1().toString(),
+      "Host": uri.host,
+    },
+  );
+  return source;
 }
 
 class PlayQueue {

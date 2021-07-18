@@ -36,7 +36,7 @@ class StarIdCommand extends RunRequest {
     if (stateBefore?.id == id.getId) {
       final starred = stateBefore?.copy(isStarred: true);
       if (starred != null) {
-        dispatch(PlayerCommandSetCurrentPlaying(starred));
+        unawaited(dispatch(PlayerCommandSetCurrentPlaying(starred)));
       }
     }
     try {
@@ -54,7 +54,7 @@ class StarIdCommand extends RunRequest {
         if (song != null) {
           stars = store.state.dataState.stars.addSong(song);
         }
-        unawaited(store.dispatchFuture(RefreshStarredCommand()));
+        unawaited(store.dispatch(RefreshStarredCommand()));
 
         return state.copy(
           playerState: next,
@@ -62,13 +62,13 @@ class StarIdCommand extends RunRequest {
         );
       } else {
         if (stateBefore != null) {
-          dispatch(PlayerCommandSetCurrentPlaying(stateBefore));
+          await dispatch(PlayerCommandSetCurrentPlaying(stateBefore));
         }
-        dispatch(DisplayError("something went wrong"));
+        await dispatch(DisplayError("something went wrong"));
       }
     } catch (e) {
       if (stateBefore != null) {
-        dispatch(PlayerCommandSetCurrentPlaying(stateBefore));
+        await dispatch(PlayerCommandSetCurrentPlaying(stateBefore));
       }
       rethrow;
     }
@@ -85,7 +85,7 @@ class UnstarIdCommand extends RunRequest {
   Future<AppState?> reduce() async {
     PlayerSong? currentSong = state.playerState.currentSong;
     if (currentSong != null) {
-      dispatch(PlayerCommandSetCurrentPlaying(
+      await dispatch(PlayerCommandSetCurrentPlaying(
         currentSong.copy(isStarred: false),
       ));
     }
@@ -109,14 +109,14 @@ class UnstarIdCommand extends RunRequest {
           playerState: next,
         );
       } else {
-        dispatch(DisplayError("something went wrong"));
+        await dispatch(DisplayError("something went wrong"));
         if (currentSong != null) {
-          dispatch(PlayerCommandSetCurrentPlaying(currentSong));
+          await dispatch(PlayerCommandSetCurrentPlaying(currentSong));
         }
       }
     } catch (e) {
       if (currentSong != null) {
-        dispatch(PlayerCommandSetCurrentPlaying(currentSong));
+        await dispatch(PlayerCommandSetCurrentPlaying(currentSong));
       }
       rethrow;
     }
@@ -180,8 +180,8 @@ class LogoutCommand extends ReduxAction<AppState> {
     await prefs.clear();
 
     DB db = await ResetDatabaseAction().run(database);
-    dispatch(SetDBAction(db));
-    await dispatchFuture(StartupAction(db));
+    await dispatch(SetDBAction(db));
+    await dispatch(StartupAction(db));
   }
 }
 
@@ -339,7 +339,7 @@ class StoreScrobbleAction extends ReduxAction<AppState> {
     )).run(database);
 
     // run a batch of scrobbles
-    unawaited(dispatchFuture(RunScrobbleBatchAction()));
+    unawaited(dispatch(RunScrobbleBatchAction()));
 
     return null;
   }
@@ -456,7 +456,7 @@ class RefreshAppState extends ReduxAction<AppState> {
         return null;
       }
 
-      await store.dispatchFuture(RefreshStarredCommand());
+      await store.dispatch(RefreshStarredCommand());
     } catch (err) {
       log('RefreshAppState error: ', error: err);
     }

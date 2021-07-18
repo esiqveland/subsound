@@ -541,7 +541,8 @@ class StartupPlayer extends ReduxAction<AppState> {
       log("playbackStateStream event=${event.format()}");
       if (event.processingState == AudioProcessingState.error) {
         dispatch(DisplayError(
-            "${event.errorCode ?? -1}: ${event.errorMessage ?? ''}"));
+          "${event.errorCode ?? -1}: ${event.errorMessage ?? ''}",
+        ));
       }
       if (state.playerState.queue.position != event.queueIndex) {
         dispatch(PlayerSetQueueIndex(event.queueIndex));
@@ -614,7 +615,7 @@ class StartupPlayer extends ReduxAction<AppState> {
           if (prevId != null && continuousPlayTime > ScrobbleAlwaysPlaytime ||
               duration > ScrobbleMinimumDuration &&
                   playedPortion >= ScrobbleThreshold) {
-            unawaited(dispatchFuture(StoreScrobbleAction(
+            unawaited(dispatch(StoreScrobbleAction(
               prevId!,
               playedAt: prev.startedAt,
             )));
@@ -635,7 +636,7 @@ class StartupPlayer extends ReduxAction<AppState> {
 
       if (song == null) {
         log('got unknown song from mediaItem: $id');
-        await dispatchFuture(GetSongCommand(songId: id));
+        await dispatch(GetSongCommand(songId: id));
         final song = state.dataState.songs.getSongId(id);
         if (song == null) {
           log('got API unknown song from mediaItem: $id');
