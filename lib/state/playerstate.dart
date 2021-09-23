@@ -615,10 +615,10 @@ class StartupPlayer extends ReduxAction<AppState> {
           if (prevId != null && continuousPlayTime > ScrobbleAlwaysPlaytime ||
               duration > ScrobbleMinimumDuration &&
                   playedPortion >= ScrobbleThreshold) {
-            unawaited(dispatch(StoreScrobbleAction(
+            dispatch(StoreScrobbleAction(
               prevId!,
               playedAt: prev.startedAt,
-            )));
+            ));
           }
         } else {
           log('prev.item?.duration${prev.item?.duration} prev.item=${prev.item}');

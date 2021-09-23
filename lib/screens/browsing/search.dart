@@ -49,12 +49,12 @@ class _SearchModelFactory extends VmFactory<AppState, SearchField> {
     return _SearchModel(
       currentPlayingId: state.playerState.currentSong?.id ?? '',
       onPlaySong: (SongResult song, List<SongResult> playQueue) =>
-          dispatch(PlayerCommandContextualPlay(
+          dispatchAsync(PlayerCommandContextualPlay(
         songId: song.id,
         playQueue: playQueue,
       )),
-      onPlayAlbum: (album) => dispatch(PlayerCommandPlayAlbum(album)),
-      onSearch: (query) => dispatch(SearchCommand(query))
+      onPlayAlbum: (album) => dispatchAsync(PlayerCommandPlayAlbum(album)),
+      onSearch: (query) => dispatchAsync(SearchCommand(query))
           .then((value) => currentState().dataState.searches.get(query))
           .then((value) => value.data),
     );

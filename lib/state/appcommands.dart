@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
@@ -36,7 +35,7 @@ class StarIdCommand extends RunRequest {
     if (stateBefore?.id == id.getId) {
       final starred = stateBefore?.copy(isStarred: true);
       if (starred != null) {
-        unawaited(dispatch(PlayerCommandSetCurrentPlaying(starred)));
+        dispatch(PlayerCommandSetCurrentPlaying(starred));
       }
     }
     try {
@@ -54,7 +53,7 @@ class StarIdCommand extends RunRequest {
         if (song != null) {
           stars = store.state.dataState.stars.addSong(song);
         }
-        unawaited(store.dispatch(RefreshStarredCommand()));
+        store.dispatch(RefreshStarredCommand());
 
         return state.copy(
           playerState: next,
@@ -339,7 +338,7 @@ class StoreScrobbleAction extends ReduxAction<AppState> {
     )).run(database);
 
     // run a batch of scrobbles
-    unawaited(dispatch(RunScrobbleBatchAction()));
+    dispatch(RunScrobbleBatchAction());
 
     return null;
   }

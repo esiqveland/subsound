@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:subsound/state/appstate.dart';
 
 enum NetworkStatus { wifi, mobile, none }
@@ -98,7 +97,7 @@ class SetupCheckInternetCommand extends ReduxAction<AppState> {
     subscription = null;
 
     subscription = Connectivity().onConnectivityChanged.listen((result) {
-      unawaited(dispatch(SetInternetStatusCommand(result.toNetworkStatus())));
+      dispatch(SetInternetStatusCommand(result.toNetworkStatus()));
     });
 
     return null;

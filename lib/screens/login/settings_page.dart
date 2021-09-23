@@ -136,7 +136,7 @@ class ServerSetupForm extends StatelessWidget {
     return StoreConnector<AppState, ServerSetupModel>(
         converter: (store) => ServerSetupModel(
             inititalData: store.state.loginState,
-            onSave: (next) => store.dispatch(SaveServerState(
+            onSave: (next) => store.dispatchAsync(SaveServerState(
                   next.uri,
                   next.username,
                   next.password,

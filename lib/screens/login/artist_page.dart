@@ -65,7 +65,7 @@ class ArtistPageModelFactory extends VmFactory<AppState, ArtistPage> {
   @override
   ArtistPageModel fromStore() {
     return ArtistPageModel(
-      onLoad: (artistId) => dispatch(GetArtistCommand(artistId: artistId))
+      onLoad: (artistId) => dispatchAsync(GetArtistCommand(artistId: artistId))
           .then((value) => currentState().dataState.artists.get(artistId)),
     );
   }

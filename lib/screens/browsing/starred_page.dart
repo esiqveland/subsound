@@ -22,7 +22,7 @@ class StarredPage extends StatelessWidget {
           playQueue: queue,
         )),
         onLoadStarred: (bool forceRefresh) => st
-            .dispatch(RefreshStarredCommand())
+            .dispatchAsync(RefreshStarredCommand())
             .then((value) => st.state.dataState.stars),
       ),
       builder: (context, vm) => _StarredPageStateful(model: vm),

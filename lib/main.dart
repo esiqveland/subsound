@@ -5,7 +5,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -77,7 +76,7 @@ void runMain() async {
   NavigateAction.setNavigatorKey(navigatorKey);
 
   final Store<AppState> store = createStore();
-  unawaited(store.dispatch(StartupAction(db)));
+  store.dispatch(StartupAction(db));
 
   runApp(MyApp(
     store: store,

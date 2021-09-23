@@ -19,7 +19,7 @@ class ArtistsPage extends StatelessWidget {
     return StoreConnector<AppState, ArtistsPageModel>(
       converter: (st) => ArtistsPageModel(
         loadArtists: () => st
-            .dispatch(GetArtistsCommand())
+            .dispatchAsync(GetArtistsCommand())
             .then((value) => st.state.dataState.artists.artistsIndex),
       ),
       builder: (context, vm) => _ArtistsPageStateful(
