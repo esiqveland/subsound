@@ -346,6 +346,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.2"
+  lints:
+    dependency: "direct dev"
+    description:
+      name: lints
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   logging:
     dependency: "direct main"
     description:
@@ -480,7 +487,7 @@ packages:
     source: hosted
     version: "2.0.3"
   pedantic:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: pedantic
       url: "https://pub.dartlang.org"
