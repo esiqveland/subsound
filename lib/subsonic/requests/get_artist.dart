@@ -73,7 +73,7 @@ class AlbumResultSimple {
     final songArtId = albumData['coverArt'] as String? ?? '';
     final coverArtLink = songArtId.isNotEmpty
         ? GetCoverArt(songArtId).getImageUrl(ctx)
-        : FallbackImageUrl;
+        : fallbackImageUrl;
 
     final duration = getDuration(albumData['duration']);
 
@@ -140,7 +140,7 @@ class GetArtist extends BaseRequest<ArtistResult> {
       final coverArtId = album['coverArt'] as String?;
       final coverArtLink = coverArtId != null
           ? GetCoverArt(coverArtId).getImageUrl(ctx)
-          : artistData['artistImageUrl'] as String? ?? FallbackImageUrl;
+          : artistData['artistImageUrl'] as String? ?? fallbackImageUrl;
 
       final duration = getDuration(album['duration']);
 
@@ -170,7 +170,7 @@ class GetArtist extends BaseRequest<ArtistResult> {
 
     final firstAlbumCoverLink = firstAlbumWithCover != null
         ? firstAlbumWithCover.coverArtLink
-        : FallbackImageUrl;
+        : fallbackImageUrl;
 
     final name = artistData['name'] as String;
     final coverArtLink =

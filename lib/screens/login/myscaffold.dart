@@ -103,7 +103,7 @@ class AppBarSettings {
   });
 }
 
-const PlayerBottomBarSize = 50.0;
+const playerBottomBarSize = 50.0;
 
 class MyScaffold extends StatelessWidget {
   final AppBarSettings? appBar;
@@ -154,7 +154,7 @@ class _AppScaffold extends StatelessWidget {
     final footerHeight =
         kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom;
     final double _panelMinSize =
-        disableBottomBar ? footerHeight : PlayerBottomBarSize + footerHeight;
+        disableBottomBar ? footerHeight : playerBottomBarSize + footerHeight;
     final double _panelMaxSize = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -202,7 +202,7 @@ class _AppScaffold extends StatelessWidget {
             ? SizedBox()
             : Container(
                 child: PlayerBottomBar(
-                  height: PlayerBottomBarSize,
+                  height: playerBottomBarSize,
                   backgroundColor: Theme.of(context).primaryColor,
                   onTap: () {
                     _controller.show();

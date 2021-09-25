@@ -20,7 +20,7 @@ class GetCoverArt extends BaseRequest<Uint8List> {
     uri = ctx.buildRequestUri(
       'getCoverArt',
       params: {
-        'id': '$id',
+        'id': id,
         if (size != null) 'size': '$size',
       },
     );

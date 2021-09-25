@@ -103,8 +103,8 @@ class DB {
   final Database database;
 
   DB({
-    required Database database,
-  }) : this.database = database;
+    required this.database,
+  });
 
   bool get isOpen => database.isOpen;
 

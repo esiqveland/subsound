@@ -36,7 +36,7 @@ class PostScrobbleRequest extends BaseRequest<ScrobbleResult> {
         jsonDecode(utf8.decode(resp.bodyBytes)) as Map<String, dynamic>;
 
     if (data['subsonic-response']['status'] != 'ok') {
-      throw Exception("status=${resp.statusCode} data=${data}");
+      throw Exception("status=${resp.statusCode} data=$data");
     }
 
     if (resp.statusCode == 200) {
@@ -46,7 +46,7 @@ class PostScrobbleRequest extends BaseRequest<ScrobbleResult> {
         ScrobbleResult(),
       );
     } else {
-      throw Exception("status=${resp.statusCode} data=${data}");
+      throw Exception("status=${resp.statusCode} data=$data");
     }
   }
 }

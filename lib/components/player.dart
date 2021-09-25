@@ -715,6 +715,7 @@ class CachedSliderState extends State<CachedSlider> {
 }
 
 class CustomTrackShape extends RoundedRectSliderTrackShape {
+  @override
   Rect getPreferredRect({
     required RenderBox parentBox,
     Offset offset = Offset.zero,

@@ -60,7 +60,7 @@ class Artist {
         ? artistImageUrl
         : coverArt.isNotEmpty
             ? GetCoverArt(coverArt).getImageUrl(ctx)
-            : FallbackImageUrl;
+            : fallbackImageUrl;
 
     final String coverArtId = coverArt.isNotEmpty ? coverArt : coverArtLink;
     final String artistName = artist['name'] as String? ?? '';

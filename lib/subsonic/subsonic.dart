@@ -4,7 +4,7 @@ export 'models/models.dart';
 export 'response.dart';
 export 'token.dart';
 
-const FallbackImageUrl =
+const fallbackImageUrl =
     'https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png';
 
 enum SubsonicResponseFormat { xml, json, jsonp }

@@ -6,7 +6,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_cover_art.dart';
 
-const FallbackImageUrl =
+const fallbackImageUrl =
     'https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png';
 
 class CoverArtImage extends StatelessWidget {
@@ -32,7 +32,7 @@ class CoverArtImage extends StatelessWidget {
       //log('broken cache id for CoverArtImage: id=$id url=$url');
     }
     return CachedNetworkImage(
-      imageUrl: url ?? FallbackImageUrl,
+      imageUrl: url ?? fallbackImageUrl,
       height: height,
       width: width,
       //placeholderFadeInDuration: ,

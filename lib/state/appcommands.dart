@@ -196,7 +196,7 @@ class RefreshStarredCommand extends RunRequest {
         DateTime.fromMillisecondsSinceEpoch(0);
     if (!forceRefresh &&
         lastUpdated.isBefore(DateTime.now().subtract(cacheTime))) {
-      log('RefreshStarredCommand: using cache from ${lastUpdated}');
+      log('RefreshStarredCommand: using cache from $lastUpdated');
       return null;
     }
     if (!state.networkState.hasNetwork) {}
@@ -309,7 +309,7 @@ class RunScrobbleBatchAction extends ReduxAction<AppState> {
         log('error submitting scrobble: ', error: e);
         // put the task back as an attempted task:
         var attempted = task.attempted();
-        await PutScrobbleDatabaseAction(attempted);
+        await PutScrobbleDatabaseAction(attempted).run(database);
         return attempted;
       }
     }).toList();
@@ -470,5 +470,6 @@ abstract class RunRequest extends ReduxAction<AppState> {
     String? requestId,
   }) : requestId = requestId ?? uuid.v1();
 
+  @override
   Future<AppState?> reduce();
 }

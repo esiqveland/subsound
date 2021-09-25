@@ -119,7 +119,7 @@ class SongResult {
     final songArtId = songData['coverArt'] as String? ?? '';
     final coverArtLink = songArtId.isNotEmpty
         ? GetCoverArt(songArtId).getImageUrl(ctx)
-        : FallbackImageUrl;
+        : fallbackImageUrl;
 
     final duration = getDuration(songData['duration']);
 
@@ -174,7 +174,7 @@ class GetSongRequest extends BaseRequest<SongResult> {
   @override
   Future<SubsonicResponse<SongResult>> run(SubsonicContext ctx) async {
     final response = await ctx.client
-        .get(ctx.buildRequestUri('getSong', params: {'id': this.id}));
+        .get(ctx.buildRequestUri('getSong', params: {'id': id}));
 
     final data =
         jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
@@ -227,7 +227,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
 
     final coverArtLink = coverArtId != null
         ? GetCoverArt(coverArtId).getImageUrl(ctx)
-        : FallbackImageUrl;
+        : fallbackImageUrl;
 
     // log('coverArtLink=$coverArtLink');
 

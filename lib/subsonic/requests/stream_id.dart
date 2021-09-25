@@ -53,9 +53,9 @@ class StreamItem extends BaseRequest<Uint8List> {
     uri = ctx.buildRequestUri(
       'stream',
       params: {
-        'id': '$id',
+        'id': id,
         if (maxBitRate != null) 'maxBitRate': '$maxBitRate',
-        if (streamFormat != null) 'format': '${describeEnum(streamFormat!)}'
+        if (streamFormat != null) 'format': describeEnum(streamFormat!)
       },
     );
 

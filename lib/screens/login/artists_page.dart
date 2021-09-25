@@ -98,7 +98,7 @@ class ArtistIndexEntryWidget extends StatelessWidget {
                 height: 48.0,
                 width: 48.0,
               ),
-              title: Text("${entry.artist[idx].name}"),
+              title: Text(entry.artist[idx].name),
               trailing: Text("${entry.artist[idx].albumCount}"),
             ),
           ),

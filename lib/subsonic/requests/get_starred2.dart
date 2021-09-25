@@ -71,7 +71,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
 
       final coverArtLink = coverArtId.isNotEmpty
           ? GetCoverArt(coverArtId).getImageUrl(ctx)
-          : FallbackImageUrl;
+          : fallbackImageUrl;
 
       final duration = getDuration(albumDataNew['duration']);
 

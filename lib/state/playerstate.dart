@@ -476,9 +476,9 @@ class CleanupPlayer extends ReduxAction<AppState> {
 
 // How much of the song to play before we scrobble.
 // 0.7 == 70% of the song.
-const ScrobbleThreshold = 0.5;
-const ScrobbleMinimumDuration = Duration(seconds: 30);
-const ScrobbleAlwaysPlaytime = Duration(minutes: 4);
+const scrobbleThreshold = 0.5;
+const scrobbleMinimumDuration = Duration(seconds: 30);
+const scrobbleAlwaysPlaytime = Duration(minutes: 4);
 
 class PlayerScrobbleState {
   final bool playing;
@@ -612,9 +612,9 @@ class StartupPlayer extends ReduxAction<AppState> {
           //
           // TODO(scrobble): handle scrobbling when the last track of a playqueue finishes
           // ie. player goes to the completed state and stops playing.
-          if (prevId != null && continuousPlayTime > ScrobbleAlwaysPlaytime ||
-              duration > ScrobbleMinimumDuration &&
-                  playedPortion >= ScrobbleThreshold) {
+          if (prevId != null && continuousPlayTime > scrobbleAlwaysPlaytime ||
+              duration > scrobbleMinimumDuration &&
+                  playedPortion >= scrobbleThreshold) {
             dispatch(StoreScrobbleAction(
               prevId!,
               playedAt: prev.startedAt,

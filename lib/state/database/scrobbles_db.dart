@@ -36,7 +36,7 @@ class DeleteScrobbleDatabaseAction extends DatabaseAction<int> {
   @override
   Future<int> run(DB db) async {
     return await db.database.delete(
-      ScrobbleData.TABLE_NAME,
+      ScrobbleData.tableName,
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -47,7 +47,7 @@ class CleanScrobbleDatabaseAction extends DatabaseAction<int> {
   @override
   Future<int> run(DB db) async {
     return await db.database.delete(
-      ScrobbleData.TABLE_NAME,
+      ScrobbleData.tableName,
       where: "state = ?",
       whereArgs: [ScrobbleState.done.asString()],
     );
@@ -59,7 +59,7 @@ class GetScrobbleBatchDatabaseAction
   @override
   Future<List<ScrobbleData>> run(DB db) async {
     var list = await db.database.query(
-      ScrobbleData.TABLE_NAME,
+      ScrobbleData.tableName,
       where: "state = ?",
       whereArgs: [ScrobbleState.added.asString()],
       limit: 100,
@@ -88,7 +88,7 @@ class PutScrobbleDatabaseAction extends DatabaseAction<ScrobbleData> {
   @override
   Future<ScrobbleData> run(DB db) async {
     await db.database.insert(
-      ScrobbleData.TABLE_NAME,
+      ScrobbleData.tableName,
       data.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -97,7 +97,7 @@ class PutScrobbleDatabaseAction extends DatabaseAction<ScrobbleData> {
 }
 
 class ScrobbleData {
-  static final String TABLE_NAME = "scrobbles";
+  static final String tableName = "scrobbles";
 
   final String id;
   final String songId;

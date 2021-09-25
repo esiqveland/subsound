@@ -21,7 +21,7 @@ class DownloadItem extends BaseRequest<Uint8List> {
     uri = ctx.buildRequestUri(
       'download',
       params: {
-        'id': '$id',
+        'id': id,
       },
     );
 

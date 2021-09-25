@@ -415,8 +415,8 @@ class PlaylistsScrollView extends StatelessWidget {
                   ));
                 },
                 leading: CoverArtImage(
-                  a.coverArt ?? FallbackImageUrl,
-                  id: a.coverArt ?? FallbackImageUrl,
+                  a.coverArt ?? fallbackImageUrl,
+                  id: a.coverArt ?? fallbackImageUrl,
                   width: 48.0,
                   height: 48.0,
                 ),
