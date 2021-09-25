@@ -173,7 +173,7 @@ class SongRow extends StatelessWidget {
         title: Text(
           song.title,
           style: TextStyle(
-            color: isPlaying ? theme.accentColor : theme.colorScheme.onPrimary,
+            color: isPlaying ? theme.colorScheme.secondary : theme.colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.left,

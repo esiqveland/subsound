@@ -434,7 +434,7 @@ class PlayerView extends StatelessWidget {
                               vm.isStarred
                                   ? Icons.star
                                   : Icons.star_border_outlined,
-                              color: Theme.of(context).accentColor,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                           ),
                         ],
