@@ -99,16 +99,16 @@ class LoggingClient extends BaseClient {
   LoggingClient(this._delegate);
 
   @override
-  Future<StreamedResponse> send(BaseRequest req) {
+  Future<StreamedResponse> send(BaseRequest request) {
     final start = DateTime.now();
-    log('http:client:${start.millisecondsSinceEpoch}:${req.method}:${req.url.toString()}: start');
-    return _delegate.send(req).then((res) {
+    log('http:client:${start.millisecondsSinceEpoch}:${request.method}:${request.url.toString()}: start');
+    return _delegate.send(request).then((res) {
       final elapsed = DateTime.now().difference(start);
-      log('http:client:${start.millisecondsSinceEpoch}:${req.method}:${req.url.toString()}: ${res.statusCode} ${res.reasonPhrase} took ${elapsed.inMilliseconds}ms');
+      log('http:client:${start.millisecondsSinceEpoch}:${request.method}:${request.url.toString()}: ${res.statusCode} ${res.reasonPhrase} took ${elapsed.inMilliseconds}ms');
       return res;
     }).catchError((Object err) {
       final elapsed = DateTime.now().difference(start);
-      log('http:client:${start.millisecondsSinceEpoch}:${req.method}:${req.url.toString()}: ERROR took ${elapsed.inMilliseconds}ms',
+      log('http:client:${start.millisecondsSinceEpoch}:${request.method}:${request.url.toString()}: ERROR took ${elapsed.inMilliseconds}ms',
           error: err);
       return Future<StreamedResponse>.error(err);
     });

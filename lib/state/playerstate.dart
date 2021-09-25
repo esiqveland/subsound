@@ -268,7 +268,9 @@ class PlayerStartListenPlayerPosition extends ReduxAction<AppState> {
   static final List<PositionListener> _listeners = [];
 
   static updateListeners(PositionUpdate pos) {
-    _listeners.forEach((l) => l.next(pos));
+    for (var l in _listeners) {
+      l.next(pos);
+    }
   }
 
   static removeListener(PositionListener l) {
@@ -461,7 +463,7 @@ class PlayerCommandPlaySong extends PlayerActions {
 
 extension Formatter on PlaybackState {
   String format() {
-    return this.toString();
+    return toString();
     //return "PlaybackState={playing=$playing, processingState=${describeEnum(processingState)}, queueIndex=$queueIndex, errorMessage=$errorMessage, updateTime=$updateTime,}";
   }
 }
@@ -602,7 +604,7 @@ class StartupPlayer extends ReduxAction<AppState> {
           var continuousPlayTime = DateTime.now().difference(prev.startedAt);
           var playedPortion =
               continuousPlayTime.inMilliseconds / duration.inMilliseconds;
-          log('playedPortion=${playedPortion} prev.startedAt=${prev.startedAt}');
+          log('playedPortion=$playedPortion prev.startedAt=${prev.startedAt}');
 
           final prevId = prev.item?.getSongMetadata().songId;
           // https://www.last.fm/api/scrobbling#when-is-a-scrobble-a-scrobble

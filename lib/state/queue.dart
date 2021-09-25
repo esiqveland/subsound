@@ -32,7 +32,8 @@ class Queue {
   Queue addAll(List<QueueItem> items) {
     final q = List.of(_queue);
     int startFromIndex = _queuePosition == null ? 0 : _queuePosition! + 1;
-    items.forEach((item) {
+
+    for (var item in items) {
       final idx = q.indexWhere(
         (element) => item.priority.index > element.priority.index,
         startFromIndex,
@@ -42,7 +43,7 @@ class Queue {
       } else {
         q.insert(idx, item);
       }
-    });
+    }
 
     return Queue(q, _queuePosition);
   }

@@ -306,6 +306,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   /// audio, in response to [AudioService.start]. [params] will contain any
   /// params passed into [AudioService.start] when starting this background
   /// audio task.
+  @override
   Future<void> onStart(Map<String, dynamic>? params) async {
     final _audioSource = ConcatenatingAudioSource(children: []);
 
@@ -454,9 +455,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  Future<void> onUpdateQueue(List<MediaItem> replaceQueue) async {
-    log('onUpdateQueue q=${replaceQueue.map((e) => e.title).join(", ")}');
-    await _playQueue.replaceWith(replaceQueue);
+  Future<void> onUpdateQueue(List<MediaItem> queue) async {
+    log('onUpdateQueue q=${queue.map((e) => e.title).join(", ")}');
+    await _playQueue.replaceWith(queue);
     await _broadcastState();
   }
 
@@ -529,7 +530,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  Future<void> onSeekTo(Duration duration) => _player.seek(duration);
+  Future<void> onSeekTo(Duration position) => _player.seek(position);
 
   @override
   Future<void> onSetSpeed(double speed) => _player.setSpeed(speed);

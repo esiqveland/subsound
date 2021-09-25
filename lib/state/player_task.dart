@@ -71,10 +71,14 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     }, onError: _handleErrors);
   }
 
+  @override
   play() => _player.play();
+  @override
   pause() => _player.pause();
+  @override
   seek(Duration position) => _player.seek(position);
   seekTo(Duration position) => _player.seek(position);
+  @override
   stop() async {
     await _player.stop();
     await super.stop();
@@ -154,11 +158,12 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     }
   }
 
+  @override
   Future<dynamic> customAction(String name,
-      [Map<String, dynamic>? arguments]) async {
+      [Map<String, dynamic>? extras]) async {
     switch (name) {
       case 'setVolume':
-        final vol = arguments?['volume'];
+        final vol = extras?['volume'];
         if (vol is double) {
           unawaited(_player.setVolume(vol));
         }

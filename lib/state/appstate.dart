@@ -199,9 +199,9 @@ class Songs {
 
   Songs addAll(List<SongResult> songs) {
     final next = Map.of(_songs);
-    songs.forEach((s) {
+    for (var s in songs) {
       next[s.id] = s;
-    });
+    }
     return Songs(next);
   }
 
@@ -235,7 +235,7 @@ class Albums {
 
   Albums addAllSimple(List<AlbumResultSimple> data) {
     final next = Map.of(albums);
-    data.forEach((a) {
+    for (var a in data) {
       next[a.id] = Album(
         id: a.id,
         artist: a.artistName,
@@ -244,15 +244,15 @@ class Albums {
         coverArtLink: a.coverArtLink ?? '',
         isDir: false,
       );
-    });
+    }
     return Albums(next, albumResults, albumLists);
   }
 
   Albums addSet(GetAlbumListType type, List<Album> data) {
     final next = Map.of(albums);
-    data.forEach((a) {
+    for (var a in data) {
       next[a.id] = a;
-    });
+    }
     final l = Map.of(albumLists);
     l[type] = data;
     return Albums(next, albumResults, l);
@@ -260,9 +260,9 @@ class Albums {
 
   Albums addAll(List<Album> data) {
     final next = Map.of(albums);
-    data.forEach((a) {
+    for (var a in data) {
       next[a.id] = a;
-    });
+    }
     return Albums(next, albumResults, albumLists);
   }
 
@@ -293,9 +293,9 @@ class Playlists {
 
   Playlists addAll(List<PlaylistResult> list) {
     var m = Map.of(playlistList);
-    list.forEach((p) {
+    for (var p in list) {
       m[p.id] = p;
-    });
+    }
     return Playlists(m, playlistCache);
   }
 }
@@ -331,9 +331,9 @@ class Artists {
 
   Artists addAll(List<Artist> data) {
     final next = Map.of(artists);
-    data.forEach((a) {
+    for (var a in data) {
       next[a.id] = a;
-    });
+    }
 
     return Artists(next, artistsIndex, artistResults);
   }
