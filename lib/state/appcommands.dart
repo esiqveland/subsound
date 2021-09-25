@@ -325,7 +325,7 @@ class StoreScrobbleAction extends ReduxAction<AppState> {
   StoreScrobbleAction(
     this.songId, {
     DateTime? playedAt,
-  }) : this.playedAt = playedAt ?? DateTime.now();
+  }) : playedAt = playedAt ?? DateTime.now();
 
   @override
   Future<AppState?> reduce() async {
@@ -379,9 +379,9 @@ class GetAlbumsCommand extends RunRequest {
   @override
   Future<AppState> reduce() async {
     final subsonicResponse = await GetAlbumList2(
-      type: this.type,
-      size: this.pageSize,
-      offset: this.offset,
+      type: type,
+      size: pageSize,
+      offset: offset,
     ).run(state.loginState.toClient());
 
     final albums = state.dataState.albums.addSet(type, subsonicResponse.data);
@@ -468,7 +468,7 @@ abstract class RunRequest extends ReduxAction<AppState> {
 
   RunRequest({
     String? requestId,
-  }) : this.requestId = requestId ?? uuid.v1();
+  }) : requestId = requestId ?? uuid.v1();
 
   Future<AppState?> reduce();
 }

@@ -44,7 +44,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
       type: BottomNavigationBarType.fixed,
       onTap: (idx) {
         setState(() {
-          this.currentIndex = idx;
+          currentIndex = idx;
         });
         widget.navItems[idx].handler(context);
       },

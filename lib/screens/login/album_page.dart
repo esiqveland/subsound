@@ -21,7 +21,7 @@ class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
       currentSongId: state.playerState.currentSong?.id,
       loadAlbum: (String albumId) {
         return dispatchAsync(GetAlbumCommand(albumId: albumId))
-            .then((value) => this.currentState().dataState.albums.get(albumId));
+            .then((value) => currentState().dataState.albums.get(albumId));
       },
       onPlay: (String songId, AlbumResult album) {
         dispatch(PlayerCommandPlaySongInAlbum(songId: songId, album: album));
@@ -133,7 +133,7 @@ class SongRow extends StatelessWidget {
         onWillDismiss: (actionType) {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text('Added to queue')));
-          onEnqueue(this.song);
+          onEnqueue(song);
           return false;
         },
         closeOnCanceled: true,
@@ -146,13 +146,13 @@ class SongRow extends StatelessWidget {
           onTap: () {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text("Added to queue")));
-            onEnqueue(this.song);
+            onEnqueue(song);
           },
         ),
       ],
       child: ListTile(
         onTap: () {
-          this.onPlay(this.song);
+          onPlay(song);
         },
         leading: Column(
           //mainAxisSize: MainAxisSize.min,
@@ -329,11 +329,11 @@ class AlbumView extends StatelessWidget {
                   song: song,
                   onEnqueue: (song) {
                     _slidableController.activeState?.close();
-                    this.onEnqueue(song);
+                    onEnqueue(song);
                   },
                   onPlay: (song) {
                     _slidableController.activeState?.close();
-                    this.onPlay(song.id, this.album);
+                    onPlay(song.id, album);
                   },
                   slidableController: _slidableController,
                 );
@@ -355,7 +355,7 @@ class AlbumPageState extends State<AlbumPage> {
   @override
   void initState() {
     super.initState();
-    this.future = load(widget.albumId);
+    future = load(widget.albumId);
   }
 
   @override

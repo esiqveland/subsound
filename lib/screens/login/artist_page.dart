@@ -25,7 +25,7 @@ class ArtistScreen extends StatelessWidget {
       ),
       body: (context) => Center(
         child: ArtistPage(
-          artistId: this.artistId,
+          artistId: artistId,
         ),
       ),
     );
@@ -233,8 +233,7 @@ class ArtistView extends StatelessWidget {
             ),
           ),
           SliverList(
-            delegate: SliverChildListDelegate(this
-                .artist
+            delegate: SliverChildListDelegate(artist
                 .albums
                 .map((album) =>
                     AlbumRow(album: album, onSelectedAlbum: onSelectedAlbum))
@@ -262,8 +261,7 @@ class AlbumList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView(
-        children: this
-            .albums
+        children: albums
             .map((a) => AlbumRow(
                   album: a,
                   onSelectedAlbum: onSelectedAlbum,
@@ -282,7 +280,7 @@ class _ArtistPageState extends State<_ArtistPageStateful> {
   @override
   void initState() {
     super.initState();
-    this.loader = load(widget.artistId);
+    loader = load(widget.artistId);
   }
 
   @override

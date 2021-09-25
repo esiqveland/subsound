@@ -254,7 +254,7 @@ class HomePageTitle extends StatelessWidget {
     return Padding(
         padding: EdgeInsets.only(
           left: homePaddingLeft,
-          bottom: this.bottomPadding ?? homePaddingBottom,
+          bottom: bottomPadding ?? homePaddingBottom,
         ),
         child: Text(
           text,
@@ -459,7 +459,7 @@ class StarredRow extends StatelessWidget {
       return StarredAlbumRow(
         album: item.getAlbum()!,
         onTap: (AlbumResultSimple album) {
-          this.onPlay(item);
+          onPlay(item);
         },
         onTapCover: (album) {
           Navigator.of(context).push(MaterialPageRoute(
@@ -482,7 +482,7 @@ class StarredRow extends StatelessWidget {
           ));
         },
         onTapRow: (SongResult song) {
-          this.onPlay(item);
+          onPlay(item);
         },
       );
     }

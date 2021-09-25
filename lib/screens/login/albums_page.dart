@@ -31,7 +31,7 @@ class AlbumRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        this.onTap(album);
+        onTap(album);
       },
       leading: CoverArtImage(
         album.coverArtLink,
@@ -62,7 +62,7 @@ class AlbumsListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NotificationListener<ScrollNotification>(
-      onNotification: this._handleScrollNotification,
+      onNotification: _handleScrollNotification,
       child: CustomScrollView(
         controller: controller,
         physics: BouncingScrollPhysics(),
@@ -128,7 +128,7 @@ class AlbumsPageState extends State<AlbumsPage> {
     _controller = ScrollController();
     isLoading = true;
     initialLoad = load(offset: 0, pageSize: pageSize).then((value) {
-      if (!this.mounted) {
+      if (!mounted) {
         return value;
       }
       setState(() {
@@ -138,7 +138,7 @@ class AlbumsPageState extends State<AlbumsPage> {
       return value;
     });
     initialLoad.whenComplete(() {
-      if (!this.mounted) {
+      if (!mounted) {
         return;
       }
       setState(() {
@@ -169,7 +169,7 @@ class AlbumsPageState extends State<AlbumsPage> {
                     controller: _controller,
                     albums: _albumList,
                     isLoading: isLoading,
-                    loadMore: this.loadMore,
+                    loadMore: loadMore,
                   );
                 }
               }

@@ -14,7 +14,7 @@ class SongId extends ItemId {
   String get getFieldName => "id";
 
   @override
-  String get getId => this.songId;
+  String get getId => songId;
 }
 
 class ArtistId extends ItemId {
@@ -25,7 +25,7 @@ class ArtistId extends ItemId {
   String get getFieldName => "artistId";
 
   @override
-  String get getId => this.artistId;
+  String get getId => artistId;
 }
 
 class AlbumId extends ItemId {
@@ -36,7 +36,7 @@ class AlbumId extends ItemId {
   String get getFieldName => "albumId";
 
   @override
-  String get getId => this.albumId;
+  String get getId => albumId;
 }
 
 abstract class ItemId {
@@ -51,7 +51,7 @@ class StarItem extends BaseRequest<StarResponse> {
   @override
   Future<SubsonicResponse<StarResponse>> run(SubsonicContext ctx) async {
     final uri = ctx.buildRequestUri("star", params: {
-      this.id.getFieldName: this.id.getId,
+      id.getFieldName: id.getId,
     });
 
     final response = await ctx.client.get(uri);
@@ -83,7 +83,7 @@ class UnstarItem extends BaseRequest<UnstarResponse> {
   @override
   Future<SubsonicResponse<UnstarResponse>> run(SubsonicContext ctx) async {
     final uri = ctx.buildRequestUri("unstar", params: {
-      this.id.getFieldName: this.id.getId,
+      id.getFieldName: id.getId,
     });
 
     final response = await ctx.client.get(uri);

@@ -79,7 +79,7 @@ class SetDBAction extends ReduxAction<AppState> {
 
   @override
   AppState? reduce() {
-    _db = this.db;
+    _db = db;
   }
 }
 
@@ -267,7 +267,7 @@ class Albums {
   }
 
   AlbumResult? get(String albumId) {
-    return this.albumResults[albumId];
+    return albumResults[albumId];
   }
 }
 
@@ -322,11 +322,11 @@ class Artists {
     );
     final artistResults = Map.of(this.artistResults);
     artistResults[a.id] = a;
-    return Artists(next, this.artistsIndex, artistResults);
+    return Artists(next, artistsIndex, artistResults);
   }
 
   Artists addIndex(List<ArtistIndexEntry> index) {
-    return Artists(this.artists, index, artistResults);
+    return Artists(artists, index, artistResults);
   }
 
   Artists addAll(List<Artist> data) {
@@ -335,7 +335,7 @@ class Artists {
       next[a.id] = a;
     });
 
-    return Artists(next, this.artistsIndex, this.artistResults);
+    return Artists(next, artistsIndex, artistResults);
   }
 }
 
@@ -352,7 +352,7 @@ class Searches {
   Searches(this.cache);
 
   Searches addResult(String searchTerm, SearchResult r) {
-    var map = Map.of(this.cache);
+    var map = Map.of(cache);
     map[searchTerm] = r;
     return Searches(map);
   }
@@ -515,7 +515,7 @@ class ServerData {
   SubsonicContext toClient() {
     final url = Uri.parse(uri);
     return SubsonicContext(
-      serverId: this.uri,
+      serverId: uri,
       name: url.host,
       endpoint: url,
       user: username,

@@ -112,13 +112,13 @@ class _SearchMusicState extends State<_SearchMusic> {
           child: CupertinoSearchTextField(
             onChanged: (val) {
               if (val.isEmpty) {
-                this.setState(() {
+                setState(() {
                   result = null;
                 });
               }
             },
             onSubmitted: (val) {
-              this.setState(() {
+              setState(() {
                 result = null;
                 loading = true;
               });
@@ -127,10 +127,10 @@ class _SearchMusicState extends State<_SearchMusic> {
               }
               widget.model
                   .onSearch(val)
-                  .then((response) => this.setState(() {
+                  .then((response) => setState(() {
                         result = response;
                       }))
-                  .whenComplete(() => this.setState(() {
+                  .whenComplete(() => setState(() {
                         loading = false;
                       }));
             },

@@ -17,7 +17,7 @@ class PostScrobbleRequest extends BaseRequest<ScrobbleResult> {
     this.id, {
     DateTime? playedAt,
     this.submission = true,
-  }) : this.playedAt = playedAt ?? DateTime.now();
+  }) : playedAt = playedAt ?? DateTime.now();
 
   @override
   String get sinceVersion => "1.5.0";
@@ -27,7 +27,7 @@ class PostScrobbleRequest extends BaseRequest<ScrobbleResult> {
     final resp = await ctx.client.get(ctx.buildRequestUri(
       'scrobble',
       params: {
-        'id': this.id,
+        'id': id,
         'time': "${playedAt.millisecondsSinceEpoch}",
         'submission': submission.toString(),
       },

@@ -259,7 +259,7 @@ class MiniPlayer extends StatelessWidget {
                 height: playerHeight,
                 child: InkWell(
                   onTap: () {
-                    this.onTap();
+                    onTap();
                   },
                   child: Container(
                     child: Row(

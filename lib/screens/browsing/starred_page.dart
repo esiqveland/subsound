@@ -64,11 +64,11 @@ class StarredSongRow extends StatelessWidget {
     return ListTile(
       dense: true,
       onTap: () {
-        this.onTapRow(song);
+        onTapRow(song);
       },
       leading: GestureDetector(
         onTap: () {
-          this.onTapCover(song);
+          onTapCover(song);
         },
         child: CoverArtImage(
           song.coverArtLink,
@@ -109,12 +109,12 @@ class StarredAlbumRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        this.onTap(album);
+        onTap(album);
       },
       contentPadding: const EdgeInsets.only(left: homePaddingLeft),
       leading: GestureDetector(
         onTap: () {
-          this.onTapCover(album);
+          onTapCover(album);
         },
         child: CoverArtImage(
           album.coverArtLink,
@@ -216,7 +216,7 @@ class StarredRow extends StatelessWidget {
       return StarredAlbumRow(
         album: item.getAlbum()!,
         onTap: (AlbumResultSimple album) {
-          this.onPlay(item);
+          onPlay(item);
         },
         onTapCover: (album) {
           Navigator.of(context).push(MaterialPageRoute(
@@ -239,7 +239,7 @@ class StarredRow extends StatelessWidget {
           ));
         },
         onTapRow: (SongResult song) {
-          this.onPlay(item);
+          onPlay(item);
         },
       );
     }

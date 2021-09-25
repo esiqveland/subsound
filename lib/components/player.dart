@@ -365,7 +365,7 @@ class PlayerView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                if (this.header != null) this.header!,
+                if (header != null) header!,
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -694,16 +694,16 @@ class CachedSliderState extends State<CachedSlider> {
         onChangeEnd: (double newValue) {
           final nextValue = newValue.round();
           widget.onChanged(nextValue);
-          this.setState(() {
-            this.valueOverride = null;
-            this.labelOverride = null;
+          setState(() {
+            valueOverride = null;
+            labelOverride = null;
           });
         },
         onChanged: (double newValue) {
           final nextValue = newValue.round();
-          this.setState(() {
-            this.valueOverride = newValue;
-            this.labelOverride = formatDuration(Duration(seconds: nextValue));
+          setState(() {
+            valueOverride = newValue;
+            labelOverride = formatDuration(Duration(seconds: nextValue));
           });
         },
         semanticFormatterCallback: (double newValue) {

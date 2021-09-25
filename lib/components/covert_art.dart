@@ -23,12 +23,12 @@ class CoverArtImage extends StatelessWidget {
     this.height = 48.0,
     this.width = 48.0,
     this.fit,
-  })  : this.id = id ?? url,
+  })  : id = id ?? url,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (this.id == null || this.id!.startsWith("http")) {
+    if (id == null || id!.startsWith("http")) {
       //log('broken cache id for CoverArtImage: id=$id url=$url');
     }
     return CachedNetworkImage(
@@ -38,7 +38,7 @@ class CoverArtImage extends StatelessWidget {
       //placeholderFadeInDuration: ,
       cacheManager: ArtworkCacheManager(),
       fit: fit,
-      cacheKey: this.id,
+      cacheKey: id,
 
       // progressIndicatorBuilder: (context, url, downloadProgress) =>
       //     CircularProgressIndicator(value: downloadProgress.progress),
@@ -59,7 +59,7 @@ class CoverArtImage2 extends StatelessWidget {
     String? id,
     this.height = 48.0,
     this.width = 48.0,
-  })  : this.id = id ?? url,
+  })  : id = id ?? url,
         super(key: key);
 
   @override

@@ -12,7 +12,7 @@ class GetArtistsData {
   final List<ArtistIndexEntry> index;
 
   GetArtistsData(this.ignoredArticles, List<ArtistIndexEntry> index)
-      : this.index = List.unmodifiable(index);
+      : index = List.unmodifiable(index);
 
   @override
   String toString() {
@@ -25,7 +25,7 @@ class ArtistIndexEntry {
   final List<Artist> artist;
 
   ArtistIndexEntry(this.name, List<Artist> artist)
-      : this.artist = List.unmodifiable(artist);
+      : artist = List.unmodifiable(artist);
 
   @override
   String toString() {

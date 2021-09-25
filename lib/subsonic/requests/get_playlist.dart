@@ -51,7 +51,7 @@ class GetPlaylistRequest extends BaseRequest<GetPlaylistResult> {
     final response = await ctx.client.get(ctx.buildRequestUri(
       'getPlaylist',
       params: {
-        'id': this.id,
+        'id': id,
       },
     ));
 

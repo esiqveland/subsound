@@ -156,7 +156,7 @@ class _ServerSetupForm extends StatefulWidget {
     Key? key,
     ServerData? inital,
     required this.onSave,
-  })  : this.initialData =
+  })  : initialData =
             inital ?? const ServerData(uri: '', username: '', password: ''),
         super(key: key);
 
@@ -173,7 +173,7 @@ class _ServerSetupFormState extends State<_ServerSetupForm> {
   @override
   void initState() {
     super.initState();
-    this._dataHolder = ServerData(
+    _dataHolder = ServerData(
       uri: widget.initialData.uri,
       username: widget.initialData.username,
       password: widget.initialData.password,

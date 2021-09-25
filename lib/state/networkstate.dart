@@ -26,9 +26,9 @@ class NetworkState {
       );
 
   bool get hasNetwork =>
-      this.status == NetworkStatus.wifi || this.status == NetworkStatus.mobile;
+      status == NetworkStatus.wifi || status == NetworkStatus.mobile;
 
-  bool get isOfflineMode => this.appMode == NetworkAppMode.offline;
+  bool get isOfflineMode => appMode == NetworkAppMode.offline;
 
   static NetworkState initialState() => NetworkState(
         status: NetworkStatus.wifi,
