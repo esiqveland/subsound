@@ -17,13 +17,13 @@ PODS:
   - path_provider_macos (0.0.1):
     - FlutterMacOS
   - Reachability (3.2)
-  - Sentry (7.2.9):
-    - Sentry/Core (= 7.2.9)
-  - Sentry/Core (7.2.9)
+  - Sentry (7.3.0):
+    - Sentry/Core (= 7.3.0)
+  - Sentry/Core (7.3.0)
   - sentry_flutter (0.0.1):
     - Flutter
     - FlutterMacOS
-    - Sentry (~> 7.2.7)
+    - Sentry (~> 7.3.0)
   - shared_preferences_macos (0.0.1):
     - FlutterMacOS
   - sqflite (0.0.2):
@@ -80,8 +80,8 @@ SPEC CHECKSUMS:
   package_info_plus_macos: f010621b07802a241d96d01876d6705f15e77c1c
   path_provider_macos: 160cab0d5461f0c0e02995469a98f24bdb9a3f1f
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  Sentry: b50788e202f5fd212f0723814466caf845168b71
-  sentry_flutter: 28e1e38fe797d3e5d766c596324834fed599bc0f
+  Sentry: 9a4e621430e2dae4477d791f2f7e905720b6efbf
+  sentry_flutter: 08fadaed464f44e1233d3fbb0c72b10cebd79487
   shared_preferences_macos: 480ce071d0666e37cef23fe6c702293a3d21799e
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
 
