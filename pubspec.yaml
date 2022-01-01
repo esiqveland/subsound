@@ -40,7 +40,7 @@ dependencies:
   flutter_sticky_header: ^0.6.0
   flutter_cache_manager: ^3.0.0-nullsafety.1
   uuid: ^3.0.0
-  connectivity: ^3.0.3
+  connectivity_plus: ^2.1.0
   sqflite_common_ffi: ^2.0.0
   sqflite: ^2.0.0+3
   we_slide: ^2.0.1

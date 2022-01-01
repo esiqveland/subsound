@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:async_redux/async_redux.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 enum NetworkStatus { wifi, mobile, none }
 enum NetworkAppMode { online, offline }
@@ -39,6 +39,8 @@ class NetworkState {
 extension Status on ConnectivityResult {
   NetworkStatus toNetworkStatus() {
     switch (this) {
+      case ConnectivityResult.ethernet:
+        return NetworkStatus.wifi;
       case ConnectivityResult.wifi:
         return NetworkStatus.wifi;
       case ConnectivityResult.mobile:
