@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/stream_id.dart';
@@ -136,13 +137,18 @@ class SongResult {
     suffix = streamFormat.toSuffix() ?? suffix;
     contentType = streamFormat.toContentType() ?? contentType;
 
+    final artistId = songData['artistId'];
+    if (artistId == null) {
+      log('artistId $id');
+    }
+
     return SongResult(
       id: id,
       playUrl: playUrl,
-      parent: songData['parent'] as String,
-      title: songData['title'] as String,
-      artistName: songData['artist'] as String,
-      artistId: songData['artistId'] as String,
+      parent: songData['parent'] as String? ?? '',
+      title: songData['title'] as String? ?? '',
+      artistName: songData['artist'] as String? ?? '',
+      artistId: artistId as String? ?? '',
       albumName: songData['album'] as String,
       albumId: songData['albumId'] as String,
       coverArtId: songArtId,
@@ -237,9 +243,9 @@ class GetAlbum extends BaseRequest<AlbumResult> {
 
     final albumResult = AlbumResult(
       id: albumId,
-      name: albumDataNew['name'] as String,
-      artistName: albumDataNew['artist'] as String,
-      artistId: albumDataNew['artistId'] as String,
+      name: albumDataNew['name'] as String? ?? '',
+      artistName: albumDataNew['artist'] as String? ?? '',
+      artistId: albumDataNew['artistId'] as String? ?? '',
       coverArtId: coverArtId ?? albumId,
       coverArtLink: coverArtLink,
       year: albumDataNew['year'] as int? ?? 0,
