@@ -7,7 +7,7 @@ import Foundation
 
 import audio_service
 import audio_session
-import connectivity_macos
+import connectivity_plus_macos
 import just_audio
 import package_info_plus_macos
 import path_provider_macos
