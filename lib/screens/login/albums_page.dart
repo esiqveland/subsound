@@ -1,5 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/state/appstate.dart';
@@ -32,7 +33,7 @@ class AlbumsPageHolder extends StatefulWidget {
 }
 
 class AlbumsPageState extends State<AlbumsPageHolder> {
-  final int pageSize = 30;
+  final int pageSize = 100;
   late ScrollController _controller;
   late Future<List<Album>> initialLoad;
 
@@ -112,10 +113,10 @@ class AlbumsPageState extends State<AlbumsPageHolder> {
           isLoading = false;
         });
       }).whenComplete(() => {
-        setState(() {
-          isLoading = false;
-        })
-      });
+            setState(() {
+              isLoading = false;
+            })
+          });
     }
     return Future.value(null);
   }
@@ -167,6 +168,71 @@ class AlbumRow extends StatelessWidget {
   }
 }
 
+class AlbumItem extends StatelessWidget {
+  final Album album;
+  final Function(Album) onTap;
+  final double width;
+
+  const AlbumItem({
+    Key? key,
+    required this.album,
+    required this.onTap,
+    required this.width,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final padding = EdgeInsets.all(8.0);
+
+    return Material(
+      child: InkWell(
+        hoverColor: Theme.of(context).hoverColor,
+        onTap: () {
+          onTap(album);
+        },
+        child: Container(
+          padding: padding,
+          width: width,
+          child: Column(
+            //mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: Container(
+                  color: Colors.redAccent,
+                  child: CoverArtImage(
+                    album.coverArtLink,
+                    id: album.coverArtId,
+                    width: width - padding.left - padding.right,
+                    height: width - padding.left - padding.right,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+              Text(
+                album.title,
+                style: theme.textTheme.titleLarge,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 2.0),
+              Text(
+                album.artist,
+                style: theme.textTheme.caption!.copyWith(fontSize: 14.0),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class AlbumsListView extends StatelessWidget {
   final List<Album> albums;
   final ScrollController controller;
@@ -183,29 +249,62 @@ class AlbumsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+
+    SliverMultiBoxAdaptorWidget sliver = SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, idx) {
+          return AlbumRow(
+            album: albums[idx],
+            onTap: (album) {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => AlbumScreen(
+                  albumId: album.id,
+                ),
+              ));
+            },
+          );
+        },
+        childCount: albums.length,
+      ),
+    );
+    if (media.size.width >= 700) {
+      const itemWidth = 240.0;
+      final maxCrossAxisExtent = 0.95 * media.size.width / itemWidth;
+
+      sliver = SliverGrid(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: itemWidth,
+          mainAxisSpacing: 15.0,
+          crossAxisSpacing: 30.0,
+          childAspectRatio: 0.7,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, idx) {
+            return AlbumItem(
+              width: itemWidth,
+              album: albums[idx],
+              onTap: (album) {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AlbumScreen(
+                    albumId: album.id,
+                  ),
+                ));
+              },
+            );
+          },
+          childCount: albums.length,
+        ),
+      );
+    }
+
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: CustomScrollView(
         controller: controller,
         physics: BouncingScrollPhysics(),
         slivers: <Widget>[
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, idx) {
-                return AlbumRow(
-                  album: albums[idx],
-                  onTap: (album) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => AlbumScreen(
-                        albumId: album.id,
-                      ),
-                    ));
-                  },
-                );
-              },
-              childCount: albums.length,
-            ),
-          ),
+          sliver,
           if (isLoading)
             SliverToBoxAdapter(
               child: Padding(
