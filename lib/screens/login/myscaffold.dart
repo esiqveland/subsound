@@ -133,7 +133,7 @@ class MyScaffold extends StatelessWidget {
       builder: (context, state) => state.startUpState == StartUpState.loading
           ? SplashScreen()
           : _AppScaffold(
-              body: body,
+              builder: body,
               appBar: appBar ?? AppBarSettings(),
               disableBottomBar: disableBottomBar || !state.hasSong,
             ),
@@ -385,12 +385,12 @@ class MainBody extends StatelessWidget {
 
 class _AppScaffold extends StatelessWidget {
   final AppBarSettings appBar;
-  final WidgetBuilder body;
+  final WidgetBuilder builder;
   final bool disableBottomBar;
 
   _AppScaffold({
     Key? key,
-    required this.body,
+    required this.builder,
     required this.appBar,
     this.disableBottomBar = false,
   }) : super(key: key);
@@ -400,7 +400,7 @@ class _AppScaffold extends StatelessWidget {
     var bodyHolder = MainBody(
       appBar: appBar,
       disableBottomBar: disableBottomBar,
-      builder: body,
+      builder: builder,
     );
     if (Platform.isLinux) {
       return AdwScaffold(
