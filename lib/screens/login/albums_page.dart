@@ -24,7 +24,10 @@ class AlbumsPage extends StatelessWidget {
 class AlbumsPageHolder extends StatefulWidget {
   final SubsonicContext ctx;
 
-  const AlbumsPageHolder({Key? key, required this.ctx}) : super(key: key);
+  const AlbumsPageHolder({
+    Key? key,
+    required this.ctx,
+  }) : super(key: key);
 
   @override
   State<AlbumsPageHolder> createState() {
@@ -195,35 +198,43 @@ class AlbumItem extends StatelessWidget {
           padding: padding,
           width: width,
           child: Column(
-            //mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  color: Colors.redAccent,
-                  child: CoverArtImage(
-                    album.coverArtLink,
-                    id: album.coverArtId,
+                borderRadius: BorderRadius.circular(16.0),
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Container(
+                    color: Colors.redAccent,
                     width: width - padding.left - padding.right,
                     height: width - padding.left - padding.right,
-                    fit: BoxFit.fitWidth,
+                    child: CoverArtImage(
+                      album.coverArtLink,
+                      id: album.coverArtId,
+                      width: width - padding.left - padding.right,
+                      height: width - padding.left - padding.right,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
               ),
+              SizedBox(height: 4.0),
               Text(
                 album.title,
                 style: theme.textTheme.titleLarge,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: 2.0),
-              Text(
-                album.artist,
-                style: theme.textTheme.caption!.copyWith(fontSize: 14.0),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              SizedBox(height: 4.0),
+              Container(
+                child: Text(
+                  album.artist,
+                  style: theme.textTheme.caption!.copyWith(fontSize: 14.0),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -277,7 +288,7 @@ class AlbumsListView extends StatelessWidget {
           maxCrossAxisExtent: itemWidth,
           mainAxisSpacing: 15.0,
           crossAxisSpacing: 30.0,
-          childAspectRatio: 0.7,
+          childAspectRatio: 0.8,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, idx) {
