@@ -1,17 +1,26 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:async_redux/async_redux.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:libadwaita/libadwaita.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
+import 'package:subsound/screens/browsing/home_page.dart';
 import 'package:subsound/screens/browsing/search.dart';
+import 'package:subsound/screens/browsing/starred_page.dart';
+import 'package:subsound/screens/login/albums_page.dart';
+import 'package:subsound/screens/login/artist_page.dart';
+import 'package:subsound/screens/login/artists_page.dart';
 import 'package:subsound/screens/login/bottomnavbar.dart';
 import 'package:subsound/screens/login/drawer.dart';
 import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/screens/login/settings_page.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:we_slide/we_slide.dart';
+import 'package:window_decorations/window_decorations.dart';
 
 import 'homescreen.dart';
 
@@ -134,15 +143,169 @@ class MyScaffold extends StatelessWidget {
 
 final Color bottomColor = Colors.black26.withOpacity(1.0);
 
-class _AppScaffold extends StatelessWidget {
-  final AppBarSettings appBar;
-  final WidgetBuilder body;
-  final bool disableBottomBar;
+class LinuxBody extends StatefulWidget {
+  final WidgetBuilder builder;
 
-  _AppScaffold({
+  const LinuxBody({
     Key? key,
-    required this.body,
+    required this.builder,
+  }) : super(key: key);
+
+  @override
+  _LinuxBodyState createState() => _LinuxBodyState();
+}
+
+class ViewSwitcherEntry {
+  final ViewSwitcherData data;
+  final WidgetBuilder builder;
+  final Function(BuildContext) goto;
+
+  ViewSwitcherEntry({
+    required this.data,
+    required this.builder,
+    required this.goto,
+  });
+}
+
+final List<ViewSwitcherEntry> linuxTabs = [
+  ViewSwitcherEntry(
+    data: ViewSwitcherData(title: "Home", icon: Icons.home),
+    builder: (context) => HomeScreen(initialTabIndex: 0),
+    goto: (context) {
+      //Navigator.pushNamed(context, HomeScreen.routeName);
+    },
+  ),
+  ViewSwitcherEntry(
+    data: ViewSwitcherData(
+      title: "Artists",
+      icon: Icons.group,
+    ),
+    builder: (context) => ArtistsPage(),
+    goto: (context) {
+      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ArtistsPage()));
+    },
+  ),
+  ViewSwitcherEntry(
+    data: ViewSwitcherData(
+      title: "Albums",
+      icon: Icons.album,
+    ),
+    builder: (context) => ArtistsPage(),
+    goto: (context) {
+      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ArtistsPage()));
+    },
+  ),
+  ViewSwitcherEntry(
+    data: ViewSwitcherData(
+      title: "Starred",
+      icon: Icons.search,
+    ),
+    builder: (context) => StarredPage(),
+    goto: (context) {
+      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => StarredPage()));
+    },
+  ),
+];
+
+class _LinuxBodyState extends State<LinuxBody> {
+  int index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        AdwHeaderBar.bitsdojo(
+          appWindow: appWindow,
+          windowDecor: windowDecor,
+          themeType: ThemeType.adwaita,
+          showClose: true,
+          showMaximize: true,
+          showMinimize: true,
+          start: Row(
+            children: [
+              Builder(
+                builder: (context) {
+                  return AdwHeaderButton(
+                    icon: const Icon(Icons.view_sidebar, size: 15),
+                    isActive: false,
+                    onPressed: () {
+                      //_flapController.toggle();
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+          title: AdwViewSwitcher(
+            currentIndex: index,
+            onViewChanged: (idx) {
+              setState(() {
+                index = idx;
+              });
+            },
+            expanded: false,
+            style: ViewSwitcherStyle.desktop,
+            tabs: linuxTabs.map((e) => e.data)
+                .toList(growable: false),
+          ),
+          end: Row(
+            children: [
+              AdwPopupMenu(
+                body: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      onTap: () {},
+                      title: const Text(
+                        'Force reload',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                    ListTile(
+                      onTap: () {},
+                      title: const Text(
+                        'Settings',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            child: AdwViewStack(
+              index: index,
+              children: [
+                HomePage(),
+                ArtistsPage(),
+                AlbumsPage(),
+                StarredPage(),
+              ],
+              // children: linuxTabs
+              //     .map((e) => e.builder)
+              //     .map((e) => Builder(builder: e))
+              //     .toList(growable: false),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class MainBody extends StatelessWidget {
+  final AppBarSettings appBar;
+  final bool disableBottomBar;
+  final WidgetBuilder builder;
+
+  MainBody({
+    Key? key,
     required this.appBar,
+    required this.builder,
     this.disableBottomBar = false,
   }) : super(key: key);
 
@@ -157,66 +320,100 @@ class _AppScaffold extends StatelessWidget {
         disableBottomBar ? footerHeight : playerBottomBarSize + footerHeight;
     final double _panelMaxSize = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: WeSlide(
-        controller: _controller,
-        panelMinSize: _panelMinSize,
-        panelMaxSize: _panelMaxSize,
-        hidePanelHeader: true,
-        hideFooter: true,
-        parallax: false,
-        overlayOpacity: 1.0,
-        overlayColor: bgColor,
-        backgroundColor: bgColor,
-        overlay: true,
-        body: CustomScrollView(
-          slivers: <Widget>[
-            if (!disableAppBar)
-              SliverAppBar(
-                title: appBar.title,
-                centerTitle: appBar.centerTitle,
-                floating: appBar.floating,
-                pinned: appBar.pinned,
-                bottom: appBar.bottom,
-              ),
-            SliverFillRemaining(
-              hasScrollBody: true,
-              child: Builder(builder: body),
+    if (Platform.isLinux) {
+      return LinuxBody(builder: builder);
+    }
+
+    return WeSlide(
+      controller: _controller,
+      panelMinSize: _panelMinSize,
+      panelMaxSize: _panelMaxSize,
+      hidePanelHeader: true,
+      hideFooter: true,
+      parallax: false,
+      overlayOpacity: 1.0,
+      overlayColor: bgColor,
+      backgroundColor: bgColor,
+      overlay: true,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          if (!disableAppBar)
+            SliverAppBar(
+              title: appBar.title,
+              centerTitle: appBar.centerTitle,
+              floating: appBar.floating,
+              pinned: appBar.pinned,
+              bottom: appBar.bottom,
             ),
-          ],
-        ),
-        panel: disableBottomBar
-            ? SizedBox()
-            : Container(
-                child: PlayerView(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  header: Text(
-                    "Now Playing",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                ),
-              ),
-        panelHeader: disableBottomBar
-            ? SizedBox()
-            : Container(
-                child: PlayerBottomBar(
-                  height: playerBottomBarSize,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  onTap: () {
-                    _controller.show();
-                  },
-                ),
-              ),
-        footerHeight: footerHeight,
-        footer: BottomNavigationBarWidget(
-          navItems: navBarItems,
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
+          SliverFillRemaining(
+            hasScrollBody: true,
+            child: Builder(builder: builder),
+          ),
+        ],
       ),
-      drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
+      panel: disableBottomBar
+          ? SizedBox()
+          : Container(
+              child: PlayerView(
+                backgroundColor: Theme.of(context).primaryColor,
+                header: Text(
+                  "Now Playing",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20.0),
+                ),
+              ),
+            ),
+      panelHeader: disableBottomBar
+          ? SizedBox()
+          : Container(
+              child: PlayerBottomBar(
+                height: playerBottomBarSize,
+                backgroundColor: Theme.of(context).primaryColor,
+                onTap: () {
+                  _controller.show();
+                },
+              ),
+            ),
+      footerHeight: footerHeight,
+      footer: BottomNavigationBarWidget(
+        navItems: navBarItems,
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
     );
+  }
+}
+
+class _AppScaffold extends StatelessWidget {
+  final AppBarSettings appBar;
+  final WidgetBuilder body;
+  final bool disableBottomBar;
+
+  _AppScaffold({
+    Key? key,
+    required this.body,
+    required this.appBar,
+    this.disableBottomBar = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var bodyHolder = MainBody(
+      appBar: appBar,
+      disableBottomBar: disableBottomBar,
+      builder: body,
+    );
+    if (Platform.isLinux) {
+      return AdwScaffold(
+        drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
+        body: bodyHolder,
+      );
+    } else {
+      return Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: bodyHolder,
+        drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
+      );
+    }
   }
 }
 

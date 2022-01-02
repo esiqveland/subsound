@@ -2,32 +2,21 @@ import 'dart:io';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
+import 'package:multi_window/multi_window.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:subsound/components/player.dart';
-import 'package:subsound/screens/login/homescreen.dart';
-import 'package:subsound/screens/login/loginscreen.dart';
-import 'package:subsound/screens/login/myscaffold.dart';
+import 'package:subsound/app/app.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/database/database.dart';
 import 'package:subsound/state/player_task.dart';
 import 'package:subsound/storage/cache.dart';
 
-final Map<String, WidgetBuilder> appRoutes = {
-  Navigator.defaultRouteName: (context) => RootScreen(),
-  RootScreen.routeName: (context) => RootScreen(),
-  HomeScreen.routeName: (context) => HomeScreen(),
-  LoginScreen.routeName: (context) => LoginScreen(),
-  PlayerScreen.routeName: (context) => PlayerScreen(),
-};
-
 final Logger logger = Logger("AppLogger");
-
-final navigatorKey = GlobalKey<NavigatorState>();
 
 void main(List<String> args) async {
   // logger.level = Level.ALL;
@@ -51,6 +40,10 @@ void main(List<String> args) async {
 void runMain(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  if (Platform.isLinux || Platform.isWindows) {
+    MultiWindow.init(args);
+  }
+
   // store this in a singleton
   final h = await AudioService.init(
     builder: () => MyAudioHandler(),
@@ -73,7 +66,7 @@ void runMain(List<String> args) async {
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  NavigateAction.setNavigatorKey(navigatorKey);
+  NavigateAction.setNavigatorKey(NavigatorKey);
 
   final Store<AppState> store = createStore();
   store.dispatch(StartupAction(db));
@@ -81,6 +74,15 @@ void runMain(List<String> args) async {
   runApp(MyApp(
     store: store,
   ));
+
+  doWhenWindowReady(() {
+    final initialSize = Size(1280, 720);
+    appWindow.minSize = initialSize;
+    appWindow.size = initialSize;
+    appWindow.alignment = Alignment.center;
+    appWindow.show();
+  });
+
 }
 
 class MyApp extends StatelessWidget {
@@ -94,21 +96,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var theme = ThemeData.dark();
     return StoreProvider(
       store: store,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        navigatorKey: navigatorKey,
-        title: 'Sub:Sound',
-        theme: theme.copyWith(
-          bottomSheetTheme: theme.bottomSheetTheme.copyWith(
-            backgroundColor: Colors.black.withOpacity(0.6),
-          ),
-        ),
-        routes: appRoutes,
-        initialRoute: Navigator.defaultRouteName,
-      ),
+      child: MainApp(),
     );
   }
 }

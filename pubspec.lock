@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "31.0.0"
+  adwaita:
+    dependency: "direct main"
+    description:
+      name: adwaita
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   analyzer:
     dependency: transitive
     description:
@@ -71,6 +78,41 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.6+1"
+  bitsdojo_window:
+    dependency: "direct main"
+    description:
+      name: bitsdojo_window
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1+1"
+  bitsdojo_window_linux:
+    dependency: transitive
+    description:
+      name: bitsdojo_window_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
+  bitsdojo_window_macos:
+    dependency: transitive
+    description:
+      name: bitsdojo_window_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
+  bitsdojo_window_platform_interface:
+    dependency: transitive
+    description:
+      name: bitsdojo_window_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
+  bitsdojo_window_windows:
+    dependency: transitive
+    description:
+      name: bitsdojo_window_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -277,6 +319,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.0"
+  flutter_svg:
+    dependency: transitive
+    description:
+      name: flutter_svg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -306,6 +355,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
+  gsettings:
+    dependency: transitive
+    description:
+      name: gsettings
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.3"
   http:
     dependency: "direct main"
     description:
@@ -374,6 +430,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.2"
+  libadwaita:
+    dependency: "direct main"
+    description:
+      name: libadwaita
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0-rc.1"
   libwinmedia:
     dependency: transitive
     description:
@@ -423,6 +486,34 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  multi_window:
+    dependency: "direct main"
+    description:
+      name: multi_window
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  multi_window_interface:
+    dependency: transitive
+    description:
+      name: multi_window_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  multi_window_linux:
+    dependency: transitive
+    description:
+      name: multi_window_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  multi_window_macos:
+    dependency: transitive
+    description:
+      name: multi_window_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   nm:
     dependency: transitive
     description:
@@ -500,6 +591,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  path_drawing:
+    dependency: transitive
+    description:
+      name: path_drawing
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  path_parsing:
+    dependency: transitive
+    description:
+      name: path_parsing
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   path_provider:
     dependency: "direct main"
     description:
@@ -904,6 +1009,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.3"
+  window_decorations:
+    dependency: "direct main"
+    description:
+      name: window_decorations
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   xdg_directories:
     dependency: transitive
     description:

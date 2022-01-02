@@ -47,6 +47,11 @@ dependencies:
   flutter_slidable: ^1.2.0
   rxdart: ^0.27.0
   sentry_flutter: ^6.0.0
+  libadwaita: ^1.0.0-rc.1
+  adwaita: ^0.0.3
+  bitsdojo_window: ">=0.1.1+1 <1.0.0"
+  multi_window: ">=0.2.0 <1.0.0"
+  window_decorations: ">=1.0.0 <2.0.0"
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.1

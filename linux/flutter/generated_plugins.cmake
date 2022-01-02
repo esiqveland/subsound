@@ -3,7 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  bitsdojo_window_linux
   libwinmedia
+  multi_window_linux
   sentry_flutter
 )
 
