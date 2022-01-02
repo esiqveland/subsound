@@ -51,7 +51,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Center(child: StarredPage()),
                 Center(child: ArtistsPage()),
-                Center(child: AlbumsPage(ctx: state.toClient())),
+                Center(child: AlbumsPage()),
                 Center(child: HomePage()),
               ],
             ),

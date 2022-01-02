@@ -1,18 +1,32 @@
+import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
+import 'package:subsound/state/appstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/models/album.dart';
 import 'package:subsound/subsonic/requests/get_album_list.dart';
 import 'package:subsound/subsonic/requests/get_album_list2.dart';
 
-class AlbumsPage extends StatefulWidget {
-  final SubsonicContext ctx;
-
-  const AlbumsPage({Key? key, required this.ctx}) : super(key: key);
+class AlbumsPage extends StatelessWidget {
+  const AlbumsPage({Key? key}) : super(key: key);
 
   @override
-  State<AlbumsPage> createState() {
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, SubsonicContext>(
+      converter: (store) => store.state.loginState.toClient(),
+      builder: (context, vm) => AlbumsPageHolder(ctx: vm),
+    );
+  }
+}
+
+class AlbumsPageHolder extends StatefulWidget {
+  final SubsonicContext ctx;
+
+  const AlbumsPageHolder({Key? key, required this.ctx}) : super(key: key);
+
+  @override
+  State<AlbumsPageHolder> createState() {
     return AlbumsPageState();
   }
 }
@@ -111,7 +125,7 @@ class AlbumsListView extends StatelessWidget {
   }
 }
 
-class AlbumsPageState extends State<AlbumsPage> {
+class AlbumsPageState extends State<AlbumsPageHolder> {
   final int pageSize = 30;
   late ScrollController _controller;
   late Future<List<Album>> initialLoad;
@@ -150,6 +164,7 @@ class AlbumsPageState extends State<AlbumsPage> {
   @override
   void dispose() {
     super.dispose();
+    _controller.dispose();
   }
 
   @override
