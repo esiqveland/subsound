@@ -29,7 +29,7 @@ final Logger logger = Logger("AppLogger");
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
-void main() async {
+void main(List<String> args) async {
   // logger.level = Level.ALL;
   // Logger.root.level = Level.ALL; // defaults to Level.INFO
   if (Platform.isWindows || Platform.isLinux) {
@@ -44,11 +44,11 @@ void main() async {
       options.dsn =
           'https://873f2393ea7c458694f56f647100c224@o564637.ingest.sentry.io/5705472';
     },
-    appRunner: () => runMain(),
+    appRunner: () => runMain(args),
   );
 }
 
-void runMain() async {
+void runMain(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // store this in a singleton
