@@ -31,6 +31,114 @@ class AlbumsPageHolder extends StatefulWidget {
   }
 }
 
+class AlbumsPageState extends State<AlbumsPageHolder> {
+  final int pageSize = 30;
+  late ScrollController _controller;
+  late Future<List<Album>> initialLoad;
+
+  List<Album> _albumList = [];
+  bool hasMore = true;
+  bool isLoading = false;
+
+  AlbumsPageState();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = ScrollController();
+    isLoading = true;
+    initialLoad = load(offset: 0, pageSize: pageSize).then((value) {
+      if (!mounted) {
+        return value;
+      }
+      setState(() {
+        isLoading = false;
+        _albumList.addAll(value);
+      });
+      return value;
+    });
+    initialLoad.whenComplete(() {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: FutureBuilder<List<Album>>(
+            future: initialLoad,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return CircularProgressIndicator();
+              } else {
+                if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                } else {
+                  _albumList = snapshot.data!;
+                  return AlbumsListView(
+                    controller: _controller,
+                    albums: _albumList,
+                    isLoading: isLoading,
+                    loadMore: loadMore,
+                  );
+                }
+              }
+            }));
+  }
+
+  Future<void> loadMore() {
+    if (hasMore && !isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+
+      return load(
+        pageSize: pageSize,
+        offset: _albumList.length,
+      ).then((value) {
+        setState(() {
+          _albumList.addAll(value);
+          isLoading = false;
+        });
+      }).whenComplete(() => {
+        setState(() {
+          isLoading = false;
+        })
+      });
+    }
+    return Future.value(null);
+  }
+
+  Future<List<Album>> load({
+    required int pageSize,
+    int offset = 0,
+  }) {
+    return GetAlbumList2(
+      type: GetAlbumListType.alphabeticalByName,
+      size: pageSize,
+      offset: offset,
+    ).run(widget.ctx).then((value) => value.data).then((List<Album> nextList) {
+      if (nextList.length < pageSize) {
+        setState(() {
+          hasMore = false;
+        });
+      }
+      return nextList;
+    });
+  }
+}
+
 class AlbumRow extends StatelessWidget {
   final Album album;
   final Function(Album) onTap;
@@ -122,113 +230,5 @@ class AlbumsListView extends StatelessWidget {
       }
     }
     return false;
-  }
-}
-
-class AlbumsPageState extends State<AlbumsPageHolder> {
-  final int pageSize = 30;
-  late ScrollController _controller;
-  late Future<List<Album>> initialLoad;
-
-  List<Album> _albumList = [];
-  bool hasMore = true;
-  bool isLoading = false;
-
-  AlbumsPageState();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = ScrollController();
-    isLoading = true;
-    initialLoad = load(offset: 0, pageSize: pageSize).then((value) {
-      if (!mounted) {
-        return value;
-      }
-      setState(() {
-        isLoading = false;
-        _albumList.addAll(value);
-      });
-      return value;
-    });
-    initialLoad.whenComplete(() {
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        isLoading = false;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-        child: FutureBuilder<List<Album>>(
-            future: initialLoad,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator();
-              } else {
-                if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                } else {
-                  _albumList = snapshot.data!;
-                  return AlbumsListView(
-                    controller: _controller,
-                    albums: _albumList,
-                    isLoading: isLoading,
-                    loadMore: loadMore,
-                  );
-                }
-              }
-            }));
-  }
-
-  Future<void> loadMore() {
-    if (hasMore && !isLoading) {
-      setState(() {
-        isLoading = true;
-      });
-
-      return load(
-        pageSize: pageSize,
-        offset: _albumList.length,
-      ).then((value) {
-        setState(() {
-          _albumList.addAll(value);
-          isLoading = false;
-        });
-      }).whenComplete(() => {
-            setState(() {
-              isLoading = false;
-            })
-          });
-    }
-    return Future.value(null);
-  }
-
-  Future<List<Album>> load({
-    required int pageSize,
-    int offset = 0,
-  }) {
-    return GetAlbumList2(
-      type: GetAlbumListType.alphabeticalByName,
-      size: pageSize,
-      offset: offset,
-    ).run(widget.ctx).then((value) => value.data).then((List<Album> nextList) {
-      if (nextList.length < pageSize) {
-        setState(() {
-          hasMore = false;
-        });
-      }
-      return nextList;
-    });
   }
 }
