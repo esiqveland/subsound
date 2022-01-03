@@ -347,6 +347,7 @@ class PlayerViewModel extends Vm {
 class PlayerView extends StatelessWidget {
   final Widget? header;
   final Color? backgroundColor;
+
   const PlayerView({
     Key? key,
     this.header,
@@ -448,8 +449,10 @@ class PlayerView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         UpdatingPlayerSlider(
-                          playerState: vm,
+                          onSeek: vm.onSeek,
                           size: MediaQuery.of(context).size.width * 0.8,
+                          onStartListen: vm.onStartListen,
+                          onStopListen: vm.onStopListen,
                         ),
                       ],
                     ),
@@ -544,13 +547,17 @@ class PlayerScreen extends StatelessWidget {
 }
 
 class UpdatingPlayerSlider extends StatefulWidget {
-  final PlayerViewModel playerState;
   final double size;
+  final Function(PositionListener) onStartListen;
+  final Function(PositionListener) onStopListen;
+  final Function(int) onSeek;
 
-  const UpdatingPlayerSlider({
+  UpdatingPlayerSlider({
     Key? key,
-    required this.playerState,
     required this.size,
+    required this.onSeek,
+    required this.onStartListen,
+    required this.onStopListen,
   }) : super(key: key);
 
   @override
@@ -571,7 +578,7 @@ class UpdatingPlayerSliderState extends State<UpdatingPlayerSlider>
   @override
   void reassemble() {
     super.reassemble();
-    widget.playerState.onStopListen(this);
+    widget.onStopListen(this);
   }
 
   @override
@@ -581,16 +588,16 @@ class UpdatingPlayerSliderState extends State<UpdatingPlayerSlider>
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return PlayerSlider(
-            playerState: widget.playerState,
+            onSeek: widget.onSeek,
             pos: snapshot.data!,
             size: widget.size,
           );
         } else {
           return PlayerSlider(
-            playerState: widget.playerState,
+            onSeek: widget.onSeek,
             pos: PositionUpdate(
-              position: widget.playerState.position,
-              duration: widget.playerState.duration,
+              position: Duration.zero,
+              duration: Duration(milliseconds: 1),
             ),
             size: widget.size,
           );
@@ -606,30 +613,30 @@ class UpdatingPlayerSliderState extends State<UpdatingPlayerSlider>
       onListen: () {},
       onCancel: () {
         log('UpdatingPlayerSliderState: onCancel');
-        widget.playerState.onStopListen(this);
+        widget.onStopListen(this);
       },
     );
     log('UpdatingPlayerSliderState: onInitListen');
-    widget.playerState.onStartListen(this);
+    widget.onStartListen(this);
   }
 
   @override
   void dispose() {
     log('UpdatingPlayerSliderState: onFinishListen');
-    widget.playerState.onStopListen(this);
+    widget.onStopListen(this);
     stream.close();
     super.dispose();
   }
 }
 
 class PlayerSlider extends StatelessWidget {
-  final PlayerViewModel playerState;
+  final Function(int) onSeek;
   final PositionUpdate pos;
   final double size;
 
   PlayerSlider({
     Key? key,
-    required this.playerState,
+    required this.onSeek,
     required this.pos,
     required this.size,
   }) : super(key: key);
@@ -640,7 +647,7 @@ class PlayerSlider extends StatelessWidget {
     final position = _getPosition(pos);
 
     return ProgressBar(
-      onChanged: playerState.onSeek,
+      onChanged: onSeek,
       position: position,
       total: total,
       size: size,
