@@ -687,17 +687,22 @@ class CachedSliderState extends State<CachedSlider> {
   Widget build(BuildContext context) {
     return SliderTheme(
       data: SliderThemeData(
-        trackShape: CustomTrackShape(),
-        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
-        overlayShape: RoundSliderOverlayShape(overlayRadius: 8.0),
         trackHeight: 2.0,
-        //rangeThumbShape: RoundRangeSliderThumbShape(enabledThumbRadius: 4.0),
-        //rangeTrackShape: RoundedRectSliderTrackShape(),
-        //tickMarkShape: SliderTickMarkShape.noTickMark,
-        //rangeTickMarkShape: RoundRangeSliderTickMarkShape(tickMarkRadius: 2.0),
+        trackShape: CustomTrackShape(),
+        thumbShape: RoundSliderThumbShape(
+          enabledThumbRadius: 5.0,
+          pressedElevation: 4.0,
+          elevation: 2.0,
+        ),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: 8.0),
+        overlayColor: Theme.of(context).colorScheme.secondary.withOpacity(0.4),
+        thumbColor: Theme.of(context).colorScheme.secondary,
+        activeTrackColor: Theme.of(context).colorScheme.secondary,
+        inactiveTrackColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white.withOpacity(0.4)
+            : Colors.black.withOpacity(0.2),
       ),
       child: Slider.adaptive(
-        activeColor: Colors.tealAccent,
         label: labelOverride ?? widget.label,
         min: 0.0,
         max: widget.max.toDouble(),
