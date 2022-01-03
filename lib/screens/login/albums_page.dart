@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -171,17 +173,26 @@ class AlbumRow extends StatelessWidget {
   }
 }
 
-class AlbumItem extends StatelessWidget {
+class AlbumItem extends StatefulWidget {
   final Album album;
   final Function(Album) onTap;
   final double width;
 
-  const AlbumItem({
+  AlbumItem({
     Key? key,
     required this.album,
     required this.onTap,
     required this.width,
-  }) : super(key: key);
+  });
+
+  @override
+  State<StatefulWidget> createState() {
+    return AlbumItemState();
+  }
+}
+
+class AlbumItemState extends State<AlbumItem> {
+  bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
@@ -189,57 +200,70 @@ class AlbumItem extends StatelessWidget {
     final padding = EdgeInsets.all(8.0);
     final border = BorderRadius.circular(4.0);
 
-    return Material(
-      color: Theme.of(context).cardColor,
-      borderRadius: border,
-      child: InkWell(
-        //hoverColor: Theme.of(context).hoverColor,
-        onTap: () {
-          onTap(album);
-        },
-        child: Container(
-          padding: padding,
-          width: width,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClipRRect(
-                borderRadius: border,
-                child: FittedBox(
-                  fit: BoxFit.fitWidth,
-                  child: Container(
-                    //color: Colors.redAccent,
-                    width: width - padding.left - padding.right,
-                    height: width - padding.left - padding.right,
-                    child: CoverArtImage(
-                      album.coverArtLink,
-                      id: album.coverArtId,
-                      width: width - padding.left - padding.right,
-                      height: width - padding.left - padding.right,
-                      fit: BoxFit.fitWidth,
+    return MouseRegion(
+      onEnter: (event) => {
+        setState(() {
+          _hover = true;
+        })
+      },
+      onExit: (event) => {
+        setState(() {
+          _hover = false;
+        })
+      },
+      child: Material(
+        elevation: _hover ? 10: 2,
+        //color: Theme.of(context).cardColor,
+        borderRadius: border,
+        child: GestureDetector(
+          //hoverColor: Theme.of(context).hoverColor,
+          onTap: () {
+            widget.onTap(widget.album);
+          },
+          child: Container(
+            padding: padding,
+            width: widget.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: border,
+                  child: FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Container(
+                      //color: Colors.redAccent,
+                      width: widget.width - padding.left - padding.right,
+                      height: widget.width - padding.left - padding.right,
+                      child: CoverArtImage(
+                        widget.album.coverArtLink,
+                        id: widget.album.coverArtId,
+                        width: widget.width - padding.left - padding.right,
+                        height: widget.width - padding.left - padding.right,
+                        fit: BoxFit.fitWidth,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 4.0),
-              Text(
-                album.title,
-                style: theme.textTheme.titleLarge,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 4.0),
-              Container(
-                child: Text(
-                  album.artist,
-                  style: theme.textTheme.caption!.copyWith(fontSize: 14.0),
+                SizedBox(height: 4.0),
+                Text(
+                  widget.album.title,
+                  style: theme.textTheme.titleLarge,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+                SizedBox(height: 4.0),
+                Container(
+                  child: Text(
+                    widget.album.artist,
+                    style: theme.textTheme.caption!.copyWith(fontSize: 14.0),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
