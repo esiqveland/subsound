@@ -200,6 +200,8 @@ class PlayerCommandSetVolume extends PlayerActions {
 
   @override
   Future<AppState?> reduce() async {
+    log('PlayerCommandSetVolume volume=$volume');
+
     await audioHandler.setVolume(volume);
     if (state.playerState.volume == volume) {
       return null;
