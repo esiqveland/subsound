@@ -94,15 +94,17 @@ class DesktopMiniPlayer extends StatelessWidget {
                                 Text(
                                   state.songTitle ?? 'Nothing playing',
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12.0),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   state.artistTitle ?? 'Artistic',
                                   style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 11.0),
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 11.0,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
@@ -150,7 +152,10 @@ class DesktopMiniPlayer extends StatelessWidget {
                       Container(
                         width: mq.size.width * 0.25,
                         padding: EdgeInsets.only(right: 5.0),
-                        child: PlayPauseIcon(state: state),
+                        child: VolumeWidget(
+                          volume: state.volume,
+                          onChanged: state.onVolumeChanged,
+                        ),
                       ),
                     ],
                   ),
@@ -160,6 +165,27 @@ class DesktopMiniPlayer extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class VolumeWidget extends StatelessWidget {
+  final double volume;
+  final Function(double) onChanged;
+
+  const VolumeWidget({
+    Key? key,
+    required this.volume,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Slider.adaptive(
+      value: volume,
+      onChanged: (val) {
+        onChanged(val);
+      },
     );
   }
 }

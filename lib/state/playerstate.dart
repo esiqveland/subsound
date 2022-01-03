@@ -193,6 +193,26 @@ class PlayerStateChanged extends PlayerActions {
   }
 }
 
+class PlayerCommandSetVolume extends PlayerActions {
+  final double volume;
+
+  PlayerCommandSetVolume(this.volume);
+
+  @override
+  Future<AppState?> reduce() async {
+    await audioHandler.setVolume(volume);
+    if (state.playerState.volume == volume) {
+      return null;
+    } else {
+      return state.copy(
+        playerState: state.playerState.copy(
+          volume: volume,
+        ),
+      );
+    }
+  }
+}
+
 class PlayerCommandPlayAlbum extends PlayerActions {
   final AlbumResultSimple album;
 
@@ -290,6 +310,7 @@ class PlayerStartListenPlayerPosition extends ReduxAction<AppState> {
   }
 
   final PositionListener listener;
+
   PlayerStartListenPlayerPosition(this.listener);
 
   @override
@@ -521,6 +542,7 @@ class StartupPlayer extends ReduxAction<AppState> {
   static StreamSubscription<bool>? runningStream;
   static StreamSubscription<PlaybackState>? playbackStream;
   static StreamSubscription<MediaItem?>? currentMediaStream;
+  static StreamSubscription<double>? volumeStream;
 
   Future<void> connectListeners() async {
     await disconnect();
@@ -550,6 +572,7 @@ class StartupPlayer extends ReduxAction<AppState> {
       if (state.playerState.queue.position != event.queueIndex) {
         dispatch(PlayerSetQueueIndex(event.queueIndex));
       }
+
       bool wasPlaying = state.playerState.isPlaying;
       if (wasPlaying != event.playing) {
         playerScrobbles.add(playerScrobbles.value.copyWith(
@@ -631,6 +654,12 @@ class StartupPlayer extends ReduxAction<AppState> {
         log('prev.playing=${prev.playing}');
       }
 
+      audioHandler.volumeState.listen((value) {
+        if (state.playerState.volume != value) {
+          dispatch(SetPlayerVolume(value));
+        }
+      });
+
       if (id == state.playerState.currentSong?.id) {
         return;
       }
@@ -664,6 +693,8 @@ class StartupPlayer extends ReduxAction<AppState> {
     playbackStream = null;
     await currentMediaStream?.cancel();
     currentMediaStream = null;
+    await volumeStream?.cancel();
+    volumeStream = null;
   }
 
   @override
@@ -700,6 +731,24 @@ class StartupPlayer extends ReduxAction<AppState> {
     //log('StartupPlayer: success=$success');
     await connectListeners();
     return state.copy();
+  }
+}
+
+class SetPlayerVolume extends ReduxAction<AppState> {
+  final double volume;
+
+  SetPlayerVolume(this.volume);
+
+  @override
+  AppState? reduce() {
+    if (state.playerState.volume != volume) {
+      return state.copy(
+        playerState: state.playerState.copy(
+          volume: volume,
+        ),
+      );
+    }
+    return null;
   }
 }
 

@@ -82,7 +82,6 @@ void runMain(List<String> args) async {
     appWindow.alignment = Alignment.center;
     appWindow.show();
   });
-
 }
 
 class MyApp extends StatelessWidget {

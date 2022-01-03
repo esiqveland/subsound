@@ -52,6 +52,7 @@ class MiniPlayerModel extends Vm {
   final String coverArtId;
   final Duration duration;
   final double playbackProgress;
+  final double volume;
   final PlayerStates playerState;
   final Function onPlay;
   final Function onPause;
@@ -60,6 +61,7 @@ class MiniPlayerModel extends Vm {
   final Function(PositionListener) onStartListen;
   final Function(PositionListener) onStopListen;
   final Function(int) onSeek;
+  final Function(double) onVolumeChanged;
 
   MiniPlayerModel({
     required this.hasCurrentSong,
@@ -71,6 +73,7 @@ class MiniPlayerModel extends Vm {
     required this.coverArtId,
     required this.duration,
     required this.playbackProgress,
+    required this.volume,
     required this.playerState,
     required this.onPlay,
     required this.onPause,
@@ -79,6 +82,7 @@ class MiniPlayerModel extends Vm {
     required this.onStartListen,
     required this.onStopListen,
     required this.onSeek,
+    required this.onVolumeChanged,
   }) : super(equals: [
           hasCurrentSong,
           songId,
@@ -88,6 +92,7 @@ class MiniPlayerModel extends Vm {
           coverArtLink ?? '',
           coverArtId,
           duration,
+          volume,
           playerState,
         ]);
 
@@ -108,6 +113,7 @@ class MiniPlayerModel extends Vm {
       coverArtId: currentSong?.coverArtId ?? '',
       duration: state.playerState.duration,
       playbackProgress: playbackProgress,
+      volume: state.playerState.volume,
       playerState: state.playerState.current,
       onPlay: () => dispatch(PlayerCommandPlay()),
       onPause: () => dispatch(PlayerCommandPause()),
@@ -118,6 +124,7 @@ class MiniPlayerModel extends Vm {
       onStopListen: (listener) =>
           dispatch(PlayerStopListenPlayerPosition(listener)),
       onSeek: (seekToPosition) => dispatch(PlayerCommandSeekTo(seekToPosition)),
+      onVolumeChanged: (next) => dispatch(PlayerCommandSetVolume(next)),
     );
   }
 }
@@ -327,7 +334,8 @@ class PlayPauseIcon extends StatelessWidget {
   final MiniPlayerModel state;
   final double? iconSize;
 
-  PlayPauseIcon({Key? key, required this.state, this.iconSize}) : super(key: key);
+  PlayPauseIcon({Key? key, required this.state, this.iconSize})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

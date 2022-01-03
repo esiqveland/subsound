@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/storage/cache.dart';
@@ -24,6 +25,8 @@ set audioHandler(MyAudioHandler h) {
 
 class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   final _player = AudioPlayer();
+
+  final BehaviorSubject<double> volumeState = BehaviorSubject.seeded(1.0);
 
   MyAudioHandler() {
     // Broadcast which item is currently playing
@@ -60,8 +63,12 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         bufferedPosition: _player.bufferedPosition,
         speed: _player.speed,
       ));
-    }, onError: _handleErrors);
+    }, onError: _handleErrors, onDone: _handleDone);
 
+    volumeState.add(_player.volume);
+    _player.volumeStream.listen((event) {
+      volumeState.add(event);
+    });
     // skip to next song when playback completes
     _player.playbackEventStream.listen((nextState) {
       if (_player.playing &&
@@ -71,13 +78,22 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     }, onError: _handleErrors);
   }
 
+  void _handleDone() {
+    _handleErrors(
+        "error: _handleDone called on a _player stream", StackTrace.current);
+  }
+
   @override
   play() => _player.play();
+
   @override
   pause() => _player.pause();
+
   @override
   seek(Duration position) => _player.seek(position);
+
   seekTo(Duration position) => _player.seek(position);
+
   @override
   stop() async {
     await _player.stop();
@@ -156,6 +172,10 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         hint: "error changing audiosource to item=${item.id}",
       ));
     }
+  }
+
+  Future<void> setVolume(double volume) async {
+    await _player.setVolume(volume);
   }
 
   @override

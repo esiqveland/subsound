@@ -184,6 +184,7 @@ class PlayerState {
   final Duration duration;
   final Duration position;
   final ShuffleMode shuffleMode;
+  final double volume;
 
   PlayerState({
     required this.current,
@@ -192,6 +193,7 @@ class PlayerState {
     required this.duration,
     required this.position,
     required this.shuffleMode,
+    required this.volume,
   });
 
   bool get isPlaying => current == PlayerStates.playing;
@@ -208,6 +210,7 @@ class PlayerState {
     Duration? duration,
     Duration? position,
     ShuffleMode? shuffleMode,
+    double? volume,
   }) =>
       PlayerState(
         current: current ?? this.current,
@@ -216,6 +219,7 @@ class PlayerState {
         duration: duration ?? this.duration,
         position: position ?? this.position,
         shuffleMode: shuffleMode ?? this.shuffleMode,
+        volume: volume ?? this.volume,
       );
 
   static PlayerState initialState() => PlayerState(
@@ -225,6 +229,7 @@ class PlayerState {
         position: Duration.zero,
         queue: Queue([]),
         shuffleMode: ShuffleMode.none,
+        volume: 1.0,
       );
 
   @override
