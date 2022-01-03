@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:async_redux/async_redux.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libadwaita/libadwaita.dart';
+import 'package:subsound/components/desktop/player_bar.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/browsing/home_page.dart';
@@ -212,6 +214,8 @@ class _LinuxBodyState extends State<LinuxBody> {
 
   @override
   Widget build(BuildContext context) {
+    var playerBar = DesktopPlayerBar();
+
     return Column(
       children: [
         AdwHeaderBar.bitsdojo(
@@ -292,6 +296,7 @@ class _LinuxBodyState extends State<LinuxBody> {
             ),
           ),
         ),
+        playerBar,
       ],
     );
   }
@@ -320,7 +325,7 @@ class MainBody extends StatelessWidget {
         disableBottomBar ? footerHeight : playerBottomBarSize + footerHeight;
     final double _panelMaxSize = MediaQuery.of(context).size.height;
 
-    if (Platform.isLinux) {
+    if (!kIsWeb && Platform.isLinux) {
       return LinuxBody(builder: builder);
     }
 
@@ -402,10 +407,10 @@ class _AppScaffold extends StatelessWidget {
       disableBottomBar: disableBottomBar,
       builder: builder,
     );
-    if (Platform.isLinux) {
+    if (!kIsWeb && Platform.isLinux) {
       return AdwScaffold(
-        drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
         body: bodyHolder,
+        drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
       );
     } else {
       return Scaffold(
