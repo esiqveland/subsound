@@ -38,6 +38,60 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
 
   @override
   MiniPlayerModel fromStore() {
+    return MiniPlayerModel.from(state, dispatch);
+  }
+}
+
+class MiniPlayerModel extends Vm {
+  final bool hasCurrentSong;
+  final String? songId;
+  final String? songTitle;
+  final String? artistTitle;
+  final String? albumTitle;
+  final String? coverArtLink;
+  final String coverArtId;
+  final Duration duration;
+  final double playbackProgress;
+  final PlayerStates playerState;
+  final Function onPlay;
+  final Function onPause;
+  final Function onPlayNext;
+  final Function onPlayPrev;
+  final Function(PositionListener) onStartListen;
+  final Function(PositionListener) onStopListen;
+  final Function(int) onSeek;
+
+  MiniPlayerModel({
+    required this.hasCurrentSong,
+    required this.songId,
+    required this.songTitle,
+    required this.artistTitle,
+    required this.albumTitle,
+    required this.coverArtLink,
+    required this.coverArtId,
+    required this.duration,
+    required this.playbackProgress,
+    required this.playerState,
+    required this.onPlay,
+    required this.onPause,
+    required this.onPlayNext,
+    required this.onPlayPrev,
+    required this.onStartListen,
+    required this.onStopListen,
+    required this.onSeek,
+  }) : super(equals: [
+          hasCurrentSong,
+          songId,
+          artistTitle ?? '',
+          songTitle ?? '',
+          albumTitle ?? '',
+          coverArtLink ?? '',
+          coverArtId,
+          duration,
+          playerState,
+        ]);
+
+  static MiniPlayerModel from(AppState state, Dispatch<AppState> dispatch) {
     final pos = state.playerState.position.inMilliseconds;
     final durSafe = state.playerState.duration.inMilliseconds;
     final dur = durSafe == 0 ? 1 : durSafe;
@@ -46,6 +100,7 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
 
     return MiniPlayerModel(
       hasCurrentSong: currentSong != null,
+      songId: currentSong?.id ?? '',
       songTitle: currentSong?.songTitle ?? '',
       artistTitle: currentSong?.artist ?? '',
       albumTitle: currentSong?.album ?? '',
@@ -62,53 +117,9 @@ class _MiniPlayerModelFactory extends VmFactory<AppState, MiniPlayer> {
           dispatch(PlayerStartListenPlayerPosition(listener)),
       onStopListen: (listener) =>
           dispatch(PlayerStopListenPlayerPosition(listener)),
+      onSeek: (seekToPosition) => dispatch(PlayerCommandSeekTo(seekToPosition)),
     );
   }
-}
-
-class MiniPlayerModel extends Vm {
-  final bool hasCurrentSong;
-  final String? songTitle;
-  final String? artistTitle;
-  final String? albumTitle;
-  final String? coverArtLink;
-  final String coverArtId;
-  final Duration duration;
-  final double playbackProgress;
-  final PlayerStates playerState;
-  final Function onPlay;
-  final Function onPause;
-  final Function onPlayNext;
-  final Function onPlayPrev;
-  final Function(PositionListener) onStartListen;
-  final Function(PositionListener) onStopListen;
-
-  MiniPlayerModel({
-    required this.hasCurrentSong,
-    required this.songTitle,
-    required this.artistTitle,
-    required this.albumTitle,
-    required this.coverArtLink,
-    required this.coverArtId,
-    required this.duration,
-    required this.playbackProgress,
-    required this.playerState,
-    required this.onPlay,
-    required this.onPause,
-    required this.onPlayNext,
-    required this.onPlayPrev,
-    required this.onStartListen,
-    required this.onStopListen,
-  }) : super(equals: [
-          hasCurrentSong,
-          artistTitle ?? '',
-          songTitle ?? '',
-          albumTitle ?? '',
-          coverArtLink ?? '',
-          coverArtId,
-          duration,
-          playerState,
-        ]);
 }
 
 class MiniPlayerProgressBar extends StatefulWidget {
@@ -270,6 +281,7 @@ class MiniPlayer extends StatelessWidget {
                                 state.coverArtLink,
                                 id: state.coverArtId,
                                 height: playerHeight,
+                                width: playerHeight,
                                 fit: BoxFit.fitHeight,
                               )
                             : Padding(
@@ -313,8 +325,9 @@ class MiniPlayer extends StatelessWidget {
 
 class PlayPauseIcon extends StatelessWidget {
   final MiniPlayerModel state;
+  final double? iconSize;
 
-  PlayPauseIcon({Key? key, required this.state}) : super(key: key);
+  PlayPauseIcon({Key? key, required this.state, this.iconSize}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -337,6 +350,7 @@ class PlayPauseIcon extends StatelessWidget {
       },
       splashRadius: 16.0,
       icon: getIcon(state.playerState),
+      iconSize: iconSize,
     );
   }
 
