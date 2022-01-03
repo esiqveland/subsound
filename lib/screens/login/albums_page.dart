@@ -210,7 +210,7 @@ class AlbumItem extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.fitWidth,
                   child: Container(
-                    color: Colors.redAccent,
+                    //color: Colors.redAccent,
                     width: width - padding.left - padding.right,
                     height: width - padding.left - padding.right,
                     child: CoverArtImage(
