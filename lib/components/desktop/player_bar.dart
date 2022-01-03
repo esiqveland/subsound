@@ -151,10 +151,18 @@ class DesktopMiniPlayer extends StatelessWidget {
                       ),
                       Container(
                         width: mq.size.width * 0.25,
-                        padding: EdgeInsets.only(right: 5.0),
-                        child: VolumeWidget(
-                          volume: state.volume,
-                          onChanged: state.onVolumeChanged,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(right: 20.0),
+                              width: mq.size.width * 0.075,
+                              child: VolumeWidget(
+                                volume: state.volume,
+                                onChanged: state.onVolumeChanged,
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ],
@@ -181,11 +189,9 @@ class VolumeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Slider.adaptive(
-      value: volume,
-      onChanged: (val) {
-        onChanged(val);
-      },
+    return VolumeSlider(
+      volume: volume,
+      onChanged: onChanged,
     );
   }
 }
@@ -223,5 +229,46 @@ class DesktopMiniPlayerCover extends StatelessWidget {
         child: Icon(Icons.album),
       );
     }
+  }
+}
+
+class VolumeSlider extends StatelessWidget {
+  final double volume;
+  final Function(double) onChanged;
+
+  const VolumeSlider({
+    Key? key,
+    required this.volume,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SliderTheme(
+      data: SliderThemeData(
+        trackHeight: 2.0,
+        trackShape: CustomTrackShape(),
+        thumbShape: RoundSliderThumbShape(
+          enabledThumbRadius: 5.0,
+          pressedElevation: 4.0,
+          elevation: 2.0,
+        ),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: 8.0),
+        overlayColor: Theme.of(context).primaryColor.withOpacity(0.4),
+        thumbColor: Theme.of(context).primaryColor,
+        activeTrackColor: Theme.of(context).primaryColor,
+        inactiveTrackColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white.withOpacity(0.4)
+            : Colors.black.withOpacity(0.2),
+      ),
+      child: Container(
+        child: Slider(
+          value: volume,
+          onChanged: onChanged,
+          max: 1.0,
+          min: 0.0,
+        ),
+      ),
+    );
   }
 }
