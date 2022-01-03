@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -463,8 +464,8 @@ class PlayerCommandPlaySong extends PlayerActions {
 
 extension Formatter on PlaybackState {
   String format() {
-    return toString();
-    //return "PlaybackState={playing=$playing, processingState=${describeEnum(processingState)}, queueIndex=$queueIndex, errorMessage=$errorMessage, updateTime=$updateTime,}";
+    //return toString();
+    return "PlaybackState={playing=$playing, processingState=${describeEnum(processingState)}, queueIndex=$queueIndex, errorMessage=$errorMessage, updateTime=$updateTime,updatePosition=$updatePosition,}";
   }
 }
 
@@ -564,6 +565,7 @@ class StartupPlayer extends ReduxAction<AppState> {
       }
       final currentPosition = event.position;
       if (state.playerState.position != currentPosition) {
+        //log("updateListeners currentPosition=$currentPosition");
         PlayerStartListenPlayerPosition.updateListeners(PositionUpdate(
           position: currentPosition,
           duration: state.playerState.duration,
