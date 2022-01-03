@@ -187,10 +187,13 @@ class AlbumItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final padding = EdgeInsets.all(8.0);
+    final border = BorderRadius.circular(4.0);
 
     return Material(
+      color: Theme.of(context).cardColor,
+      borderRadius: border,
       child: InkWell(
-        hoverColor: Theme.of(context).hoverColor,
+        //hoverColor: Theme.of(context).hoverColor,
         onTap: () {
           onTap(album);
         },
@@ -203,7 +206,7 @@ class AlbumItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
+                borderRadius: border,
                 child: FittedBox(
                   fit: BoxFit.fitWidth,
                   child: Container(
