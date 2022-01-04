@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -5,6 +8,8 @@ import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
+import 'package:subsound/state/playerstate.dart';
+import 'package:subsound/utils/duration.dart';
 
 class DesktopPlayerBar extends StatelessWidget {
   const DesktopPlayerBar({Key? key}) : super(key: key);
@@ -138,12 +143,12 @@ class DesktopMiniPlayer extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.only(right: 5.0),
-                            child: UpdatingPlayerSlider(
+                            child: UpdatingPlayerBarSlider(
                               onSeek: state.onSeek,
                               onStartListen: state.onStartListen,
                               onStopListen: state.onStopListen,
-                              size: MediaQuery.of(context).size.width * 0.4,
+                              size: MediaQuery.of(context).size.width * 0.45 -
+                                  5.0,
                             ),
                           ),
                         ],
@@ -267,6 +272,285 @@ class VolumeSlider extends StatelessWidget {
           max: 1.0,
           min: 0.0,
         ),
+      ),
+    );
+  }
+}
+
+class UpdatingPlayerBarSlider extends StatefulWidget {
+  final double size;
+  final Function(PositionListener) onStartListen;
+  final Function(PositionListener) onStopListen;
+  final Function(int) onSeek;
+
+  UpdatingPlayerBarSlider({
+    Key? key,
+    required this.size,
+    required this.onSeek,
+    required this.onStartListen,
+    required this.onStopListen,
+  }) : super(key: key);
+
+  @override
+  State<UpdatingPlayerBarSlider> createState() {
+    return UpdatingPlayerBarSliderState();
+  }
+}
+
+class UpdatingPlayerBarSliderState extends State<UpdatingPlayerBarSlider>
+    implements PositionListener {
+  late StreamController<PositionUpdate> stream;
+
+  @override
+  void next(PositionUpdate pos) {
+    stream.add(pos);
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    widget.onStopListen(this);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<PositionUpdate>(
+      stream: stream.stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return PlayerSlider(
+            onSeek: widget.onSeek,
+            pos: snapshot.data!,
+            size: widget.size,
+          );
+        } else {
+          return PlayerSlider(
+            onSeek: widget.onSeek,
+            pos: PositionUpdate(
+              position: Duration.zero,
+              duration: Duration(milliseconds: 1),
+            ),
+            size: widget.size,
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //widget.onStartListen(this);
+    stream = StreamController<PositionUpdate>(
+      onListen: () {
+        log('UpdatingPlayerSliderState: onListen');
+        widget.onStartListen(this);
+      },
+      onCancel: () {
+        log('UpdatingPlayerSliderState: onCancel');
+        widget.onStopListen(this);
+      },
+      onPause: () {
+        log('UpdatingPlayerSliderState: onPause');
+        widget.onStopListen(this);
+      },
+      onResume: () {
+        log('UpdatingPlayerSliderState: onResume');
+        widget.onStartListen(this);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    log('UpdatingPlayerSliderState: onFinishListen');
+    widget.onStopListen(this);
+    stream.close();
+    super.dispose();
+  }
+}
+
+class PlayerSlider extends StatelessWidget {
+  final Function(int) onSeek;
+  final PositionUpdate pos;
+  final double size;
+
+  PlayerSlider({
+    Key? key,
+    required this.onSeek,
+    required this.pos,
+    required this.size,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final total = _getDuration(pos);
+    final position = _getPosition(pos);
+
+    return ProgressBar(
+      onChanged: onSeek,
+      position: position,
+      total: total,
+      width: size,
+    );
+  }
+
+  static Duration _getDuration(PositionUpdate nextPos) {
+    if (nextPos.duration.inMilliseconds == 0) {
+      // avoid division by zero
+      return Duration(seconds: 1);
+    }
+    return nextPos.duration;
+  }
+
+  static Duration _getPosition(PositionUpdate nextPos) {
+    if (nextPos.position == Duration.zero) {
+      return Duration(seconds: 0);
+    }
+    if (nextPos.position > nextPos.duration) {
+      return nextPos.duration;
+    } else {
+      return nextPos.position;
+    }
+  }
+}
+
+class CachedSliderState extends State<CachedSlider> {
+  double? valueOverride;
+  String? labelOverride;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliderTheme(
+      data: SliderThemeData(
+        trackHeight: 2.0,
+        trackShape: CustomTrackShape(),
+        thumbShape: RoundSliderThumbShape(
+          enabledThumbRadius: 5.0,
+          pressedElevation: 4.0,
+          elevation: 2.0,
+        ),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: 8.0),
+        overlayColor: Theme.of(context).colorScheme.secondary.withOpacity(0.4),
+        thumbColor: Theme.of(context).colorScheme.secondary,
+        activeTrackColor: Theme.of(context).colorScheme.secondary,
+        inactiveTrackColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white.withOpacity(0.4)
+            : Colors.black.withOpacity(0.2),
+      ),
+      child: Slider.adaptive(
+        label: labelOverride ?? widget.label,
+        min: 0.0,
+        max: widget.max.toDouble(),
+        value: valueOverride ?? widget.value.toDouble(),
+        divisions: widget.divisions,
+        onChangeEnd: (double newValue) {
+          final nextValue = newValue.round();
+          widget.onChanged(nextValue);
+          setState(() {
+            valueOverride = null;
+            labelOverride = null;
+          });
+        },
+        onChanged: (double newValue) {
+          final nextValue = newValue.round();
+          setState(() {
+            valueOverride = newValue;
+            labelOverride = formatDuration(Duration(seconds: nextValue));
+          });
+        },
+        semanticFormatterCallback: (double newValue) {
+          return formatDuration(Duration(seconds: newValue.round()));
+        },
+      ),
+    );
+  }
+}
+
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  @override
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double trackHeight = sliderTheme.trackHeight ?? 0;
+    final double trackLeft = offset.dx;
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+  }
+}
+
+class CachedSlider extends StatefulWidget {
+  final String label;
+  final int value;
+  final int max;
+  final int divisions;
+  final double width;
+  final Function(int) onChanged;
+
+  const CachedSlider({
+    Key? key,
+    required this.label,
+    required this.value,
+    required this.max,
+    required this.divisions,
+    required this.width,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  State<CachedSlider> createState() {
+    return CachedSliderState();
+  }
+}
+
+class ProgressBar extends StatelessWidget {
+  final Duration total;
+  final Duration position;
+  final double width;
+  final Function(int) onChanged;
+
+  ProgressBar({
+    Key? key,
+    required this.onChanged,
+    required this.total,
+    required this.position,
+    required this.width,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var positionText = formatDuration(position);
+    var remaining =
+        Duration(microseconds: total.inMicroseconds - position.inMicroseconds);
+    var remainingText = "-" + formatDuration(remaining);
+
+    final divisions = total.inSeconds < 1 ? 1 : total.inSeconds;
+    final value = position.inSeconds;
+
+    return SizedBox(
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(positionText, style: Theme.of(context).textTheme.caption),
+          SizedBox(width: 10.0),
+          CachedSlider(
+            label: positionText,
+            value: value,
+            max: total.inSeconds,
+            divisions: divisions,
+            width: width,
+            onChanged: onChanged,
+          ),
+          SizedBox(width: 10.0),
+          Text(remainingText, style: Theme.of(context).textTheme.caption),
+        ],
       ),
     );
   }
