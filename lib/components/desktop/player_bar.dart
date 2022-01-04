@@ -58,13 +58,12 @@ class DesktopMiniPlayer extends StatelessWidget {
         height: height,
         child: Container(
           decoration: BoxDecoration(
-              // color: Colors.black12,
-              // color: Colors.pinkAccent,
-              border: Border(
-                  bottom: BorderSide(
-            //color: Colors.black,
-            width: bottomBorderSize,
-          ))),
+            border: Border(
+              bottom: BorderSide(
+                width: bottomBorderSize,
+              ),
+            ),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
