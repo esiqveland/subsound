@@ -493,7 +493,8 @@ class AppState {
 
   @override
   String toString() {
-    return 'AppState{startUpState: $startUpState, loginState: $loginState, userState: $userState, playerState: $playerState, dataState: $dataState}';
+    //return 'AppState{startUpState: $startUpState, loginState: $loginState, userState: $userState, playerState: $playerState, dataState: $dataState}';
+    return 'AppState{playerState: $playerState, dataState: $dataState}';
   }
 }
 

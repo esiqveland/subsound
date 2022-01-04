@@ -125,7 +125,7 @@ class PlayerSong {
 
   @override
   String toString() {
-    return 'PlayerSong{id: $id, songTitle: $songTitle}';
+    return 'PlayerSong{id: $id, songTitle: $songTitle, format=$fileExtension,}';
   }
 
   MediaItem toMediaItem() {
