@@ -340,7 +340,7 @@ class PlayPauseIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () {
+      onPressed: state.hasCurrentSong ? () {
         switch (state.playerState) {
           case PlayerStates.stopped:
             state.onPlay();
@@ -355,7 +355,7 @@ class PlayPauseIcon extends StatelessWidget {
             state.onPause();
             break;
         }
-      },
+      } : null,
       splashRadius: 16.0,
       icon: getIcon(state.playerState),
       iconSize: iconSize,
