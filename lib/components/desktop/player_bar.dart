@@ -340,7 +340,7 @@ class UpdatingPlayerBarSliderState extends State<UpdatingPlayerBarSlider>
   @override
   void initState() {
     super.initState();
-    //widget.onStartListen(this);
+    widget.onStartListen(this);
     stream = StreamController<PositionUpdate>(
       onListen: () {
         log('UpdatingPlayerSliderState: onListen');
