@@ -488,7 +488,7 @@ class PlayerCommandPlaySong extends PlayerActions {
 extension Formatter on PlaybackState {
   String format() {
     //return toString();
-    return "PlaybackState={playing=$playing, processingState=${describeEnum(processingState)}, queueIndex=$queueIndex, errorMessage=$errorMessage, updateTime=$updateTime,updatePosition=$updatePosition,}";
+    return "PlaybackState={playing=$playing, processingState=${describeEnum(processingState)}, queueIndex=$queueIndex, errorMessage=$errorMessage, updateTime=$updateTime,updatePosition=$updatePosition, bufferedPosition=$bufferedPosition, }";
   }
 }
 
