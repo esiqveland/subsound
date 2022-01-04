@@ -252,6 +252,10 @@ class PlayerCommandSetCurrentPlaying extends PlayerActions {
     final next = song.copy(
       isStarred: state.dataState.isSongStarred(song.id),
     );
+    PlayerStartListenPlayerPosition.updateListeners(PositionUpdate(
+      duration: song.duration,
+      position: Duration.zero,
+    ));
     return state.copy(
       playerState: state.playerState.copy(
         current: playerstate ?? state.playerState.current,
