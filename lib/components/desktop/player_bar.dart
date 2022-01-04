@@ -134,18 +134,22 @@ class DesktopMiniPlayer extends StatelessWidget {
                                     icon: Icon(Icons.skip_previous),
                                     splashRadius: 12.0,
                                     iconSize: 26.0,
-                                    onPressed: () {
-                                      state.onPlayPrev();
-                                    },
+                                    onPressed: state.hasCurrentSong
+                                        ? () {
+                                            state.onPlayPrev();
+                                          }
+                                        : null,
                                   ),
                                   PlayPauseIcon(state: state, iconSize: 32.0),
                                   IconButton(
                                     icon: Icon(Icons.skip_next),
                                     splashRadius: 12.0,
                                     iconSize: 26.0,
-                                    onPressed: () {
-                                      state.onPlayNext();
-                                    },
+                                    onPressed: state.hasCurrentSong
+                                        ? () {
+                                            state.onPlayNext();
+                                          }
+                                        : null,
                                   ),
                                 ],
                               ),
