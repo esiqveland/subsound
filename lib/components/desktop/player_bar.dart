@@ -56,6 +56,10 @@ class DesktopMiniPlayer extends StatelessWidget {
     //final screenWidth = MediaQuery.of(context).size.width;
     final playerHeight = height - miniProgressBarHeight - bottomBorderSize;
     final mq = MediaQuery.of(context);
+    final totalWidth = mq.size.width - bottomBorderSize * 2;
+    final widthLeft = totalWidth / 3;
+    final widthCenter = totalWidth / 3;
+    final widthRight = totalWidth / 3;
 
     return StoreConnector<AppState, MiniPlayerModel>(
       vm: () => _DesktopMiniPlayerModelFactory(this),
@@ -64,13 +68,13 @@ class DesktopMiniPlayer extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(
-                width: bottomBorderSize,
-              ),
+              left: BorderSide(width: bottomBorderSize),
+              right: BorderSide(width: bottomBorderSize),
+              bottom: BorderSide(width: bottomBorderSize),
             ),
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               MiniPlayerProgressBar(
                 height: miniProgressBarHeight,
@@ -84,7 +88,7 @@ class DesktopMiniPlayer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        width: mq.size.width * 0.25,
+                        width: widthLeft,
                         child: Row(
                           children: [
                             DesktopMiniPlayerCover(
@@ -116,54 +120,62 @@ class DesktopMiniPlayer extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            child: Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.skip_previous),
-                                  splashRadius: 12.0,
-                                  iconSize: 26.0,
-                                  onPressed: () {
-                                    state.onPlayPrev();
-                                  },
-                                ),
-                                PlayPauseIcon(state: state, iconSize: 32.0),
-                                IconButton(
-                                  icon: Icon(Icons.skip_next),
-                                  splashRadius: 12.0,
-                                  iconSize: 26.0,
-                                  onPressed: () {
-                                    state.onPlayNext();
-                                  },
-                                ),
-                              ],
+                      Container(
+                        width: widthCenter,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.skip_previous),
+                                    splashRadius: 12.0,
+                                    iconSize: 26.0,
+                                    onPressed: () {
+                                      state.onPlayPrev();
+                                    },
+                                  ),
+                                  PlayPauseIcon(state: state, iconSize: 32.0),
+                                  IconButton(
+                                    icon: Icon(Icons.skip_next),
+                                    splashRadius: 12.0,
+                                    iconSize: 26.0,
+                                    onPressed: () {
+                                      state.onPlayNext();
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            child: UpdatingPlayerBarSlider(
-                              onSeek: state.onSeek,
-                              onStartListen: state.onStartListen,
-                              onStopListen: state.onStopListen,
-                              size: MediaQuery.of(context).size.width * 0.45 -
-                                  5.0,
+                            Container(
+                              child: UpdatingPlayerBarSlider(
+                                onSeek: state.onSeek,
+                                onStartListen: state.onStartListen,
+                                onStopListen: state.onStopListen,
+                                size: widthCenter - 10.0,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       Container(
-                        width: mq.size.width * 0.25,
+                        width: widthRight,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Container(
                               padding: EdgeInsets.only(right: 20.0),
-                              width: mq.size.width * 0.075,
-                              child: VolumeWidget(
-                                volume: state.volume,
-                                onChanged: state.onVolumeChanged,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: 76.0,
+                                ),
+                                child: VolumeWidget(
+                                  volume: state.volume,
+                                  onChanged: state.onVolumeChanged,
+                                ),
                               ),
                             )
                           ],
@@ -514,6 +526,7 @@ class ProgressBar extends StatelessWidget {
   final Duration position;
   final double width;
   final Function(int) onChanged;
+  final double spacerWidth = 10.0;
 
   ProgressBar({
     Key? key,
@@ -534,21 +547,22 @@ class ProgressBar extends StatelessWidget {
     final value = position.inSeconds;
 
     return SizedBox(
-      width: width,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(positionText, style: Theme.of(context).textTheme.caption),
-          SizedBox(width: 10.0),
-          CachedSlider(
-            label: positionText,
-            value: value,
-            max: total.inSeconds,
-            divisions: divisions,
-            width: width,
-            onChanged: onChanged,
+          SizedBox(width: spacerWidth),
+          Expanded(
+            child: CachedSlider(
+              label: positionText,
+              value: value,
+              max: total.inSeconds,
+              divisions: divisions,
+              width: width,
+              onChanged: onChanged,
+            ),
           ),
-          SizedBox(width: 10.0),
+          SizedBox(width: spacerWidth),
           Text(remainingText, style: Theme.of(context).textTheme.caption),
         ],
       ),
