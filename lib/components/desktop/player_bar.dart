@@ -227,8 +227,9 @@ class DesktopMiniPlayerCover extends StatelessWidget {
     final padding = EdgeInsets.all(14.0);
 
     final height = playerHeight - padding.top - padding.left;
+    final link = state.coverArtLink;
 
-    if (state.coverArtLink != null) {
+    if (link != null && link.isNotEmpty) {
       return Padding(
         padding: padding,
         child: CoverArtImage(
@@ -242,7 +243,11 @@ class DesktopMiniPlayerCover extends StatelessWidget {
     } else {
       return Padding(
         padding: EdgeInsets.only(left: 10.0),
-        child: Icon(Icons.album),
+        child: Icon(
+          Icons.album,
+          size: height,
+          color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.4),
+        ),
       );
     }
   }
