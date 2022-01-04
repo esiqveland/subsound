@@ -212,10 +212,10 @@ class AlbumItemState extends State<AlbumItem> {
         })
       },
       child: Material(
-        elevation: _hover ? 10: 2,
+        elevation: _hover ? 4: 2,
         //color: Theme.of(context).cardColor,
         borderRadius: border,
-        child: GestureDetector(
+        child: InkWell(
           //hoverColor: Theme.of(context).hoverColor,
           onTap: () {
             widget.onTap(widget.album);
