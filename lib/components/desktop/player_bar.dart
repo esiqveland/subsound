@@ -171,6 +171,13 @@ class DesktopMiniPlayer extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Container(
+                              padding: EdgeInsets.only(right: 10),
+                              child: VolumeSliderIcon(
+                                volume: state.volume,
+                                onChange: state.onVolumeChanged,
+                              ),
+                            ),
+                            Container(
                               padding: EdgeInsets.only(right: 20.0),
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
@@ -194,6 +201,79 @@ class DesktopMiniPlayer extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class VolumeSliderIcon extends StatefulWidget {
+  final double volume;
+  final Function(double) onChange;
+
+  const VolumeSliderIcon({
+    Key? key,
+    required this.volume,
+    required this.onChange,
+  }) : super(key: key);
+
+  @override
+  State<VolumeSliderIcon> createState() => _VolumeSliderIconState();
+}
+
+class _VolumeSliderIconState extends State<VolumeSliderIcon> {
+  double? storedVolume;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 22.0,
+      height: 22.0,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: GestureDetector(
+          onTap: () {
+            if (widget.volume < 0.001) {
+              if (storedVolume != null) {
+                final setVolume = storedVolume!;
+                setState(() {
+                  storedVolume = null;
+                });
+                widget.onChange(setVolume);
+              } else {
+                setState(() {
+                  storedVolume = null;
+                });
+                widget.onChange(1.0);
+              }
+            } else {
+              final current = widget.volume;
+              setState(() {
+                storedVolume = current;
+              });
+              widget.onChange(0.0);
+            }
+          },
+          child: Icon(
+            getIcon(widget.volume),
+            size: 20,
+            color: Theme.of(context).textTheme.caption!.color,
+            semanticLabel: 'Volume control',
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData getIcon(double volume) {
+    if (volume <= 0.01) {
+      return Icons.volume_off;
+    } else if (volume < 0.3) {
+      return Icons.volume_mute;
+    } else if (volume < 0.6) {
+      return Icons.volume_down;
+    } else if (volume < 0.95) {
+      return Icons.volume_up;
+    } else {
+      return Icons.volume_up_outlined;
+    }
   }
 }
 
