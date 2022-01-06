@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
@@ -570,13 +571,21 @@ class StartupPlayer extends ReduxAction<AppState> {
 
     playbackStream = audioHandler.playbackState.listen((event) {
       log("playbackStateStream event=${event.format()}");
-      if (event.processingState == AudioProcessingState.error) {
+      var processingState = event.processingState;
+      if (processingState == AudioProcessingState.error) {
         dispatch(DisplayError(
           "${event.errorCode ?? -1}: ${event.errorMessage ?? ''}",
         ));
       }
       if (state.playerState.queue.position != event.queueIndex) {
         dispatch(PlayerSetQueueIndex(event.queueIndex));
+      }
+      if (!kIsWeb && Platform.isLinux) {
+        // workaround for https://github.com/bdlukaa/just_audio_libwinmedia/issues/9
+        if (event.playing &&
+            processingState == AudioProcessingState.buffering) {
+          processingState = AudioProcessingState.ready;
+        }
       }
 
       bool wasPlaying = state.playerState.isPlaying;
@@ -588,7 +597,7 @@ class StartupPlayer extends ReduxAction<AppState> {
         ));
       }
       PlayerStates nextState =
-          getNextPlayerState(event.processingState, event.playing);
+          getNextPlayerState(processingState, event.playing);
       if (state.playerState.current != nextState) {
         dispatch(PlayerStateChanged(nextState));
       }
