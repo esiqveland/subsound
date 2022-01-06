@@ -65,6 +65,7 @@ class SongResult {
   final DateTime? starredAt;
   final String contentType;
   final String suffix;
+  final int playCount;
 
   SongResult({
     required this.id,
@@ -87,8 +88,9 @@ class SongResult {
     required this.fileSize,
     required this.starred,
     required this.starredAt,
-    required this.suffix,
     required this.contentType,
+    required this.suffix,
+    required this.playCount,
   });
 
   String durationNice() {
@@ -165,6 +167,7 @@ class SongResult {
       starredAt: parseDateTime(songData['starred'] as String?),
       contentType: contentType,
       suffix: suffix,
+      playCount: songData['playCount'] as int? ?? 0,
     );
   }
 }

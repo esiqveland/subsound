@@ -89,7 +89,7 @@ class GetStarred2 extends BaseRequest<GetStarred2Result> {
         createdAt: DateTime.parse(albumDataNew['created'] as String),
         isVideo: albumDataNew['isVideo'] as bool,
         parent: albumDataNew['parent'] as String,
-        playCount: albumDataNew['playcount'] as int? ?? 0,
+        playCount: albumDataNew['playCount'] as int? ?? 0,
         starredAt: parseDateTime(albumDataNew['starred'] as String?),
       );
 
