@@ -5,8 +5,10 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/components/player.dart';
+import 'package:subsound/state/appcommands.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
+import 'package:subsound/subsonic/requests/star.dart';
 
 class PlayerBottomBar extends StatelessWidget {
   final double height;
@@ -62,6 +64,9 @@ class MiniPlayerModel extends Vm {
   final Function(PositionListener) onStopListen;
   final Function(int) onSeek;
   final Function(double) onVolumeChanged;
+  final Function(String) onStar;
+  final Function(String) onUnstar;
+  final bool isStarred;
 
   MiniPlayerModel({
     required this.hasCurrentSong,
@@ -83,6 +88,9 @@ class MiniPlayerModel extends Vm {
     required this.onStopListen,
     required this.onSeek,
     required this.onVolumeChanged,
+    required this.onStar,
+    required this.onUnstar,
+    required this.isStarred,
   }) : super(equals: [
           hasCurrentSong,
           songId,
@@ -94,6 +102,7 @@ class MiniPlayerModel extends Vm {
           duration,
           volume,
           playerState,
+          isStarred,
         ]);
 
   static MiniPlayerModel from(AppState state, Dispatch<AppState> dispatch) {
@@ -125,6 +134,9 @@ class MiniPlayerModel extends Vm {
           dispatch(PlayerStopListenPlayerPosition(listener)),
       onSeek: (seekToPosition) => dispatch(PlayerCommandSeekTo(seekToPosition)),
       onVolumeChanged: (next) => dispatch(PlayerCommandSetVolume(next)),
+      onStar: (next) => dispatch(StarIdCommand(SongId(songId: next))),
+      onUnstar: (next) => dispatch(UnstarIdCommand(SongId(songId: next))),
+      isStarred: currentSong?.isStarred ?? false,
     );
   }
 }
@@ -340,22 +352,24 @@ class PlayPauseIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: state.hasCurrentSong ? () {
-        switch (state.playerState) {
-          case PlayerStates.stopped:
-            state.onPlay();
-            break;
-          case PlayerStates.playing:
-            state.onPause();
-            break;
-          case PlayerStates.paused:
-            state.onPlay();
-            break;
-          case PlayerStates.buffering:
-            state.onPause();
-            break;
-        }
-      } : null,
+      onPressed: state.hasCurrentSong
+          ? () {
+              switch (state.playerState) {
+                case PlayerStates.stopped:
+                  state.onPlay();
+                  break;
+                case PlayerStates.playing:
+                  state.onPause();
+                  break;
+                case PlayerStates.paused:
+                  state.onPlay();
+                  break;
+                case PlayerStates.buffering:
+                  state.onPause();
+                  break;
+              }
+            }
+          : null,
       splashRadius: 16.0,
       icon: getIcon(state.playerState),
       iconSize: iconSize,

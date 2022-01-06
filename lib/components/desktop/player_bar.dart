@@ -121,6 +121,29 @@ class DesktopMiniPlayer extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: GestureDetector(
+                                onTap: state.hasCurrentSong
+                                    ? () {
+                                        if (state.songId != null) {
+                                          if (state.isStarred) {
+                                            state.onUnstar(state.songId!);
+                                          } else {
+                                            state.onStar(state.songId!);
+                                          }
+                                        }
+                                      }
+                                    : null,
+                                child: Icon(
+                                  state.isStarred
+                                      ? Icons.star
+                                      : Icons.star_border_outlined,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
