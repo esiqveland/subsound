@@ -200,9 +200,19 @@ final List<ViewSwitcherEntry> linuxTabs = [
   ViewSwitcherEntry(
     data: ViewSwitcherData(
       title: "Starred",
-      icon: Icons.search,
+      icon: Icons.star_sharp,
     ),
     builder: (context) => StarredPage(),
+    goto: (context) {
+      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => StarredPage()));
+    },
+  ),
+  ViewSwitcherEntry(
+    data: ViewSwitcherData(
+      title: "Search",
+      icon: Icons.search,
+    ),
+    builder: (context) => SearchScreen(),
     goto: (context) {
       //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => StarredPage()));
     },
@@ -284,10 +294,31 @@ class _LinuxBodyState extends State<LinuxBody> {
             child: AdwViewStack(
               index: index,
               children: [
-                HomePage(),
-                ArtistsPage(),
-                AlbumsPage(),
-                StarredPage(),
+                Builder(
+                  builder: (context) {
+                    return HomePage();
+                  }
+                ),
+                Builder(
+                  builder: (context) {
+                    return ArtistsPage();
+                  }
+                ),
+                Builder(
+                  builder: (context) {
+                    return AlbumsPage();
+                  }
+                ),
+                Builder(
+                  builder: (context) {
+                    return StarredPage();
+                  }
+                ),
+                Builder(
+                  builder: (context) {
+                    return SearchScreen();
+                  }
+                ),
               ],
               // children: linuxTabs
               //     .map((e) => e.builder)
