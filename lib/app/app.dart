@@ -23,8 +23,15 @@ class MainApp extends StatelessWidget {
     var darkTheme = theme;
 
     if (Platform.isLinux) {
-      theme = adwaita.darkTheme;
-      darkTheme = adwaita.darkTheme;
+      theme = adwaita.darkTheme.copyWith(
+        //backgroundColor: Colors.black,
+        scaffoldBackgroundColor: Colors.black,
+        colorScheme: adwaita.darkTheme.colorScheme.copyWith(
+          //primary: Colors.black,
+          //background: Colors.black,
+        ),
+      );
+      darkTheme = theme;
     }
 
     return MaterialApp(

@@ -22,7 +22,9 @@ class DesktopPlayerBar extends StatelessWidget {
       //color: Colors.amberAccent.withOpacity(0.5),
       child: DesktopMiniPlayer(
         height: 100.0,
-        backgroundColor: Theme.of(context).backgroundColor,
+        // backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        backgroundColor: Color(0xFF121212),
+        //backgroundColor: Colors.amberAccent.withOpacity(0.5),
         onTap: () {},
       ),
     );
@@ -72,6 +74,7 @@ class DesktopMiniPlayer extends StatelessWidget {
               right: BorderSide(width: bottomBorderSize),
               bottom: BorderSide(width: bottomBorderSize),
             ),
+            color: backgroundColor,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -112,6 +115,7 @@ class DesktopMiniPlayer extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 11.0,
+                                    color: Theme.of(context).textTheme.caption?.color,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -223,12 +227,10 @@ class _VolumeSliderIconState extends State<VolumeSliderIcon> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 22.0,
-      height: 22.0,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: GestureDetector(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        GestureDetector(
           onTap: () {
             if (widget.volume < 0.001) {
               if (storedVolume != null) {
@@ -258,7 +260,7 @@ class _VolumeSliderIconState extends State<VolumeSliderIcon> {
             semanticLabel: 'Volume control',
           ),
         ),
-      ),
+      ],
     );
   }
 
