@@ -47,6 +47,8 @@ extension Status on ConnectivityResult {
         return NetworkStatus.mobile;
       case ConnectivityResult.none:
         return NetworkStatus.none;
+      case ConnectivityResult.bluetooth:
+        return NetworkStatus.none;
     }
   }
 }
