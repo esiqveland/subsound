@@ -7,7 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libadwaita/libadwaita.dart';
+import 'package:subsound/components/desktop/linux_header_bar.dart';
 import 'package:subsound/components/desktop/player_bar.dart';
+import 'package:subsound/components/desktop/side_menu.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/components/player.dart';
 import 'package:subsound/screens/browsing/home_page.dart';
@@ -157,18 +159,6 @@ class LinuxBody extends StatefulWidget {
   _LinuxBodyState createState() => _LinuxBodyState();
 }
 
-class ViewSwitcherEntry {
-  final ViewSwitcherData data;
-  final WidgetBuilder builder;
-  final Function(BuildContext) goto;
-
-  ViewSwitcherEntry({
-    required this.data,
-    required this.builder,
-    required this.goto,
-  });
-}
-
 final List<ViewSwitcherEntry> linuxTabs = [
   ViewSwitcherEntry(
     data: ViewSwitcherData(title: "Home", icon: Icons.home),
@@ -228,65 +218,14 @@ class _LinuxBodyState extends State<LinuxBody> {
 
     return Column(
       children: [
-        AdwHeaderBar.bitsdojo(
-          appWindow: appWindow,
-          windowDecor: windowDecor,
-          themeType: ThemeType.adwaita,
-          showClose: true,
-          showMaximize: true,
-          showMinimize: true,
-          start: Row(
-            children: [
-              Builder(
-                builder: (context) {
-                  return AdwHeaderButton(
-                    icon: const Icon(Icons.view_sidebar, size: 15),
-                    isActive: false,
-                    onPressed: () {
-                      //_flapController.toggle();
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
-          title: AdwViewSwitcher(
-            currentIndex: index,
-            onViewChanged: (idx) {
-              setState(() {
-                index = idx;
-              });
-            },
-            expanded: false,
-            style: ViewSwitcherStyle.desktop,
-            tabs: linuxTabs.map((e) => e.data)
-                .toList(growable: false),
-          ),
-          end: Row(
-            children: [
-              AdwPopupMenu(
-                body: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      onTap: () {},
-                      title: const Text(
-                        'Force reload',
-                        style: TextStyle(fontSize: 13),
-                      ),
-                    ),
-                    ListTile(
-                      onTap: () {},
-                      title: const Text(
-                        'Settings',
-                        style: TextStyle(fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        LinuxHeaderBar(
+          tabs: linuxTabs,
+          currentIndex: index,
+          onSwitchedTab: (idx) {
+            setState(() {
+              index = idx;
+            });
+          },
         ),
         Expanded(
           child: Padding(
@@ -294,31 +233,21 @@ class _LinuxBodyState extends State<LinuxBody> {
             child: AdwViewStack(
               index: index,
               children: [
-                Builder(
-                  builder: (context) {
-                    return HomePage();
-                  }
-                ),
-                Builder(
-                  builder: (context) {
-                    return ArtistsPage();
-                  }
-                ),
-                Builder(
-                  builder: (context) {
-                    return AlbumsPage();
-                  }
-                ),
-                Builder(
-                  builder: (context) {
-                    return StarredPage();
-                  }
-                ),
-                Builder(
-                  builder: (context) {
-                    return SearchScreen();
-                  }
-                ),
+                Builder(builder: (context) {
+                  return HomePage();
+                }),
+                Builder(builder: (context) {
+                  return ArtistsPage();
+                }),
+                Builder(builder: (context) {
+                  return AlbumsPage();
+                }),
+                Builder(builder: (context) {
+                  return StarredPage();
+                }),
+                Builder(builder: (context) {
+                  return SearchScreen();
+                }),
               ],
               // children: linuxTabs
               //     .map((e) => e.builder)
