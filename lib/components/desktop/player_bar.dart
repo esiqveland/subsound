@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/components/miniplayer.dart';
-import 'package:subsound/components/player.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/utils/duration.dart';
