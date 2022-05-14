@@ -29,13 +29,18 @@ dependencies:
   logging: ^1.0.1
   async_redux: ^15.0.0
   audio_service: ^0.18.0
-  #audio_service:
-  #  git:
-  #    url: https://github.com/ryanheise/audio_service.git
-  #    ref: one-isolate
-  #    path: audio_service
+#  just_audio:
+#    git:
+#      url: https://github.com/esiqveland/just_audio.git
+#      ref: 'test_proxy_errors_2'
+#      path: just_audio
   just_audio: ^0.9.0
   just_audio_libwinmedia: ^0.0.4
+#  libwinmedia:
+#    git:
+#      url: 'https://github.com/esiqveland/libwinmedia.git'
+#      ref: '18-linux-fix-volume'
+#      path: 'flutter'
   cached_network_image: ^3.0.0-nullsafety
   flutter_sticky_header: ^0.6.0
   flutter_cache_manager: ^3.0.0-nullsafety.1
