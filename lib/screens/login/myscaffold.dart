@@ -2,11 +2,11 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:async_redux/async_redux.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libadwaita/libadwaita.dart';
+import 'package:libadwaita_core/libadwaita_core.dart';
 import 'package:subsound/components/desktop/linux_header_bar.dart';
 import 'package:subsound/components/desktop/player_bar.dart';
 import 'package:subsound/components/desktop/side_menu.dart';
@@ -24,7 +24,6 @@ import 'package:subsound/screens/login/loginscreen.dart';
 import 'package:subsound/screens/login/settings_page.dart';
 import 'package:subsound/state/appstate.dart';
 import 'package:we_slide/we_slide.dart';
-import 'package:window_decorations/window_decorations.dart';
 
 import 'homescreen.dart';
 
@@ -215,6 +214,7 @@ class _LinuxBodyState extends State<LinuxBody> {
   @override
   Widget build(BuildContext context) {
     var playerBar = DesktopPlayerBar();
+    var sideBar = DesktopSideBar();
 
     return Column(
       children: [
@@ -370,7 +370,7 @@ class _AppScaffold extends StatelessWidget {
     if (!kIsWeb && Platform.isLinux) {
       return AdwScaffold(
         body: bodyHolder,
-        drawer: Navigator.of(context).canPop() ? null : MyDrawer(),
+        actions: AdwActions(),
       );
     } else {
       return Scaffold(
