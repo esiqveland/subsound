@@ -904,6 +904,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.13"
+  titlebar_buttons:
+    dependency: "direct main"
+    description:
+      name: titlebar_buttons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   typed_data:
     dependency: transitive
     description:
@@ -1044,13 +1051,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.2"
-  window_decorations:
-    dependency: "direct main"
-    description:
-      name: window_decorations
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.3"
   xdg_directories:
     dependency: transitive
     description:
