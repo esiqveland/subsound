@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
@@ -75,6 +74,7 @@ void runMain(List<String> args) async {
     store: store,
   ));
 
+/*
   doWhenWindowReady(() {
     final initialSize = Size(1280, 720);
     appWindow.minSize = initialSize;
@@ -82,6 +82,7 @@ void runMain(List<String> args) async {
     appWindow.alignment = Alignment.center;
     appWindow.show();
   });
+*/
 }
 
 class MyApp extends StatelessWidget {

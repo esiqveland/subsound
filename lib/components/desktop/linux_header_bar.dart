@@ -1,8 +1,7 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:libadwaita/libadwaita.dart';
-import 'package:window_decorations/window_decorations.dart';
+import 'package:libadwaita_core/libadwaita_core.dart';
 
 class ViewSwitcherEntry {
   final ViewSwitcherData data;
@@ -30,28 +29,21 @@ class LinuxHeaderBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdwHeaderBar.bitsdojo(
-      appWindow: appWindow,
-      windowDecor: windowDecor,
-      themeType: ThemeType.adwaita,
-      showClose: true,
-      showMaximize: true,
-      showMinimize: true,
-      start: AdwHeaderButton(
+    return AdwHeaderBar(
+      actions: AdwActions(),
+      start: [AdwHeaderButton(
         icon: const Icon(Icons.view_sidebar, size: 15),
         isActive: false,
         onPressed: () {
           //_flapController.toggle();
         },
-      ),
+      )],
       title: AdwViewSwitcher(
         currentIndex: currentIndex,
         onViewChanged: onSwitchedTab,
-        expanded: false,
-        style: ViewSwitcherStyle.desktop,
         tabs: tabs.map((e) => e.data).toList(growable: false),
       ),
-      end: AdwPopupMenu(
+      end: [GtkPopupMenu(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -71,7 +63,7 @@ class LinuxHeaderBar extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      ),],
     );
   }
 }
