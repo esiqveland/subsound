@@ -580,13 +580,6 @@ class StartupPlayer extends ReduxAction<AppState> {
       if (state.playerState.queue.position != event.queueIndex) {
         dispatch(PlayerSetQueueIndex(event.queueIndex));
       }
-      if (!kIsWeb && Platform.isLinux) {
-        // workaround for https://github.com/bdlukaa/just_audio_libwinmedia/issues/9
-        if (event.playing &&
-            processingState == AudioProcessingState.buffering) {
-          processingState = AudioProcessingState.ready;
-        }
-      }
 
       bool wasPlaying = state.playerState.isPlaying;
       if (wasPlaying != event.playing) {

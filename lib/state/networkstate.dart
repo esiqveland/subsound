@@ -45,9 +45,11 @@ extension Status on ConnectivityResult {
         return NetworkStatus.wifi;
       case ConnectivityResult.mobile:
         return NetworkStatus.mobile;
-      case ConnectivityResult.none:
-        return NetworkStatus.none;
+      case ConnectivityResult.vpn:
+        return NetworkStatus.wifi;
       case ConnectivityResult.bluetooth:
+        return NetworkStatus.none;
+      case ConnectivityResult.none:
         return NetworkStatus.none;
     }
   }

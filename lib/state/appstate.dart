@@ -36,11 +36,12 @@ class StateLogger implements StateObserver<AppState> {
     ReduxAction<AppState> action,
     AppState stateIni,
     AppState stateEnd,
+    Object? error,
     int dispatchCount,
   ) {
     // log('action=$action');
     // log('current=$stateIni');
-    log('next=$stateEnd');
+    log('next=$stateEnd action=$action');
   }
 }
 

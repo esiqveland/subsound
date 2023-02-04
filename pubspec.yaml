@@ -27,7 +27,7 @@ dependencies:
   shared_preferences: ^2.0.5
   path_provider: ^2.0.0
   logging: ^1.0.1
-  async_redux: ^15.0.0
+  async_redux: ^18.0.0
   audio_service: ^0.18.0
 #  just_audio:
 #    git:
@@ -35,21 +35,16 @@ dependencies:
 #      ref: 'test_proxy_errors_2'
 #      path: just_audio
   just_audio: ^0.9.0
-  just_audio_libwinmedia: ^0.0.4
-#  libwinmedia:
-#    git:
-#      url: 'https://github.com/esiqveland/libwinmedia.git'
-#      ref: '18-linux-fix-volume'
-#      path: 'flutter'
+  just_audio_mpv: ^0.1.0
   cached_network_image: ^3.0.0-nullsafety
   flutter_sticky_header: ^0.6.0
   flutter_cache_manager: ^3.0.0-nullsafety.1
   uuid: ^3.0.0
-  connectivity_plus: ^2.1.0
+  connectivity_plus: ^3.0.0
   sqflite_common_ffi: ^2.0.0
   sqflite: ^2.0.0+3
   we_slide: ^2.0.1
-  flutter_slidable: ^1.2.0
+  flutter_slidable: ^2.0.0
   rxdart: ^0.27.0
   sentry_flutter: ^6.0.0
   libadwaita: ^1.0.0-rc.1

@@ -14,7 +14,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   PlayerScreen.routeName: (context) => PlayerScreen(),
 };
 
-final NavigatorKey = GlobalKey<NavigatorState>();
+final navigatorKey = GlobalKey<NavigatorState>();
 
 class MainApp extends StatelessWidget {
   @override
@@ -32,7 +32,7 @@ class MainApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      navigatorKey: NavigatorKey,
+      navigatorKey: navigatorKey,
       title: 'Sub:Sound',
       darkTheme: darkTheme,
       theme: theme.copyWith(

@@ -27,6 +27,12 @@ void main(List<String> args) async {
     databaseFactory = databaseFactoryFfi;
   }
 
+  // setup mpv on Linux:
+  if (Platform.isLinux) {
+    if (Process.runSync("which", ["mpv"]).exitCode != 0) {
+
+    }
+  }
   await SentryFlutter.init(
     (options) {
       options.dsn =
@@ -65,7 +71,7 @@ void runMain(List<String> args) async {
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  NavigateAction.setNavigatorKey(NavigatorKey);
+  NavigateAction.setNavigatorKey(navigatorKey);
 
   final Store<AppState> store = createStore();
   store.dispatch(StartupAction(db));

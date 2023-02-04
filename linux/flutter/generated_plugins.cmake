@@ -3,7 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  libwinmedia
   multi_window_linux
   sentry_flutter
   url_launcher_linux
