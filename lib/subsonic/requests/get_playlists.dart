@@ -15,10 +15,13 @@ class GetPlaylistsResult {
 bool? parseBool(dynamic val) {
   if (val == null) {
     return null;
-  } else if (val is bool) {
+  }
+  if (val is bool) {
     return val;
   } else if (val is String) {
     return "true" == val.toLowerCase();
+  } else {
+    return null;
   }
 }
 

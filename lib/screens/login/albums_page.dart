@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/state/appstate.dart';
@@ -257,7 +254,7 @@ class AlbumItemState extends State<AlbumItem> {
                 Container(
                   child: Text(
                     widget.album.artist,
-                    style: theme.textTheme.caption!.copyWith(fontSize: 14.0),
+                    style: theme.textTheme.bodySmall!.copyWith(fontSize: 14.0),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

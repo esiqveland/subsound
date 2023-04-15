@@ -61,7 +61,7 @@ class SettingsSect extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(children: [
-          Text(title, style: Theme.of(context).textTheme.subtitle1)
+          Text(title, style: Theme.of(context).textTheme.titleMedium)
         ]),
         SizedBox(height: 5),
         child,
@@ -190,7 +190,7 @@ class _ServerSetupFormState extends State<_ServerSetupForm> {
             Row(
               children: [
                 Text('Server setup',
-                    style: Theme.of(context).textTheme.subtitle1),
+                    style: Theme.of(context).textTheme.titleMedium),
               ],
             ),
             TextFormField(

@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/components/miniplayer.dart';
 import 'package:subsound/state/appstate.dart';
@@ -114,7 +113,7 @@ class DesktopMiniPlayer extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 11.0,
-                                    color: Theme.of(context).textTheme.caption?.color,
+                                    color: Theme.of(context).textTheme.bodySmall?.color,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -278,7 +277,7 @@ class _VolumeSliderIconState extends State<VolumeSliderIcon> {
           child: Icon(
             getIcon(widget.volume),
             size: 20,
-            color: Theme.of(context).textTheme.caption!.color,
+            color: Theme.of(context).textTheme.bodySmall?.color,
             semanticLabel: 'Volume control',
           ),
         ),
@@ -654,7 +653,7 @@ class ProgressBar extends StatelessWidget {
     var positionText = formatDuration(position);
     var remaining =
         Duration(microseconds: total.inMicroseconds - position.inMicroseconds);
-    var remainingText = "-" + formatDuration(remaining);
+    var remainingText = "-${formatDuration(remaining)}";
 
     final divisions = total.inSeconds < 1 ? 1 : total.inSeconds;
     final value = position.inSeconds;
@@ -663,7 +662,7 @@ class ProgressBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(positionText, style: Theme.of(context).textTheme.caption),
+          Text(positionText, style: Theme.of(context).textTheme.bodySmall),
           SizedBox(width: spacerWidth),
           Expanded(
             child: CachedSlider(
@@ -676,7 +675,7 @@ class ProgressBar extends StatelessWidget {
             ),
           ),
           SizedBox(width: spacerWidth),
-          Text(remainingText, style: Theme.of(context).textTheme.caption),
+          Text(remainingText, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );

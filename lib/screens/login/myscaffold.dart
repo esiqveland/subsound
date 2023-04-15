@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:async_redux/async_redux.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libadwaita/libadwaita.dart';
@@ -16,7 +15,6 @@ import 'package:subsound/screens/browsing/home_page.dart';
 import 'package:subsound/screens/browsing/search.dart';
 import 'package:subsound/screens/browsing/starred_page.dart';
 import 'package:subsound/screens/login/albums_page.dart';
-import 'package:subsound/screens/login/artist_page.dart';
 import 'package:subsound/screens/login/artists_page.dart';
 import 'package:subsound/screens/login/bottomnavbar.dart';
 import 'package:subsound/screens/login/drawer.dart';
@@ -155,7 +153,7 @@ class LinuxBody extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LinuxBodyState createState() => _LinuxBodyState();
+  LinuxBodyState createState() => LinuxBodyState();
 }
 
 final List<ViewSwitcherEntry> linuxTabs = [
@@ -208,7 +206,7 @@ final List<ViewSwitcherEntry> linuxTabs = [
   ),
 ];
 
-class _LinuxBodyState extends State<LinuxBody> {
+class LinuxBodyState extends State<LinuxBody> {
   int index = 0;
 
   @override
@@ -278,21 +276,21 @@ class MainBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final bool disableAppBar = appBar.disableAppBar;
-    final WeSlideController _controller = WeSlideController();
+    final WeSlideController slideController = WeSlideController();
     final footerHeight =
         kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom;
-    final double _panelMinSize =
+    final double wePanelMinSize =
         disableBottomBar ? footerHeight : playerBottomBarSize + footerHeight;
-    final double _panelMaxSize = MediaQuery.of(context).size.height;
+    final double wePanelMaxSize = MediaQuery.of(context).size.height;
 
     if (!kIsWeb && Platform.isLinux) {
       return LinuxBody(builder: builder);
     }
 
     return WeSlide(
-      controller: _controller,
-      panelMinSize: _panelMinSize,
-      panelMaxSize: _panelMaxSize,
+      controller: slideController,
+      panelMinSize: wePanelMinSize,
+      panelMaxSize: wePanelMaxSize,
       hidePanelHeader: true,
       hideFooter: true,
       parallax: false,
@@ -335,7 +333,7 @@ class MainBody extends StatelessWidget {
                 height: playerBottomBarSize,
                 backgroundColor: Theme.of(context).primaryColor,
                 onTap: () {
-                  _controller.show();
+                  slideController.show();
                 },
               ),
             ),
@@ -408,8 +406,8 @@ class TestAppBar extends StatelessWidget {
 class TestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final double _panelMinSize = 150.0;
-    final double _panelMaxSize = MediaQuery.of(context).size.height;
+    final double panelMinSize = 150.0;
+    final double panelMaxSize = MediaQuery.of(context).size.height;
 
     return Scaffold(
       // appBar: AppBar(
@@ -430,8 +428,8 @@ class TestApp extends StatelessWidget {
       // ),
       backgroundColor: Colors.black,
       body: WeSlide(
-        panelMinSize: _panelMinSize,
-        panelMaxSize: _panelMaxSize,
+        panelMinSize: panelMinSize,
+        panelMaxSize: panelMaxSize,
         footerHeight: 60.0,
         body: Stack(
           children: <Widget>[
@@ -452,7 +450,7 @@ class TestApp extends StatelessWidget {
           child: Center(child: Text("This is the panel 😊")),
         ),
         panelHeader: Container(
-          height: _panelMinSize,
+          height: panelMinSize,
           color: Colors.green,
           child: Center(child: Text("Slide to Up ☝️")),
         ),
@@ -468,14 +466,14 @@ class TestApp extends StatelessWidget {
 class TestApp2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final double _panelMinSize = 150.0;
-    final double _panelMaxSize = MediaQuery.of(context).size.height;
+    final double panelMinSize = 150.0;
+    final double panelMaxSize = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: WeSlide(
-        panelMinSize: _panelMinSize,
-        panelMaxSize: _panelMaxSize,
+        panelMinSize: panelMinSize,
+        panelMaxSize: panelMaxSize,
         footerHeight: 60.0,
         body: CustomScrollView(
           slivers: <Widget>[
@@ -509,7 +507,7 @@ class TestApp2 extends StatelessWidget {
           child: Center(child: Text("This is the panel 😊")),
         ),
         panelHeader: Container(
-          height: _panelMinSize,
+          height: panelMinSize,
           color: Colors.green,
           child: Center(child: Text("Slide to Up ☝️")),
         ),

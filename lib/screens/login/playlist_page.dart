@@ -1,6 +1,5 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:subsound/screens/browsing/starred_page.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/screens/login/myscaffold.dart';

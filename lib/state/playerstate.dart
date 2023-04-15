@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
@@ -17,8 +16,6 @@ import 'package:subsound/state/queue.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
 import 'package:subsound/subsonic/requests/get_artist.dart';
-
-import 'player_task.dart';
 
 // Must be a top-level function
 // void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());

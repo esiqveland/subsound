@@ -5,7 +5,6 @@ import 'package:async_redux/async_redux.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/login/album_page.dart';
 import 'package:subsound/screens/login/myscaffold.dart';
@@ -519,7 +518,7 @@ class ArtistTitle extends StatelessWidget {
 
     return Text(
       artistName ?? "",
-      style: theme.textTheme.subtitle1!.copyWith(
+      style: theme.textTheme.titleMedium!.copyWith(
         fontSize: 12.0,
         color: Colors.white70,
       ),
@@ -792,7 +791,7 @@ class ProgressBar extends StatelessWidget {
     var positionText = formatDuration(position);
     var remaining =
         Duration(microseconds: total.inMicroseconds - position.inMicroseconds);
-    var remainingText = "-" + formatDuration(remaining);
+    var remainingText = "-${formatDuration(remaining)}";
 
     final divisions = total.inSeconds < 1 ? 1 : total.inSeconds;
     final value = position.inSeconds;

@@ -146,7 +146,7 @@ packages:
     source: hosted
     version: "1.1.1"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       sha256: cfc915e6923fe5ce6e153b0723c753045de46de1b4d63771530504004a45fae0
@@ -186,7 +186,7 @@ packages:
     source: hosted
     version: "1.6.3"
   crypto:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: crypto
       sha256: aa274aa7774f8964e4f4f38cc994db7b6158dd36e9187aaceaddc994b35c6c67
@@ -600,7 +600,7 @@ packages:
     source: hosted
     version: "2.1.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: db9d4f58c908a4ba5953fcee2ae317c94889433e5024c27ce74a37f94267945b
@@ -672,7 +672,7 @@ packages:
     source: hosted
     version: "2.1.5"
   pedantic:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: pedantic
       sha256: "67fc27ed9639506c856c840ccce7594d0bdcd91bc8d53d6e52359449a1d50602"

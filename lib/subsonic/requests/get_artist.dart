@@ -5,7 +5,6 @@ import 'package:pedantic/pedantic.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/utils/duration.dart';
 
-import '../base_request.dart';
 import '../subsonic.dart';
 import 'get_cover_art.dart';
 

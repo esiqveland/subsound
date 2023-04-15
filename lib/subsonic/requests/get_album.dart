@@ -5,7 +5,6 @@ import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/stream_id.dart';
 import 'package:subsound/utils/duration.dart';
 
-import '../base_request.dart';
 import '../subsonic.dart';
 import 'get_cover_art.dart';
 
@@ -227,7 +226,7 @@ class GetAlbum extends BaseRequest<AlbumResult> {
     final albumDataNew = data['subsonic-response']['album'];
     final String? coverArtId = albumDataNew['coverArt'] as String?;
 
-    final List<dynamic>? songList = albumDataNew['song'] as List<dynamic>;
+    final List<dynamic>? songList = albumDataNew['song'] as List<dynamic>?;
 
     final songs =
         List<Map<String, dynamic>>.from(songList ?? []).map((songData) {

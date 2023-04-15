@@ -12,9 +12,6 @@ import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/subsonic/context.dart';
 import 'package:subsound/subsonic/models/album.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
-import 'package:subsound/subsonic/requests/get_album_list.dart';
-import 'package:subsound/subsonic/requests/get_artist.dart';
-import 'package:subsound/subsonic/requests/get_artists.dart';
 import 'package:subsound/subsonic/requests/get_playlist.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
 import 'package:subsound/subsonic/requests/requests.dart';
@@ -81,6 +78,7 @@ class SetDBAction extends ReduxAction<AppState> {
   @override
   AppState? reduce() {
     _db = db;
+    return state;
   }
 }
 

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/browsing/starred_page.dart';
 import 'package:subsound/screens/login/album_page.dart';
@@ -19,8 +18,8 @@ import 'package:subsound/subsonic/requests/get_playlist.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _HomePageViewModel>(
-      converter: (st) => _HomePageViewModel(
+    return StoreConnector<AppState, HomePageViewModel>(
+      converter: (st) => HomePageViewModel(
         currentSongId: st.state.playerState.currentSong?.id ?? '',
         onPlayAlbum: (album) => st.dispatch(PlayerCommandPlayAlbum(album)),
         onPlaySong: (song, queue) => st.dispatch(PlayerCommandContextualPlay(
@@ -102,7 +101,7 @@ class HomePage extends StatelessWidget {
 }
 
 class _StarredPageStateful extends StatefulWidget {
-  final _HomePageViewModel model;
+  final HomePageViewModel model;
   _StarredPageStateful({Key? key, required this.model}) : super(key: key);
 
   @override
@@ -139,13 +138,13 @@ class HomeData {
   HomeData(this.starred, this.recentAlbums, this.newAlbums, this.playlists);
 }
 
-class _HomePageViewModel extends Vm {
+class HomePageViewModel extends Vm {
   final String currentSongId;
   final Function(SongResult, List<SongResult>) onPlaySong;
   final Function(AlbumResultSimple) onPlayAlbum;
   final Future<HomeData> Function() onLoadStarred;
 
-  _HomePageViewModel({
+  HomePageViewModel({
     required this.currentSongId,
     required this.onPlaySong,
     required this.onPlayAlbum,
@@ -183,7 +182,7 @@ class StarredScrollView extends StatelessWidget {
 }
 
 class StarredListView extends StatelessWidget {
-  final _HomePageViewModel model;
+  final HomePageViewModel model;
   final HomeData data;
 
   const StarredListView({
@@ -330,18 +329,20 @@ class AlbumsScrollView extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(height: homePaddingBottom / 2),
-                                      Text(a.title,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: theme.textTheme.subtitle1),
+                                      Text(
+                                        a.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: theme.textTheme.titleMedium,
+                                      ),
                                       SizedBox(height: homePaddingBottom / 2),
                                       Text(
                                         a.artist,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style:
-                                            theme.textTheme.bodyText2!.copyWith(
-                                          color: theme.textTheme.caption!.color,
+                                            theme.textTheme.bodyMedium!.copyWith(
+                                          color: theme.textTheme.bodySmall!.color,
                                         ),
                                       ),
                                       SizedBox(height: homePaddingBottom / 2),
@@ -424,13 +425,13 @@ class PlaylistsScrollView extends StatelessWidget {
                   a.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.titleMedium,
                 ),
                 subtitle: Text(
                   a.comment,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.titleMedium,
                 ),
               );
             }),

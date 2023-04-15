@@ -3,10 +3,6 @@ import 'dart:convert';
 import 'package:subsound/subsonic/requests/get_cover_art.dart';
 import 'package:subsound/subsonic/subsonic.dart';
 
-import '../base_request.dart';
-import '../context.dart';
-import '../response.dart';
-
 class GetArtistsData {
   final String ignoredArticles;
   final List<ArtistIndexEntry> index;

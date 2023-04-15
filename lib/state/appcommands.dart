@@ -11,14 +11,9 @@ import 'package:subsound/state/errors.dart';
 import 'package:subsound/state/playerstate.dart';
 import 'package:subsound/storage/cache.dart';
 import 'package:subsound/subsonic/requests/get_album.dart';
-import 'package:subsound/subsonic/requests/get_album_list.dart';
-import 'package:subsound/subsonic/requests/get_album_list2.dart';
-import 'package:subsound/subsonic/requests/get_artist.dart';
-import 'package:subsound/subsonic/requests/get_artists.dart';
 import 'package:subsound/subsonic/requests/get_playlist.dart';
 import 'package:subsound/subsonic/requests/get_playlists.dart';
 import 'package:subsound/subsonic/requests/get_starred2.dart';
-import 'package:subsound/subsonic/requests/ping.dart';
 import 'package:subsound/subsonic/requests/post_scrobble.dart';
 import 'package:subsound/subsonic/requests/requests.dart';
 import 'package:subsound/subsonic/requests/star.dart';
@@ -172,7 +167,7 @@ class RefreshPlaylistsCommand extends RunRequest {
 // logout user from server and reset local state such as database and cache.
 class LogoutCommand extends ReduxAction<AppState> {
   @override
-  Future<AppState?> reduce() async {
+  Future<AppState> reduce() async {
     await ArtworkCacheManager().emptyCache();
     await DownloadCacheManager().emptyCache();
     var prefs = await SharedPreferences.getInstance();
@@ -181,6 +176,7 @@ class LogoutCommand extends ReduxAction<AppState> {
     DB db = await ResetDatabaseAction().run(database);
     await dispatch(SetDBAction(db));
     await dispatch(StartupAction(db));
+    return state;
   }
 }
 

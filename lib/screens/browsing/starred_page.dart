@@ -1,5 +1,4 @@
 import 'package:async_redux/async_redux.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:subsound/components/covert_art.dart';
 import 'package:subsound/screens/browsing/home_page.dart';
@@ -59,7 +58,7 @@ class StarredSongRow extends StatelessWidget {
     var theme = Theme.of(context);
     var subtitle = song.artistName;
     if (song.albumName.isNotEmpty) {
-      subtitle = subtitle + "  -  ${song.albumName}";
+      subtitle = "$subtitle  -  ${song.albumName}";
     }
     return ListTile(
       dense: true,

@@ -56,7 +56,7 @@ class StarItem extends BaseRequest<StarResponse> {
 
     final response = await ctx.client.get(uri);
     if (response.statusCode != 200) {
-      throw StateError("${response.statusCode}: " + response.body);
+      throw StateError("${response.statusCode}: ${response.body}");
     }
 
     final json =
@@ -64,7 +64,7 @@ class StarItem extends BaseRequest<StarResponse> {
     final data = json['subsonic-response'];
 
     if (data['status'] != 'ok') {
-      throw StateError("${response.statusCode}: " + response.body);
+      throw StateError("${response.statusCode}: ${response.body}");
     }
 
     return SubsonicResponse(ResponseStatus.ok, ctx.version, StarResponse());
@@ -88,7 +88,7 @@ class UnstarItem extends BaseRequest<UnstarResponse> {
 
     final response = await ctx.client.get(uri);
     if (response.statusCode != 200) {
-      throw StateError("${response.statusCode}: " + response.body);
+      throw StateError("${response.statusCode}: ${response.body}");
     }
 
     final json =
@@ -96,7 +96,7 @@ class UnstarItem extends BaseRequest<UnstarResponse> {
     final data = json['subsonic-response'];
 
     if (data['status'] != 'ok') {
-      throw StateError("${response.statusCode}: " + response.body);
+      throw StateError("${response.statusCode}: ${response.body}");
     }
 
     return SubsonicResponse(ResponseStatus.ok, ctx.version, UnstarResponse());
