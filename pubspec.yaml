@@ -44,7 +44,7 @@ dependencies:
   sqflite_common_ffi: ^2.0.0
   sqflite: ^2.0.0+3
   we_slide: ^2.0.1
-  flutter_slidable: ^2.0.0
+  flutter_slidable: ^3.0.0
   rxdart: ^0.27.0
   sentry_flutter: ^7.0.0
   libadwaita: ^1.0.0-rc.1
