@@ -11,7 +11,7 @@ import 'package:subsound/subsonic/requests/get_album.dart';
 
 import 'myscaffold.dart';
 
-class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen> {
+class _AlbumViewModelFactory extends VmFactory<AppState, AlbumScreen, AlbumViewModel> {
   _AlbumViewModelFactory(AlbumScreen widget) : super(widget);
 
   @override

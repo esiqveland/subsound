@@ -41,7 +41,7 @@ class SearchField extends StatelessWidget {
   }
 }
 
-class _SearchModelFactory extends VmFactory<AppState, SearchField> {
+class _SearchModelFactory extends VmFactory<AppState, SearchField, _SearchModel> {
   _SearchModelFactory(SearchField widget) : super(widget);
 
   @override

@@ -31,7 +31,7 @@ class DesktopPlayerBar extends StatelessWidget {
 }
 
 class _DesktopMiniPlayerModelFactory
-    extends VmFactory<AppState, DesktopMiniPlayer> {
+    extends VmFactory<AppState, DesktopMiniPlayer, MiniPlayerModel> {
   _DesktopMiniPlayerModelFactory(DesktopMiniPlayer widget) : super(widget);
 
   @override

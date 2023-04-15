@@ -29,15 +29,11 @@ void main(List<String> args) async {
 
   // setup mpv on Linux:
   if (Platform.isLinux) {
-    if (Process.runSync("which", ["mpv"]).exitCode != 0) {
-
-    }
+    if (Process.runSync("which", ["mpv"]).exitCode != 0) {}
   }
   await SentryFlutter.init(
-    (options) {
-      options.dsn =
-          'https://873f2393ea7c458694f56f647100c224@o564637.ingest.sentry.io/5705472';
-    },
+    (options) => options.dsn =
+        'https://873f2393ea7c458694f56f647100c224@o564637.ingest.sentry.io/5705472',
     appRunner: () => runMain(args),
   );
 }

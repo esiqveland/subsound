@@ -24,7 +24,7 @@ class PlaylistViewModel extends Vm {
   }) : super(equals: [currentSongId]);
 }
 
-class _PlaylistViewModelFactory extends VmFactory<AppState, PlaylistScreen> {
+class _PlaylistViewModelFactory extends VmFactory<AppState, PlaylistScreen, PlaylistViewModel> {
   _PlaylistViewModelFactory(PlaylistScreen widget) : super(widget);
 
   @override

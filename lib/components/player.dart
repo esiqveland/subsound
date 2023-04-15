@@ -259,7 +259,7 @@ class PlayerState {
   }
 }
 
-class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView> {
+class _PlayerViewModelFactory extends VmFactory<AppState, PlayerView, PlayerViewModel> {
   _PlayerViewModelFactory(PlayerView widget) : super(widget);
 
   @override

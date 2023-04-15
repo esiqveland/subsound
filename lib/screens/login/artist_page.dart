@@ -60,7 +60,7 @@ class ArtistPage extends StatelessWidget {
   }
 }
 
-class ArtistPageModelFactory extends VmFactory<AppState, ArtistPage> {
+class ArtistPageModelFactory extends VmFactory<AppState, ArtistPage, ArtistPageModel> {
   ArtistPageModelFactory(ArtistPage widget) : super(widget);
   @override
   ArtistPageModel fromStore() {

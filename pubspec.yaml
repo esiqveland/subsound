@@ -27,7 +27,7 @@ dependencies:
   shared_preferences: ^2.0.5
   path_provider: ^2.0.0
   logging: ^1.0.1
-  async_redux: ^18.0.0
+  async_redux: ^19.0.0
   audio_service: ^0.18.0
 #  just_audio:
 #    git:
@@ -46,7 +46,7 @@ dependencies:
   we_slide: ^2.0.1
   flutter_slidable: ^2.0.0
   rxdart: ^0.27.0
-  sentry_flutter: ^6.0.0
+  sentry_flutter: ^7.0.0
   libadwaita: ^1.0.0-rc.1
   adwaita: ^0.5.0
 #  bitsdojo_window: ">=0.1.1+1 <1.0.0"
