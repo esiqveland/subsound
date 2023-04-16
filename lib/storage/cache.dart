@@ -137,7 +137,16 @@ class DownloadCacheManager extends CacheManager {
   Future<bool> isCached(CachedSong meta) async {
     final f = await getCachedSongFile(meta);
     final len = await f.length();
-    return len == meta.fileSize;
+
+    // assume we are not transcoding/converting these file extensions:
+    if ("mp3" == meta.fileExtension || "ogg" == meta.fileExtension || "aac" == meta.fileExtension) {
+      return len == meta.fileSize;
+    } else {
+      // TODO: estimate correct filesize based on fileExtension and duration
+      // TODO: ideally, we had a checksum we could verify with...
+      // TODO: consider downloading to a tempfile that is renamed after no errors occur
+      return len > 250*1024;
+    }
   }
 
   Future<File> getCachedSongFile(CachedSong meta) async {
