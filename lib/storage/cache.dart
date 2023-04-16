@@ -145,8 +145,7 @@ class DownloadCacheManager extends CacheManager {
     return File(p.joinAll([
       dir.path,
       "songs",
-      meta.songId,
-      meta.fileExtension,
+      "${meta.songId}.${meta.fileExtension}", // apparently, ios needs the file to have a file extension to play it
     ]));
   }
 
