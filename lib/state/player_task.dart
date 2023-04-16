@@ -257,7 +257,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 }
 
 Future<AudioSource> _toStreamSource(MediaItem mediaItem) async {
-  return _toAudioSource(mediaItem, mediaItem.getSongMetadata());
+  return _preloadedSource(mediaItem);
 }
 
 // ignore: unused_element
@@ -276,6 +276,7 @@ Future<AudioSource> _preloadedSource(MediaItem mediaItem) async {
   return source;
 }
 
+// ignore: unused_element
 Future<AudioSource> _toAudioSource(
   MediaItem mediaItem,
   SongMetadata meta,
