@@ -48,6 +48,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         androidCompactActionIndices: [0, 1, 2],
         systemActions: {
           MediaAction.seek,
+          MediaAction.playPause,
           // MediaAction.seekForward,
           // MediaAction.seekBackward,
         },
