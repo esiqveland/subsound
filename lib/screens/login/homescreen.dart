@@ -4,6 +4,8 @@ import 'package:subsound/screens/browsing/home_page.dart';
 import 'package:subsound/screens/browsing/starred_page.dart';
 import 'package:subsound/screens/login/albums_page.dart';
 import 'package:subsound/screens/login/artists_page.dart';
+import 'package:subsound/screens/login/loginscreen.dart';
+import 'package:subsound/screens/login/settings_page.dart';
 import 'package:subsound/state/appstate.dart';
 
 import 'myscaffold.dart';
@@ -22,42 +24,44 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, ServerData>(
       converter: (st) => st.state.loginState,
-      builder: (context, state) => DefaultTabController(
-        length: 4,
-        initialIndex: initialTabIndex,
-        child: MyScaffold(
-          appBar: AppBarSettings(
-            title: Text("Home"),
-            bottom: TabBar(
-              onTap: (idx) {},
-              tabs: [
-                Tab(
-                  text: "Starred",
+      builder: (context, state) => !state.isValid
+          ? LoginScreen()
+          : DefaultTabController(
+              length: 4,
+              initialIndex: initialTabIndex,
+              child: MyScaffold(
+                appBar: AppBarSettings(
+                  title: Text("Home"),
+                  bottom: TabBar(
+                    onTap: (idx) {},
+                    tabs: [
+                      Tab(
+                        text: "Starred",
+                      ),
+                      Tab(
+                        text: "Artists",
+                      ),
+                      Tab(
+                        text: "Albums",
+                      ),
+                      Tab(
+                        text: "Home",
+                      ),
+                    ],
+                  ),
                 ),
-                Tab(
-                  text: "Artists",
+                body: (context) => Center(
+                  child: TabBarView(
+                    children: [
+                      Center(child: StarredPage()),
+                      Center(child: ArtistsPage()),
+                      Center(child: AlbumsPage()),
+                      Center(child: HomePage()),
+                    ],
+                  ),
                 ),
-                Tab(
-                  text: "Albums",
-                ),
-                Tab(
-                  text: "Home",
-                ),
-              ],
+              ),
             ),
-          ),
-          body: (context) => Center(
-            child: TabBarView(
-              children: [
-                Center(child: StarredPage()),
-                Center(child: ArtistsPage()),
-                Center(child: AlbumsPage()),
-                Center(child: HomePage()),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
