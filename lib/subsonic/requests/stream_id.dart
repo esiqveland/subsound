@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
