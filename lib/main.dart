@@ -61,6 +61,9 @@ void runMain(List<String> args) async {
     ),
   );
 
+  // final session = await AudioSession.instance;
+  // await session.configure(AudioSessionConfiguration.music());
+
   // save handler as singleton
   audioHandler = h;
   final DB db = await openDB();
